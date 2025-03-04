@@ -36,7 +36,7 @@ export const Route = createRootRoute({
               type: "launch_frame",
               name: "SassyHash 💅",
               url: "https://velvety-creponne-cc1d63.netlify.app",
-              splashImageUrl: "https://sassyhash.artlu.xyz/sassyhash-og.png",
+              splashImageUrl: "https://sassyhash.artlu.xyz/splash-square.png",
               splashBackgroundColor: "#0E081F",
             },
           },

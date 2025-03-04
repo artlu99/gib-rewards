@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   return (
     <div className="prose p-2">
-      <h3>Frames v2 demo</h3>
+      <h3>Contest | SassyHash 💅</h3>
     </div>
   );
 }
