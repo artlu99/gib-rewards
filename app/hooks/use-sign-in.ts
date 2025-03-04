@@ -55,10 +55,11 @@ export const useSignIn = () => {
         }),
       });
 
+      console.info("res:", res);
+
       if (!res.ok) {
-        throw new Error(JSON.stringify(res));
-        // const errorData = await res.json().catch(() => ({}));
-        // throw new Error(errorData.message || "Sign in failed (specific)");
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Sign in failed (specific)");
       }
 
       const data = await res.json();
