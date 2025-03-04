@@ -11,10 +11,13 @@
   "dependencies": {
     "@farcaster/frame-core": "^0.0.28",
     "@farcaster/frame-sdk": "^0.0.30",
+    "@neynar/nodejs-sdk": "^2.17.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-router": "^1.112.7",
     "@tanstack/react-start": "^1.112.7",
     "@tanstack/router-devtools": "^1.112.7",
+    "@upstash/redis": "^1.34.4",
+    "itty-fetcher": "^0.9.4",
     "jose": "^6.0.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

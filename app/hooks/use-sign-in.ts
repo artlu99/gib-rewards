@@ -55,8 +55,6 @@ export const useSignIn = () => {
         }),
       });
 
-      console.info("res:", res);
-
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || "Sign in failed (specific)");

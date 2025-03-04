@@ -3,20 +3,21 @@ import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { setResponseStatus } from "@tanstack/react-start/server";
 import * as jose from "jose";
 import { verifyMessage as verifyMessageViem } from "viem";
+import { fetchUser } from "~/utils/neynar";
+
 const verifyMessage = async ({ fid, signature, message, referrerFid }) => {
   if (!fid || !signature || !message) {
     return false;
   }
 
-  console.log("verifyMessage:", fid, signature, message, referrerFid);
-
+  const user = await fetchUser(fid);
   try {
     const isValidSignature = await verifyMessageViem({
-      address: "0x21ca9f0f7c0b59f616b1d96325d55b62c9661d6d" as `0x${string}`, // user.custodyWalletAddress
+      address: user.custody_address as `0x${string}`,
       message,
       signature,
     });
-    console.log("isValidSignature:", isValidSignature);
+    return isValidSignature;
   } catch (error) {
     console.error(
       "Error verifying message:",
@@ -24,7 +25,7 @@ const verifyMessage = async ({ fid, signature, message, referrerFid }) => {
     );
   }
 
-  return true;
+  return false;
 };
 
 export const APIRoute = createAPIFileRoute("/api/sign-in")({
