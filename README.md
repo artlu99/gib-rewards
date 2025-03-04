@@ -7,11 +7,10 @@ This site is built with TanStack Start!
 - [TailwindCSS v4](https://tailwindcss.com)
 - [DaiyUI v5](https://daisyui.com)
 - deployed to Netifly
-
 - Frames v2
     - auth via FC Connect
-    - notifications
 
+    - notifications
 
 - Pinata FC Hubs
 - Neynar for FC data
