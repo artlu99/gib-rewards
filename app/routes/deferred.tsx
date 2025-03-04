@@ -33,7 +33,7 @@ function Deferred() {
   const [count, setCount] = useState(0);
   const { deferredStuff, deferredPerson, person } = Route.useLoaderData();
 
-  const { signIn, isSignedIn, isLoading, logout } = useSignIn();
+  const { signIn, isSignedIn, isLoading, logout, error } = useSignIn();
 
   return (
     <div className="p-2">
@@ -57,7 +57,7 @@ function Deferred() {
           </button>
         </div>
       )}
-
+      {error && <div>{error}</div>}
       <div data-testid="regular-person">
         {person.name} - {person.randomNumber}
       </div>

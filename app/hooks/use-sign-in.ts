@@ -61,7 +61,7 @@ export const useSignIn = () => {
       }
 
       const data = await res.json();
-      localStorage.setItem("token", data.token);
+      localStorage.setItem(`token-${context.user.fid}`, data.token);
       setIsSignedIn(true);
       return data;
     } catch (err) {
@@ -75,9 +75,9 @@ export const useSignIn = () => {
   }, [context, contextError]);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
+    localStorage.removeItem(`token-${context?.user.fid}`);
     setIsSignedIn(false);
-  }, []);
+  }, [context]);
 
   return { signIn, logout, isSignedIn, isLoading, error };
 };
