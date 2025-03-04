@@ -6,13 +6,12 @@ This site is built with TanStack Start!
 - [Biome](https://biomejs.dev)
 - [TailwindCSS v4](https://tailwindcss.com)
 - [DaiyUI v5](https://daisyui.com)
+- deployed to Netifly
 
 - Frames v2
     - auth via FC Connect
     - notifications
 
-- deployed to AWS S3
-- FlightControl
 
 - Pinata FC Hubs
 - Neynar for FC data

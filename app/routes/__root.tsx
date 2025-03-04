@@ -5,8 +5,7 @@ import {
   Scripts,
   createRootRoute,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import * as React from "react";
+import type * as React from "react";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
 import appCss from "~/styles/app.css?url";
@@ -23,10 +22,26 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       ...seo({
-        title:
-          "TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+        title: "Contest | SassyHash 💅",
+        description: "💅🏆 a weekly rewards program to discover the best",
       }),
+      {
+        name: "fc:frame",
+        content: JSON.stringify({
+          version: "next",
+          imageUrl: "https://sassyhash.artlu.xyz/sassyhash-og.png",
+          button: {
+            title: "Contest | SassyHash 💅",
+            action: {
+              type: "launch_frame",
+              name: "SassyHash 💅",
+              url: "https://sassyhash.artlu.xyz",
+              splashImageUrl: "https://sassyhash.artlu.xyz/sassyhash-og.png",
+              splashBackgroundColor: "#0E081F",
+            },
+          },
+        }),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -72,9 +87,10 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html data-theme="dim">
+    <html lang="en" data-theme="dim">
       <head>
         <HeadContent />
+        <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js" />
       </head>
       <body>
         <div className="p-2 flex gap-2 text-lg">
@@ -84,7 +100,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               className: "font-bold",
             }}
           >
-            Leaderboard 🏆
+            🏆
+            <br /> Leaderboard
           </Link>{" "}
           <Link
             to="/deferred"
@@ -92,7 +109,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               className: "font-bold",
             }}
           >
-            Me-me-meee 💰
+            💰
+            <br />
+            Me-me-meee
           </Link>{" "}
           <Link
             to="/route-a"
@@ -100,21 +119,25 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               className: "font-bold",
             }}
           >
-            Rules 🕵️‍♀️
-          </Link>{' '}
+            🕵️‍♀️
+            <br />
+            Rules
+          </Link>{" "}
           <Link
             to="/"
             activeProps={{
-              className: 'font-bold',
+              className: "font-bold",
             }}
             activeOptions={{ exact: true }}
           >
-            wat dis 💅
+            💅
+            <br />
+            Wat dis
           </Link>
         </div>
         <hr />
         {children}
-        <TanStackRouterDevtools position="bottom-right" />
+        <script>frame.sdk.actions.ready();</script>
         <Scripts />
       </body>
     </html>

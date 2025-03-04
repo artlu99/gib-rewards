@@ -1,0 +1,17 @@
+{
+	"accountAssociation": {
+		"header": "eyJmaWQiOjY1NDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyMWNBOUYwRjdDMGI1OWY2MTZiMUQ5NjMyNWQ1NUI2MmM5NjYxRDZkIn0",
+		"payload": "eyJkb21haW4iOiJzYXNzeWhhc2guYXJ0bHUueHl6In0",
+		"signature": "MHg2YjkzZjM1Mzk5ZjI3ZWMzZTQwZmI4MTM4YzY0Y2Y5ZmQ1OGJmZDI4NjI2ZWMxMDE2MWYwZTUzZDY0Y2NhMTlmNjc5NWM1NzBjZGJkYmRkOTI1MTJiNGNiNzA4ODFmZjlmYTE1MDExYTQyMzMwYmFlZmViMTk0ZGY3NzE4ZGNhMDFj"
+	},
+	"frame": {
+		"version": "0.0.1",
+		"name": "SassyHash 💅",
+		"iconUrl": "https://sassyhash.artlu.xyz/og-clean.jpg",
+		"homeUrl": "https://sassyhash.artlu.xyz",
+		"imageUrl": "https://sassyhash.artlu.xyz/sassyhash-og.png",
+		"buttonTitle": "SassyHash 💅 | Download",
+		"splashImageUrl": "https://sassyhash.artlu.xyz/splash-square.png",
+		"splashBackgroundColor": "#050709"
+	}
+}
