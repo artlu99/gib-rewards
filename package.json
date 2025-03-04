@@ -9,6 +9,8 @@
     "start": "vinxi start"
   },
   "dependencies": {
+    "@farcaster/frame-core": "^0.0.28",
+    "@farcaster/frame-sdk": "^0.0.30",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-router": "^1.112.7",
     "@tanstack/react-start": "^1.112.7",
