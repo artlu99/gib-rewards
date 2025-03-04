@@ -14,7 +14,7 @@ const verifyMessage = async ({
   message: string;
   referrerFid: string | null;
 }) => {
-  if (!fid || !signature || !message || !referrerFid) {
+  if (!fid || !signature || !message) {
     return false;
   }
 

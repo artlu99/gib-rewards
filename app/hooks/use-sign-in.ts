@@ -55,9 +55,10 @@ export const useSignIn = () => {
         }),
       });
 
+      console.log(res);
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Sign in failed");
+        throw new Error(errorData.message || "Sign in failed (specific)");
       }
 
       const data = await res.json();
@@ -66,7 +67,7 @@ export const useSignIn = () => {
       return data;
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Sign in failed";
+        err instanceof Error ? err.message : "Sign in failed (general)";
       setError(errorMessage);
       throw err;
     } finally {
