@@ -72,7 +72,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html data-theme="dim">
       <head>
         <HeadContent />
       </head>

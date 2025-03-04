@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: winter --default, dim --prefersdark;
+}
 
 @layer base {
   html {
