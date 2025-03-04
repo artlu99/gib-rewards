@@ -91,6 +91,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
         <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js" />
+        <script src="./frame.js" />
       </head>
       <body>
         <div className="p-2 flex gap-2 text-lg">
@@ -137,7 +138,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </div>
         <hr />
         {children}
-        <script>frame.sdk.actions.ready();</script>
         <Scripts />
       </body>
     </html>
