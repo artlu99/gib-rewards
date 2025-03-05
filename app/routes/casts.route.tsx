@@ -49,16 +49,7 @@ function PostsLayoutComponent() {
   ) : (
     <div className="p-2 flex gap-2">
       <ul className="list-disc pl-4">
-        {[
-          ...casts,
-          {
-            fid: 0,
-            castHash: "i-do-not-exist",
-            username: "no-user",
-            count: 0,
-            rootParentUrl: null,
-          },
-        ].map((cast) => {
+        {casts.map((cast) => {
           return (
             <li key={cast.castHash} className="whitespace-nowrap">
               <Link
