@@ -30,7 +30,7 @@ const cachedFetcherGet = async <T>(url: string) => {
   return res as T;
 };
 
-export const fetchUser = async (fid: string): Promise<NeynarUser> => {
+export const fetchUser = async (fid: number): Promise<NeynarUser> => {
   try {
     const res = await cachedFetcherGet<BulkUsersResponse>(
       `/v2/farcaster/user/bulk?fids=${fid}`

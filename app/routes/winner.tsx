@@ -2,7 +2,6 @@ import { Await, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Suspense, useEffect, useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
-import { useSignIn } from "~/hooks/use-sign-in";
 
 const personServerFn = createServerFn({ method: "GET" })
   .validator((d: string) => d)

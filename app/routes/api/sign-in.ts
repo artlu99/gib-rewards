@@ -2,20 +2,30 @@ import { json } from "@tanstack/react-start";
 import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { setResponseStatus } from "@tanstack/react-start/server";
 import * as jose from "jose";
-import { verifyMessage as verifyMessageViem } from "viem";
+import { type ByteArray, verifyMessage as verifyMessageViem } from "viem";
+import { z } from "zod";
 import { fetchUser } from "~/utils/neynar";
 
-const verifyMessage = async ({ fid, signature, message, referrerFid }) => {
-  if (!fid || !signature || !message) {
+const verifyMessageSchema = z.object({
+  fid: z.string().transform((val) => Number.parseInt(val)),
+  signature: z.string(),
+  message: z.string(),
+  referrerFid: z.string().optional(),
+});
+
+const verifyMessage = async (params: z.infer<typeof verifyMessageSchema>) => {
+  const result = verifyMessageSchema.safeParse(params);
+  if (!result.success) {
     return false;
   }
+  const { fid, signature, message } = result.data;
 
   const user = await fetchUser(fid);
   try {
     const isValidSignature = await verifyMessageViem({
       address: user.custody_address as `0x${string}`,
       message,
-      signature,
+      signature: signature as unknown as ByteArray,
     });
     return isValidSignature;
   } catch (error) {

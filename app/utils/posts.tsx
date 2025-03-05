@@ -1,23 +1,35 @@
 import { createServerFn } from "@tanstack/react-start";
+import { verifyToken } from "./auth";
 import { getMostSeenCasts } from "./whistles";
 
-export const fetchPost = createServerFn({ method: "GET" }).handler(
-  async ({ data: postId }) => {
-    console.info(`Fetching post with id ${postId}...`);
+export const fetchPost = createServerFn({ method: "GET" })
+  .validator(
+    (d: { postId: string; headers?: { Authorization?: string } | undefined }) =>
+      d
+  )
+  .handler(async ({ data }) => {
+    const { postId, headers } = data;
+
+    const authHeader = headers?.Authorization;
+    const token = authHeader?.replace("Bearer ", "");
+    const auth = token ? await verifyToken(token) : null;
+
     const casts = await getMostSeenCasts({
-      viewerFid: null,
+      viewerFid: auth?.fid ?? null,
       limit: 100,
     });
     return casts.find((cast) => cast.castHash === postId);
-  }
-);
+  });
 
-export const fetchPosts = createServerFn({ method: "GET" }).handler(
-  async () => {
-    console.info("Fetching casts...");
+export const fetchPosts = createServerFn({ method: "GET" })
+  .validator((d: { headers?: { Authorization?: string } } | undefined) => d)
+  .handler(async ({ data }) => {
+    const authHeader = data?.headers?.Authorization;
+    const token = authHeader?.replace("Bearer ", "");
+    const auth = token ? await verifyToken(token) : null;
+
     return await getMostSeenCasts({
-      viewerFid: null,
+      viewerFid: auth?.fid ?? null,
       limit: 10,
     });
-  }
-);
+  });

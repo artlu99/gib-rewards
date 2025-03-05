@@ -19,7 +19,6 @@ import { Route as IndexImport } from './routes/index'
 import { Route as CastsIndexImport } from './routes/casts.index'
 import { Route as CastsPostIdImport } from './routes/casts.$postId'
 import { Route as PathlessLayoutNestedLayoutImport } from './routes/_pathlessLayout/_nested-layout'
-import { Route as CastsPostIdDecodedImport } from './routes/casts_.$postId.decoded'
 import { Route as PathlessLayoutNestedLayoutRulesEsImport } from './routes/_pathlessLayout/_nested-layout/rules-es'
 import { Route as PathlessLayoutNestedLayoutRulesEnImport } from './routes/_pathlessLayout/_nested-layout/rules-en'
 
@@ -72,12 +71,6 @@ const PathlessLayoutNestedLayoutRoute = PathlessLayoutNestedLayoutImport.update(
     getParentRoute: () => PathlessLayoutRoute,
   } as any,
 )
-
-const CastsPostIdDecodedRoute = CastsPostIdDecodedImport.update({
-  id: '/casts_/$postId/decoded',
-  path: '/casts/$postId/decoded',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const PathlessLayoutNestedLayoutRulesEsRoute =
   PathlessLayoutNestedLayoutRulesEsImport.update({
@@ -167,13 +160,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutNestedLayoutRulesEsImport
       parentRoute: typeof PathlessLayoutNestedLayoutImport
     }
-    '/casts_/$postId/decoded': {
-      id: '/casts_/$postId/decoded'
-      path: '/casts/$postId/decoded'
-      fullPath: '/casts/$postId/decoded'
-      preLoaderRoute: typeof CastsPostIdDecodedImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -233,7 +219,6 @@ export interface FileRoutesByFullPath {
   '/casts/': typeof CastsIndexRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
-  '/casts/$postId/decoded': typeof CastsPostIdDecodedRoute
 }
 
 export interface FileRoutesByTo {
@@ -245,7 +230,6 @@ export interface FileRoutesByTo {
   '/casts': typeof CastsIndexRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
-  '/casts/$postId/decoded': typeof CastsPostIdDecodedRoute
 }
 
 export interface FileRoutesById {
@@ -260,7 +244,6 @@ export interface FileRoutesById {
   '/casts/': typeof CastsIndexRoute
   '/_pathlessLayout/_nested-layout/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/_pathlessLayout/_nested-layout/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
-  '/casts_/$postId/decoded': typeof CastsPostIdDecodedRoute
 }
 
 export interface FileRouteTypes {
@@ -275,7 +258,6 @@ export interface FileRouteTypes {
     | '/casts/'
     | '/rules-en'
     | '/rules-es'
-    | '/casts/$postId/decoded'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -286,7 +268,6 @@ export interface FileRouteTypes {
     | '/casts'
     | '/rules-en'
     | '/rules-es'
-    | '/casts/$postId/decoded'
   id:
     | '__root__'
     | '/'
@@ -299,7 +280,6 @@ export interface FileRouteTypes {
     | '/casts/'
     | '/_pathlessLayout/_nested-layout/rules-en'
     | '/_pathlessLayout/_nested-layout/rules-es'
-    | '/casts_/$postId/decoded'
   fileRoutesById: FileRoutesById
 }
 
@@ -309,7 +289,6 @@ export interface RootRouteChildren {
   PathlessLayoutRoute: typeof PathlessLayoutRouteWithChildren
   RedirectRoute: typeof RedirectRoute
   WinnerRoute: typeof WinnerRoute
-  CastsPostIdDecodedRoute: typeof CastsPostIdDecodedRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -318,7 +297,6 @@ const rootRouteChildren: RootRouteChildren = {
   PathlessLayoutRoute: PathlessLayoutRouteWithChildren,
   RedirectRoute: RedirectRoute,
   WinnerRoute: WinnerRoute,
-  CastsPostIdDecodedRoute: CastsPostIdDecodedRoute,
 }
 
 export const routeTree = rootRoute
@@ -335,8 +313,7 @@ export const routeTree = rootRoute
         "/casts",
         "/_pathlessLayout",
         "/redirect",
-        "/winner",
-        "/casts_/$postId/decoded"
+        "/winner"
       ]
     },
     "/": {
@@ -384,9 +361,6 @@ export const routeTree = rootRoute
     "/_pathlessLayout/_nested-layout/rules-es": {
       "filePath": "_pathlessLayout/_nested-layout/rules-es.tsx",
       "parent": "/_pathlessLayout/_nested-layout"
-    },
-    "/casts_/$postId/decoded": {
-      "filePath": "casts_.$postId.decoded.tsx"
     }
   }
 }
