@@ -17,7 +17,7 @@ const slowServerFn = createServerFn({ method: "GET" })
     return { name, randomNumber: Math.floor(Math.random() * 100) };
   });
 
-export const Route = createFileRoute("/deferred")({
+export const Route = createFileRoute("/winner")({
   loader: async () => {
     return {
       deferredStuff: new Promise<string>((r) =>
@@ -35,36 +35,9 @@ function Deferred() {
   const { deferredStuff, deferredPerson, person } = Route.useLoaderData();
 
   const { context } = useFrame();
-  const { signIn, isSignedIn, isLoading, logout, error } = useSignIn();
-
-  useEffect(() => {
-    if (!context?.user) return;
-    signIn();
-  }, [context, signIn]);
 
   return (
     <div className="p-2">
-      {!isSignedIn ? (
-        <button
-          type="button"
-          onClick={() => signIn()}
-          disabled={isLoading}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300"
-        >
-          {isLoading ? "Signing in..." : "Sign in with Farcaster"}
-        </button>
-      ) : (
-        <div className="flex flex-col items-center gap-4">
-          <button
-            type="button"
-            onClick={() => logout()}
-            className="mt-8 px-4 py-2 bg-red-500 w-full text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Logout
-          </button>
-        </div>
-      )}
-      {error && <div>{error}</div>}
       <div data-testid="regular-person">
         {person.name} - {person.randomNumber}
       </div>

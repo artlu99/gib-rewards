@@ -94,7 +94,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <div className="p-2 flex gap-2 text-lg">
           <Link
-            to="/posts"
+            to="/casts"
             activeProps={{
               className: "font-bold",
             }}
@@ -103,7 +103,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <br /> Leaderboard
           </Link>{" "}
           <Link
-            to="/deferred"
+            to="/winner"
             activeProps={{
               className: "font-bold",
             }}
@@ -113,7 +113,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             Me-me-meee
           </Link>{" "}
           <Link
-            to="/route-a"
+            to="/rules-en"
             activeProps={{
               className: "font-bold",
             }}

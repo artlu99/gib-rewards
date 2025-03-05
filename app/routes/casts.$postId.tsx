@@ -3,12 +3,12 @@ import { fetchPost } from '../utils/posts'
 import { NotFound } from '~/components/NotFound'
 import { PostErrorComponent } from '~/components/PostError'
 
-export const Route = createFileRoute('/posts/$postId')({
+export const Route = createFileRoute('/casts/$postId')({
   loader: ({ params: { postId } }) => fetchPost({ data: postId }),
   errorComponent: PostErrorComponent,
   component: PostComponent,
   notFoundComponent: () => {
-    return <NotFound>Post not found</NotFound>
+    return <NotFound>Cast not found</NotFound>
   },
 })
 
@@ -20,7 +20,7 @@ function PostComponent() {
       <h4 className="text-xl font-bold underline">{post.title}</h4>
       <div className="text-sm">{post.body}</div>
       <Link
-        to="/posts/$postId/deep"
+        to="/casts/$postId/deep"
         params={{
           postId: post.id,
         }}

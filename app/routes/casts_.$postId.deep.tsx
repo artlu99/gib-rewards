@@ -2,7 +2,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { fetchPost } from '../utils/posts'
 import { PostErrorComponent } from '~/components/PostError'
 
-export const Route = createFileRoute('/posts_/$postId/deep')({
+export const Route = createFileRoute('/casts_/$postId/deep')({
   loader: async ({ params: { postId } }) =>
     fetchPost({
       data: postId,
@@ -17,10 +17,10 @@ function PostDeepComponent() {
   return (
     <div className="p-2 space-y-2">
       <Link
-        to="/posts"
+        to="/casts"
         className="block py-1 text-blue-800 hover:text-blue-600"
       >
-        ← All Posts
+        ← back to Leaderboard
       </Link>
       <h4 className="text-xl font-bold underline">{post.title}</h4>
       <div className="text-sm">{post.body}</div>
