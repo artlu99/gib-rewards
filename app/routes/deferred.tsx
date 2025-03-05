@@ -1,6 +1,7 @@
 import { Await, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
 
 const personServerFn = createServerFn({ method: "GET" })
@@ -33,7 +34,13 @@ function Deferred() {
   const [count, setCount] = useState(0);
   const { deferredStuff, deferredPerson, person } = Route.useLoaderData();
 
+  const { context } = useFrame();
   const { signIn, isSignedIn, isLoading, logout, error } = useSignIn();
+
+  useEffect(() => {
+    if (!context?.user) return;
+    signIn();
+  }, [context, signIn]);
 
   return (
     <div className="p-2">
