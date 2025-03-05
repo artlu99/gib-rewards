@@ -1,20 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
+import { CastErrorComponent } from "~/components/CastError";
 import { NotFound } from "~/components/NotFound";
-import { PostErrorComponent } from "~/components/PostError";
-import { fetchPost } from "../utils/posts";
+import { fetchCast } from "~/utils/topNcasts";
 
-export const Route = createFileRoute("/casts/$postId")({
-  loader: ({ params: { postId } }) => fetchPost({ data: { postId } }),
-  errorComponent: PostErrorComponent,
-  component: PostComponent,
+export const Route = createFileRoute("/casts/$castHash")({
+  loader: ({ params: { castHash } }) => fetchCast({ data: { castHash } }),
+  errorComponent: CastErrorComponent,
+  component: CastComponent,
   notFoundComponent: () => {
     return <NotFound>Cast not found</NotFound>;
   },
 });
 
-function PostComponent() {
+function CastComponent() {
   const cast = Route.useLoaderData();
 
   const [showDecodedText, setShowDecodedText] = useState(false);

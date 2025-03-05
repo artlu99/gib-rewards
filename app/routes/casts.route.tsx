@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
 import { getStoredToken } from "~/utils/auth";
-import { fetchPosts } from "~/utils/posts";
+import { fetchCasts } from "~/utils/topNcasts";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 
 export const Route = createFileRoute("/casts")({
@@ -28,7 +28,7 @@ function PostsLayoutComponent() {
       setLoading(true);
       try {
         const token = getStoredToken(context?.user?.fid);
-        const result = await fetchPosts({
+        const result = await fetchCasts({
           data: {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
           },
@@ -53,8 +53,8 @@ function PostsLayoutComponent() {
           return (
             <li key={cast.castHash} className="whitespace-nowrap">
               <Link
-                to="/casts/$postId"
-                params={{ postId: cast.castHash }}
+                to="/casts/$castHash"
+                params={{ castHash: cast.castHash }}
                 className="block py-1 text-blue-800 hover:text-blue-600"
                 activeProps={{ className: "text-black font-bold" }}
               >

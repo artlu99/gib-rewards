@@ -17,7 +17,7 @@ import { Route as PathlessLayoutImport } from './routes/_pathlessLayout'
 import { Route as CastsRouteImport } from './routes/casts.route'
 import { Route as IndexImport } from './routes/index'
 import { Route as CastsIndexImport } from './routes/casts.index'
-import { Route as CastsPostIdImport } from './routes/casts.$postId'
+import { Route as CastsCastHashImport } from './routes/casts.$castHash'
 import { Route as PathlessLayoutNestedLayoutImport } from './routes/_pathlessLayout/_nested-layout'
 import { Route as PathlessLayoutNestedLayoutRulesEsImport } from './routes/_pathlessLayout/_nested-layout/rules-es'
 import { Route as PathlessLayoutNestedLayoutRulesEnImport } from './routes/_pathlessLayout/_nested-layout/rules-en'
@@ -59,9 +59,9 @@ const CastsIndexRoute = CastsIndexImport.update({
   getParentRoute: () => CastsRouteRoute,
 } as any)
 
-const CastsPostIdRoute = CastsPostIdImport.update({
-  id: '/$postId',
-  path: '/$postId',
+const CastsCastHashRoute = CastsCastHashImport.update({
+  id: '/$castHash',
+  path: '/$castHash',
   getParentRoute: () => CastsRouteRoute,
 } as any)
 
@@ -132,11 +132,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutNestedLayoutImport
       parentRoute: typeof PathlessLayoutImport
     }
-    '/casts/$postId': {
-      id: '/casts/$postId'
-      path: '/$postId'
-      fullPath: '/casts/$postId'
-      preLoaderRoute: typeof CastsPostIdImport
+    '/casts/$castHash': {
+      id: '/casts/$castHash'
+      path: '/$castHash'
+      fullPath: '/casts/$castHash'
+      preLoaderRoute: typeof CastsCastHashImport
       parentRoute: typeof CastsRouteImport
     }
     '/casts/': {
@@ -166,12 +166,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface CastsRouteRouteChildren {
-  CastsPostIdRoute: typeof CastsPostIdRoute
+  CastsCastHashRoute: typeof CastsCastHashRoute
   CastsIndexRoute: typeof CastsIndexRoute
 }
 
 const CastsRouteRouteChildren: CastsRouteRouteChildren = {
-  CastsPostIdRoute: CastsPostIdRoute,
+  CastsCastHashRoute: CastsCastHashRoute,
   CastsIndexRoute: CastsIndexRoute,
 }
 
@@ -215,7 +215,7 @@ export interface FileRoutesByFullPath {
   '': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/redirect': typeof RedirectRoute
   '/winner': typeof WinnerRoute
-  '/casts/$postId': typeof CastsPostIdRoute
+  '/casts/$castHash': typeof CastsCastHashRoute
   '/casts/': typeof CastsIndexRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
@@ -226,7 +226,7 @@ export interface FileRoutesByTo {
   '': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/redirect': typeof RedirectRoute
   '/winner': typeof WinnerRoute
-  '/casts/$postId': typeof CastsPostIdRoute
+  '/casts/$castHash': typeof CastsCastHashRoute
   '/casts': typeof CastsIndexRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
@@ -240,7 +240,7 @@ export interface FileRoutesById {
   '/redirect': typeof RedirectRoute
   '/winner': typeof WinnerRoute
   '/_pathlessLayout/_nested-layout': typeof PathlessLayoutNestedLayoutRouteWithChildren
-  '/casts/$postId': typeof CastsPostIdRoute
+  '/casts/$castHash': typeof CastsCastHashRoute
   '/casts/': typeof CastsIndexRoute
   '/_pathlessLayout/_nested-layout/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/_pathlessLayout/_nested-layout/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
@@ -254,7 +254,7 @@ export interface FileRouteTypes {
     | ''
     | '/redirect'
     | '/winner'
-    | '/casts/$postId'
+    | '/casts/$castHash'
     | '/casts/'
     | '/rules-en'
     | '/rules-es'
@@ -264,7 +264,7 @@ export interface FileRouteTypes {
     | ''
     | '/redirect'
     | '/winner'
-    | '/casts/$postId'
+    | '/casts/$castHash'
     | '/casts'
     | '/rules-en'
     | '/rules-es'
@@ -276,7 +276,7 @@ export interface FileRouteTypes {
     | '/redirect'
     | '/winner'
     | '/_pathlessLayout/_nested-layout'
-    | '/casts/$postId'
+    | '/casts/$castHash'
     | '/casts/'
     | '/_pathlessLayout/_nested-layout/rules-en'
     | '/_pathlessLayout/_nested-layout/rules-es'
@@ -322,7 +322,7 @@ export const routeTree = rootRoute
     "/casts": {
       "filePath": "casts.route.tsx",
       "children": [
-        "/casts/$postId",
+        "/casts/$castHash",
         "/casts/"
       ]
     },
@@ -346,8 +346,8 @@ export const routeTree = rootRoute
         "/_pathlessLayout/_nested-layout/rules-es"
       ]
     },
-    "/casts/$postId": {
-      "filePath": "casts.$postId.tsx",
+    "/casts/$castHash": {
+      "filePath": "casts.$castHash.tsx",
       "parent": "/casts"
     },
     "/casts/": {
