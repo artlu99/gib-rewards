@@ -1,36 +1,23 @@
-import { notFound } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-import axios from 'redaxios'
+import { createServerFn } from "@tanstack/react-start";
+import { getMostSeenCasts } from "./whistles";
 
-export type PostType = {
-  id: string
-  title: string
-  body: string
-}
+export const fetchPost = createServerFn({ method: "GET" }).handler(
+  async ({ data: postId }) => {
+    console.info(`Fetching post with id ${postId}...`);
+    const casts = await getMostSeenCasts({
+      viewerFid: null,
+      limit: 100,
+    });
+    return casts.find((cast) => cast.castHash === postId);
+  }
+);
 
-export const fetchPost = createServerFn({ method: 'GET' })
-  .validator((d: string) => d)
-  .handler(async ({ data }) => {
-    console.info(`Fetching post with id ${data}...`)
-    const post = await axios
-      .get<PostType>(`https://jsonplaceholder.typicode.com/posts/${data}`)
-      .then((r) => r.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.status === 404) {
-          throw notFound()
-        }
-        throw err
-      })
-
-    return post
-  })
-
-export const fetchPosts = createServerFn({ method: 'GET' }).handler(
+export const fetchPosts = createServerFn({ method: "GET" }).handler(
   async () => {
-    console.info('Fetching posts...')
-    return axios
-      .get<Array<PostType>>('https://jsonplaceholder.typicode.com/posts')
-      .then((r) => r.data.slice(0, 10))
-  },
-)
+    console.info("Fetching casts...");
+    return await getMostSeenCasts({
+      viewerFid: null,
+      limit: 10,
+    });
+  }
+);

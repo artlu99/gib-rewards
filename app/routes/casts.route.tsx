@@ -7,29 +7,38 @@ export const Route = createFileRoute("/casts")({
 });
 
 function PostsLayoutComponent() {
-  const posts = Route.useLoaderData();
+  const casts = Route.useLoaderData();
 
   return (
     <div className="p-2 flex gap-2">
       <ul className="list-disc pl-4">
-        {[...posts, { id: "i-do-not-exist", title: "a non-existent Cast" }].map(
-          (post) => {
-            return (
-              <li key={post.id} className="whitespace-nowrap">
-                <Link
-                  to="/casts/$postId"
-                  params={{
-                    postId: post.id,
-                  }}
-                  className="block py-1 text-blue-800 hover:text-blue-600"
-                  activeProps={{ className: "text-black font-bold" }}
-                >
-                  <div>{post.title.substring(0, 20)}</div>
-                </Link>
-              </li>
-            );
-          }
-        )}
+        {[
+          ...casts,
+          {
+            fid: 0,
+            castHash: "i-do-not-exist",
+            username: "no-user",
+            count: 0,
+            rootParentUrl: null,
+          },
+        ].map((cast) => {
+          return (
+            <li key={cast.castHash} className="whitespace-nowrap">
+              <Link
+                to="/casts/$postId"
+                params={{
+                  postId: cast.castHash,
+                }}
+                className="block py-1 text-blue-800 hover:text-blue-600"
+                activeProps={{ className: "text-black font-bold" }}
+              >
+                <div>
+                  @{cast.username}-{cast.count}
+                </div>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
       <hr />
       <Outlet />
