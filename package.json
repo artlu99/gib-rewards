@@ -24,7 +24,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-farcaster-embed": "^1.8.9",
-    "redaxios": "^0.5.1",
     "tailwind-merge": "^2.6.0",
     "viem": "^2.23.6",
     "vinxi": "0.5.3",
