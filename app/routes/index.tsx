@@ -14,15 +14,16 @@ export const Route = createFileRoute("/")({
 
 function PostsLayoutComponent() {
   const { contextFid, viewProfile } = useFrame();
-  const { signIn, isSignedIn } = useSignIn();
+  const { signIn } = useSignIn();
   const [loading, setLoading] = useState(false);
   const { casts, setCasts, smoothScores, setSmoothScores } = useBearStore();
 
   useEffect(() => {
-    if (!isSignedIn) {
+    const token = getStoredToken(contextFid ?? undefined);
+    if (!token) {
       signIn();
     }
-  }, [signIn, isSignedIn]);
+  }, [signIn, contextFid]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: ignore the set state functions
   useEffect(() => {
