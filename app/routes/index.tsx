@@ -23,9 +23,11 @@ function Home() {
         <button
           onClick={() => openUrl("https://sassyhash.artlu.xyz/blog")}
           type="button"
+          className="link link-secondary text-lg p-1 active:scale-95 transition-transform"
         >
           here
         </button>
+        .
       </p>
     </div>
   );

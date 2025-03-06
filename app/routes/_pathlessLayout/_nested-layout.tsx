@@ -12,7 +12,7 @@ export interface RulesConfig {
   };
 }
 
-const defaultRulesConfig: RulesConfig = {
+export const defaultRulesConfig: RulesConfig = {
   topN: 10,
   totalPool: 100,
   minPayout: 5,

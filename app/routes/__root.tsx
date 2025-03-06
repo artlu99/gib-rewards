@@ -89,7 +89,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dim">
+    <html lang="en">
       <head>
         <HeadContent />
         <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js" />

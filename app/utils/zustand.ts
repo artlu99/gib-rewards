@@ -1,12 +1,15 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
+import type { SmoothScores } from "./smoothScores";
 
 type BearStore = {
   bears: number;
   addABear: () => void;
   casts: LeaderboardCastInfo[];
   setCasts: (casts: LeaderboardCastInfo[]) => void;
+  smoothScores: SmoothScores;
+  setSmoothScores: (smoothScores: SmoothScores) => void;
 };
 
 export const useBearStore = create<BearStore>()(
@@ -16,6 +19,15 @@ export const useBearStore = create<BearStore>()(
       addABear: () => set({ bears: get().bears + 1 }),
       casts: [],
       setCasts: (casts: LeaderboardCastInfo[]) => set({ casts }),
+      smoothScores: {
+        nRaw: 0,
+        sumRaw: 0,
+        meanRaw: 0,
+        stdevRaw: 0,
+        sumSmooth: 0,
+        items: [],
+      },
+      setSmoothScores: (smoothScores: SmoothScores) => set({ smoothScores }),
     }),
     {
       name: "zustand-store",
