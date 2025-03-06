@@ -14,16 +14,18 @@ export const Route = createFileRoute("/")({
 });
 
 function PostsLayoutComponent() {
-  const { context, contextFid, viewProfile } = useFrame();
-  const { signIn, isSignedIn, logout } = useSignIn();
+  const { contextFid, viewProfile } = useFrame();
+  const { signIn, isSignedIn } = useSignIn();
   const [loading, setLoading] = useState(false);
   const [cast, setCast] = useState<LeaderboardCastInfo>();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const { casts, setCasts, smoothScores, setSmoothScores } = useBearStore();
 
   useEffect(() => {
-    signIn();
-  }, [signIn]);
+    if (!isSignedIn) {
+      signIn();
+    }
+  }, [signIn, isSignedIn]);
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -58,6 +60,7 @@ function PostsLayoutComponent() {
                 <li key={cast.castHash} className="whitespace-nowrap">
                   <div className="block text-lg p-1 active:scale-95 transition-transform">
                     <div>
+                      {castInfo?.decodedText}
                       <button
                         type="button"
                         className="link btn-link"
@@ -79,27 +82,6 @@ function PostsLayoutComponent() {
             })}
           </ol>
           <hr />
-          {isSignedIn ? (
-            <div>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={logout}
-              >
-                Log out
-              </button>
-            </div>
-          ) : (
-            <div>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={signIn}
-              >
-                Sign in
-              </button>
-            </div>
-          )}
         </div>
       ) : (
         <div>
@@ -120,12 +102,12 @@ function PostsLayoutComponent() {
                 {cast.decodedText ? (showDecodedText ? "🙈" : "💅") : null}
               </button>
             </div>
-            <div className="w-[320px]">
-              <FarcasterEmbed username={cast.username} hash={cast.castHash} />
-            </div>
             {showDecodedText && (
               <div className="text-lg">{cast.decodedText}</div>
             )}
+            <div className="w-[320px]">
+              <FarcasterEmbed username={cast.username} hash={cast.castHash} />
+            </div>
           </div>
         </div>
       )}
