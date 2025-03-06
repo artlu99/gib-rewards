@@ -22,7 +22,7 @@ export const useSignIn = () => {
           throw new Error(`SDK initialization failed: ${contextError}`);
         }
 
-        if (!context?.user?.fid) {
+        if (!contextFid) {
           throw new Error(
             "No FID found. Please make sure you're logged into Fartcaster."
           );
@@ -77,7 +77,7 @@ export const useSignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [context, contextError]);
+  }, [context, contextFid, contextError]);
 
   const logout = useCallback(() => {
     localStorage.removeItem(`token-${contextFid}`);

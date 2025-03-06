@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
 });
 
 function PostsLayoutComponent() {
-  const { context, viewProfile } = useFrame();
+  const { context, contextFid, viewProfile } = useFrame();
   const { signIn, isSignedIn, logout } = useSignIn();
   const [loading, setLoading] = useState(false);
   const [cast, setCast] = useState<LeaderboardCastInfo>();
@@ -29,7 +29,7 @@ function PostsLayoutComponent() {
     const fetchUserPosts = async () => {
       setLoading(true);
       try {
-        const token = getStoredToken(context?.user?.fid);
+        const token = getStoredToken(contextFid ?? undefined);
         const result = await fetchCasts({
           data: {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -45,7 +45,7 @@ function PostsLayoutComponent() {
     };
 
     fetchUserPosts();
-  }, [context, setCasts, setSmoothScores]);
+  }, [contextFid, setCasts, setSmoothScores]);
 
   return (
     <Suspense fallback={<div>Loading casts...</div>}>
