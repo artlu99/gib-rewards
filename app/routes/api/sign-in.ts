@@ -6,16 +6,21 @@ import { type ByteArray, verifyMessage as verifyMessageViem } from "viem";
 import { z } from "zod";
 import { fetchUser } from "~/utils/neynar";
 
+const LOCAL_DEBUGGING = import.meta.env.DEV;
+
 const verifyMessageSchema = z.object({
-  fid: z.string().transform((val) => Number.parseInt(val)),
+  fid: z.number(),
   signature: z.string(),
   message: z.string(),
-  referrerFid: z.string().optional(),
+  referrerFid: z.number().nullable().optional(),
 });
 
 const verifyMessage = async (params: z.infer<typeof verifyMessageSchema>) => {
+  if (LOCAL_DEBUGGING) return true;
+
   const result = verifyMessageSchema.safeParse(params);
   if (!result.success) {
+    console.info("DEBUGGING: Result", JSON.stringify(result, null, 2));
     return false;
   }
   const { fid, signature, message } = result.data;

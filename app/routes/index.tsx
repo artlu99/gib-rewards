@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
@@ -15,18 +15,15 @@ export const Route = createFileRoute("/")({
 
 function PostsLayoutComponent() {
   const { context, viewProfile } = useFrame();
-  const { signIn, isSignedIn } = useSignIn();
+  const { signIn, isSignedIn, logout } = useSignIn();
   const [loading, setLoading] = useState(false);
   const [cast, setCast] = useState<LeaderboardCastInfo>();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const { casts, setCasts, smoothScores, setSmoothScores } = useBearStore();
 
   useEffect(() => {
-    if (!context?.user) return;
-    if (!isSignedIn) {
-      signIn();
-    }
-  }, [context, isSignedIn, signIn]);
+    signIn();
+  }, [signIn]);
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -82,7 +79,27 @@ function PostsLayoutComponent() {
             })}
           </ol>
           <hr />
-          <Outlet />
+          {isSignedIn ? (
+            <div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={logout}
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={signIn}
+              >
+                Sign in
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div>

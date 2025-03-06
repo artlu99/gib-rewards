@@ -5,6 +5,8 @@ import type {
 import sdk from "@farcaster/frame-sdk";
 import { useCallback, useEffect, useState } from "react";
 
+const LOCAL_DEBUGGING = import.meta.env.DEV;
+
 export const useFrame = () => {
   const [context, setContext] = useState<FrameContext | null>(null);
   const [safeAreaInsets, setSafeAreaInsets] = useState<SafeAreaInsets>({
@@ -44,6 +46,7 @@ export const useFrame = () => {
     }
   }, [isSDKLoaded]);
 
+  const contextFid = context?.user?.fid ?? LOCAL_DEBUGGING ? 6546 : null;
   const isWarpcast = context?.client?.clientFid === 9152;
   const isInstalled = context?.client?.added ?? false;
 
@@ -73,6 +76,7 @@ export const useFrame = () => {
     context,
     safeAreaInsets,
     isSDKLoaded,
+    contextFid,
     error,
     openUrl,
     viewProfile,

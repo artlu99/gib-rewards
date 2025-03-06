@@ -4,8 +4,10 @@ import { useFrame } from "~/components/context/FrameContext";
 
 const MESSAGE_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+const LOCAL_DEBUGGING = import.meta.env.DEV;
+
 export const useSignIn = () => {
-  const { context, error: contextError } = useFrame();
+  const { context, contextFid, error: contextError } = useFrame();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,27 +17,34 @@ export const useSignIn = () => {
       setIsLoading(true);
       setError(null);
 
-      if (contextError) {
-        throw new Error(`SDK initialization failed: ${contextError}`);
+      if (!LOCAL_DEBUGGING) {
+        if (contextError) {
+          throw new Error(`SDK initialization failed: ${contextError}`);
+        }
+
+        if (!context?.user?.fid) {
+          throw new Error(
+            "No FID found. Please make sure you're logged into Fartcaster."
+          );
+        }
       }
 
-      if (!context?.user?.fid) {
-        throw new Error(
-          "No FID found. Please make sure you're logged into Fartcaster."
-        );
-      }
-
-      const result = await sdk.actions.signIn({
-        nonce: Math.random().toString(36).substring(2),
-        notBefore: new Date().toISOString(),
-        expirationTime: new Date(
-          Date.now() + MESSAGE_EXPIRATION_TIME
-        ).toISOString(),
-      });
+      const result = !LOCAL_DEBUGGING
+        ? await sdk.actions.signIn({
+            nonce: Math.random().toString(36).substring(2),
+            notBefore: new Date().toISOString(),
+            expirationTime: new Date(
+              Date.now() + MESSAGE_EXPIRATION_TIME
+            ).toISOString(),
+          })
+        : {
+            signature: "0x123",
+            message: "0x123",
+          };
 
       const referrerFid =
-        context.location?.type === "cast_embed"
-          ? context.location.cast.fid
+        context?.location?.type === "cast_embed"
+          ? context?.location.cast.fid
           : null;
 
       const res = await fetch("/api/sign-in", {
@@ -46,7 +55,7 @@ export const useSignIn = () => {
         body: JSON.stringify({
           signature: result.signature,
           message: result.message,
-          fid: context.user.fid,
+          fid: contextFid,
           referrerFid,
         }),
       });
@@ -57,7 +66,7 @@ export const useSignIn = () => {
       }
 
       const data = await res.json();
-      localStorage.setItem(`token-${context.user.fid}`, data.token);
+      localStorage.setItem(`token-${contextFid}`, data.token);
       setIsSignedIn(true);
       return data;
     } catch (err) {
@@ -71,9 +80,9 @@ export const useSignIn = () => {
   }, [context, contextError]);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(`token-${context?.user.fid}`);
+    localStorage.removeItem(`token-${contextFid}`);
     setIsSignedIn(false);
-  }, [context]);
+  }, [contextFid]);
 
   return { signIn, logout, isSignedIn, isLoading, error };
 };
