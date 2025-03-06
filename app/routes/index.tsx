@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
 });
 
 function PostsLayoutComponent() {
-  const { contextFid, viewProfile } = useFrame();
+  const { contextFid, viewProfile, openUrl } = useFrame();
   const { signIn, isSignedIn } = useSignIn();
   const [loading, setLoading] = useState(false);
   const [cast, setCast] = useState<LeaderboardCastInfo>();
@@ -60,20 +60,22 @@ function PostsLayoutComponent() {
                 <li key={cast.castHash} className="whitespace-nowrap">
                   <div className="block text-lg p-1 active:scale-95 transition-transform">
                     <div>
-                      {castInfo?.decodedText}
+                      {castInfo?.decodedText
+                        ? `${castInfo.decodedText.slice(0, 3)}... `
+                        : null}{" "}
+                      <button
+                        type="button"
+                        className="link btn-link"
+                        onClick={() => setCast(castInfo)}
+                      >
+                        {cast.raw} views - {cast.smooth.toFixed(2)} points
+                      </button>{" "}
                       <button
                         type="button"
                         className="link btn-link"
                         onClick={() => viewProfile(cast.fid, cast.username)}
                       >
                         @{cast.username}
-                      </button>{" "}
-                      <button
-                        type="button"
-                        className="link btn-link"
-                        onClick={() => setCast(castInfo)}
-                      >
-                        {cast.raw} {cast.smooth.toFixed(2)}
                       </button>
                     </div>
                   </div>
@@ -105,7 +107,26 @@ function PostsLayoutComponent() {
             {showDecodedText && (
               <div className="text-lg">{cast.decodedText}</div>
             )}
-            <div className="w-[320px]">
+            <div
+              className="w-full"
+              onClick={() =>
+                openUrl(
+                  `https://warpcast.com/${cast.username}/${cast.castHash.slice(
+                    0,
+                    8
+                  )}`
+                )
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  openUrl(
+                    `https://warpcast.com/${
+                      cast.username
+                    }/${cast.castHash.slice(0, 8)}`
+                  );
+                }
+              }}
+            >
               <FarcasterEmbed username={cast.username} hash={cast.castHash} />
             </div>
           </div>
