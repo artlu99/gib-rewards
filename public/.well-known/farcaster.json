@@ -1,14 +1,14 @@
 {
 	"accountAssociation": {
 		"header": "eyJmaWQiOjY1NDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyMWNBOUYwRjdDMGI1OWY2MTZiMUQ5NjMyNWQ1NUI2MmM5NjYxRDZkIn0",
-		"payload": "eyJkb21haW4iOiJ2ZWx2ZXR5LWNyZXBvbm5lLWNjMWQ2My5uZXRsaWZ5LmFwcCJ9",
-		"signature": "MHgzYjE4YmQxOTA5NzUyZjkxZDIxZmM0OGYyNDllMTg4OWRhOTljZWQ2NWRlNGU5MWEyNzYzZThlMjYwZTFkZDc5N2ZjNDAyYmZmYzg1ZDcyZjRkMjA2OWU1YjNjYWE5MWQ5NzNmNWUxYjE0Y2QxNzZjYTJlNzE0ODVlYWU1ZDI4ZDFi"	
+		"payload": "eyJkb21haW4iOiJnaWItcmV3YXJkcy5hcnRsdS54eXoifQ",
+		"signature": "MHgyNDg5ZmU1MmRjYzJkMmNlMzRkZDY5MTdlMzUxYmFiNzk2MTc2ZDc2OGNlYzg4NzRlMjY2MzM4MzRjZDJlZjIxMzdiMmJjMGQ1N2U1NGU2YjMyYTYyYjc1MTczNTZlMDM2MzliNTAxMzUwZWRmODg2YWQwZDc5OTkyNDcxZGZkYzFi"
 	},
 	"frame": {
 		"version": "0.0.1",
 		"name": "Contest | SassyHash 💅",
 		"iconUrl": "https://sassyhash.artlu.xyz/og-clean.jpg",
-		"homeUrl": "https://velvety-creponne-cc1d63.netlify.app",
+		"homeUrl": "https://gib-rewards.artlu.xyz",
 		"imageUrl": "https://sassyhash.artlu.xyz/sassyhash-og.png",
 		"buttonTitle": "SassyHash 💅",
 		"splashImageUrl": "https://sassyhash.artlu.xyz/splash-square.png",
