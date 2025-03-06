@@ -27,8 +27,6 @@ function Winner() {
   const availablePool =
     rulesConfig.totalPool - rulesConfig.minPayout * numWinners;
 
-  console.log(availablePool);
-
   return (
     <div className="prose dark:prose-invert p-2">
       <h2>Week March 4 ~ March 11</h2>

@@ -93,9 +93,6 @@ export async function getMostSeenCasts({
   limit?: number;
   excludeFids?: number[];
 }): Promise<LeaderboardCastInfo[]> {
-  console.log("url:", process.env.YOGA_REDIS_REST_URL);
-  console.log("token:", process.env.YOGA_REDIS_REST_READ_ONLY_TOKEN);
-
   const usage = await redis.hgetall("action-usage");
 
   if (!usage) {
