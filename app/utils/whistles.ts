@@ -49,6 +49,7 @@ export interface LeaderboardCastInfo {
   castHash: string;
   count: number;
   decodedText?: string | null;
+  modLikes?: number[];
 }
 
 const LeaderboardCastInfoSchema = z.object({
@@ -58,6 +59,7 @@ const LeaderboardCastInfoSchema = z.object({
   castHash: z.string(),
   count: z.number(),
   decodedText: z.string().nullable().optional(),
+  modLikes: z.array(z.number()).optional(),
 });
 
 export const LeaderboardCastInfoResponseSchema = z.array(

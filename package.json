@@ -9,6 +9,7 @@
     "start": "vinxi start"
   },
   "dependencies": {
+    "@farcaster/core": "^0.15.6",
     "@farcaster/frame-core": "^0.0.28",
     "@farcaster/frame-sdk": "^0.0.30",
     "@neynar/nodejs-sdk": "^2.17.0",

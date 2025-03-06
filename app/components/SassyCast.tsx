@@ -1,8 +1,34 @@
+import type { Message } from "@farcaster/core";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { fetcher } from "itty-fetcher";
+import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
+
+const MAX_PAGE_SIZE = 100;
+const MODERATORS: Record<number, string> = {
+  533: "alexpaden",
+  3115: "ghostlinkz.eth",
+  4163: "kmacb.eth",
+  6546: "artlu",
+  8004: "ahn.eth",
+  10174: "cryptowenmoon.eth",
+  10215: "zoo",
+  15850: "christin",
+  16567: "serendipity",
+  191780: "agrimony.eth",
+  475488: "hankmoody",
+  535389: "xbornid.eth",
+};
+const MODERATOR_FIDS = Object.keys(MODERATORS).map(Number);
+
+const client = fetcher({ base: "https://nemes.farcaster.xyz:2281" });
+
+const pluralize = (count: number, singular: string, plural?: string) =>
+  count === 1
+    ? `${count} ${singular}`
+    : `${count.toLocaleString()} ${plural ?? `${singular}s`}`;
 
 interface SassyCastProps {
   cast: LeaderboardCastInfo;
@@ -11,11 +37,36 @@ interface SassyCastProps {
 export const SassyCast = ({ cast }: SassyCastProps) => {
   const { openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
+  const [modLikes, setModLikes] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchLikes = async () => {
+      const res = await client.get<{ messages: Message[] }>(
+        `/v1/reactionsByCast?${new URLSearchParams({
+          target_fid: cast.fid.toString(),
+          target_hash: cast.castHash,
+          reaction_type: "1",
+          page_size: MAX_PAGE_SIZE.toString(),
+        })}`
+      );
+
+      const modLikes =
+        res?.messages
+          .map((m) => m.data?.fid ?? 0)
+          .filter((fid) => MODERATOR_FIDS.includes(fid)) ?? [];
+
+      setModLikes(modLikes);
+    };
+    fetchLikes();
+  }, [cast]);
 
   return (
     <div className="max-w-screen-sm">
       <div className="flex justify-between items-center">
-        <div className="text-sm">{cast.count} attempted views (raw)</div>
+        <div className="text-sm">
+          {pluralize(cast.count, "attempted view")} (raw) -{" "}
+          {pluralize(modLikes.length, "SassyMod like")}
+        </div>
         <button
           type="button"
           onClick={() => setShowDecodedText(true)}
@@ -83,6 +134,17 @@ export const SassyCast = ({ cast }: SassyCastProps) => {
               <p className="text-2xl flex-1 flex items-center justify-center p-8 break-all whitespace-pre-wrap overflow-auto text-center relative z-10 text-base-content">
                 {cast.decodedText}
               </p>
+              <hr />
+              <div className="text-sm">
+                {modLikes.length > 0 ? (
+                  <div>
+                    Liked by:{" "}
+                    {modLikes.map((fid) => MODERATORS[fid]).join(", ")}
+                  </div>
+                ) : (
+                  <div>Liked by: {pluralize(modLikes.length, "moderator")}</div>
+                )}
+              </div>
             </motion.div>
           </motion.dialog>
         )}

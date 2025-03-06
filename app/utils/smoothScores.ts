@@ -14,6 +14,7 @@ export interface SmoothScores {
     rawZscore: number;
     smooth: number;
     smoothZscore: number;
+    numModLikes : number;
   }[];
 }
 
@@ -37,6 +38,7 @@ export const calculateSmoothScores = (data: LeaderboardCastInfo[]) => {
       rawZscore: 0,
       smooth: 0,
       smoothZscore: 0,
+      numModLikes: cast.modLikes?.length ?? 0,
     });
   }
   smoothData.meanRaw = smoothData.sumRaw / smoothData.nRaw;
