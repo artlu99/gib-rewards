@@ -19,11 +19,7 @@ export const useSignIn = () => {
         throw new Error(`SDK initialization failed: ${contextError}`);
       }
 
-      if (!context) {
-        throw new Error("Contest must be accessed from a Farcaster client!");
-      }
-
-      if (!context.user?.fid) {
+      if (!context?.user?.fid) {
         throw new Error(
           "No FID found. Please make sure you're logged into Fartcaster."
         );

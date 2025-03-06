@@ -3,7 +3,7 @@ import type {
   SafeAreaInsets,
 } from "@farcaster/frame-core/dist/context";
 import sdk from "@farcaster/frame-sdk";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useFrame = () => {
   const [context, setContext] = useState<FrameContext | null>(null);
@@ -44,10 +44,37 @@ export const useFrame = () => {
     }
   }, [isSDKLoaded]);
 
+  const isWarpcast = context?.client?.clientFid === 9152;
+  const isInstalled = context?.client?.added ?? false;
+
+  const openUrl = useCallback(
+    (url: string) => {
+      context ? sdk.actions.openUrl(url) : window.open(url, "_blank");
+    },
+    [context]
+  );
+
+  const viewProfile = useCallback(
+    (fid: number, username?: string) => {
+      const profileUrl = username
+        ? `https://warpcast.com/${username}`
+        : `https://vasco.wtf/${fid}`;
+
+      isWarpcast
+        ? sdk.actions.viewProfile({ fid })
+        : context
+        ? sdk.actions.openUrl(profileUrl)
+        : window.open(profileUrl, "_blank");
+    },
+    [context, isWarpcast]
+  );
+
   return {
     context,
     safeAreaInsets,
     isSDKLoaded,
     error,
+    openUrl,
+    viewProfile,
   };
 };
