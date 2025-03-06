@@ -1,10 +1,10 @@
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
 import { getStoredToken } from "~/utils/auth";
 import { fetchCasts } from "~/utils/topNcasts";
-import type { LeaderboardCastInfo } from "~/utils/whistles";
+import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/casts")({
   component: PostsLayoutComponent,
@@ -14,7 +14,7 @@ function PostsLayoutComponent() {
   const { context } = useFrame();
   const { signIn, isSignedIn } = useSignIn();
   const [loading, setLoading] = useState(false);
-  const [casts, setCasts] = useState<LeaderboardCastInfo[]>([]);
+  const { casts, setCasts } = useBearStore();
 
   useEffect(() => {
     if (context?.user) return;
@@ -42,32 +42,32 @@ function PostsLayoutComponent() {
     };
 
     fetchUserPosts();
-  }, [context?.user?.fid]);
+  }, [context?.user?.fid, setCasts]);
 
-  return loading ? (
-    <div>Loading casts...</div>
-  ) : (
-    <div className="p-2 flex gap-2">
-      <ul className="list-disc pl-4">
-        {casts.map((cast) => {
-          return (
-            <li key={cast.castHash} className="whitespace-nowrap">
-              <Link
-                to="/casts/$castHash"
-                params={{ castHash: cast.castHash }}
-                className="block py-1 text-blue-800 hover:text-blue-600"
-                activeProps={{ className: "text-black font-bold" }}
-              >
-                <div>
-                  @{cast.username}-{cast.count}
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-      <hr />
-      <Outlet />
-    </div>
+  return (
+    <Suspense fallback={<div>Loading casts...</div>}>
+      <div className="p-2 flex gap-2">
+        <ul className="list-disc pl-4">
+          {(loading ? [] : casts).map((cast) => {
+            return (
+              <li key={cast.castHash} className="whitespace-nowrap">
+                <Link
+                  to="/casts/$castHash"
+                  params={{ castHash: cast.castHash }}
+                  className="block py-1 text-blue-800 hover:text-blue-600"
+                  activeProps={{ className: "text-black font-bold" }}
+                >
+                  <div>
+                    @{cast.username}-{cast.count}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <hr />
+        <Outlet />
+      </div>
+    </Suspense>
   );
 }

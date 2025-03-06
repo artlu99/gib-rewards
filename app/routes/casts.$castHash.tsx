@@ -3,10 +3,9 @@ import { useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { CastErrorComponent } from "~/components/CastError";
 import { NotFound } from "~/components/NotFound";
-import { fetchCast } from "~/utils/topNcasts";
+import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/casts/$castHash")({
-  loader: ({ params: { castHash } }) => fetchCast({ data: { castHash } }),
   errorComponent: CastErrorComponent,
   component: CastComponent,
   notFoundComponent: () => {
@@ -15,7 +14,9 @@ export const Route = createFileRoute("/casts/$castHash")({
 });
 
 function CastComponent() {
-  const cast = Route.useLoaderData();
+  const { casts } = useBearStore();
+  const { castHash } = Route.useParams();
+  const cast = casts.find((cast) => cast.castHash === castHash);
 
   const [showDecodedText, setShowDecodedText] = useState(false);
 
