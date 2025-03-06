@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useEffect, useState } from "react";
-import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
+import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
 import { getStoredToken } from "~/utils/auth";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { fetchCasts } from "~/utils/topNcasts";
-import type { LeaderboardCastInfo } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/")({
@@ -14,11 +13,9 @@ export const Route = createFileRoute("/")({
 });
 
 function PostsLayoutComponent() {
-  const { contextFid, viewProfile, openUrl } = useFrame();
+  const { contextFid, viewProfile } = useFrame();
   const { signIn, isSignedIn } = useSignIn();
   const [loading, setLoading] = useState(false);
-  const [cast, setCast] = useState<LeaderboardCastInfo>();
-  const [showDecodedText, setShowDecodedText] = useState(false);
   const { casts, setCasts, smoothScores, setSmoothScores } = useBearStore();
 
   useEffect(() => {
@@ -27,6 +24,7 @@ function PostsLayoutComponent() {
     }
   }, [signIn, isSignedIn]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore the set state functions
   useEffect(() => {
     const fetchUserPosts = async () => {
       setLoading(true);
@@ -47,91 +45,44 @@ function PostsLayoutComponent() {
     };
 
     fetchUserPosts();
-  }, [contextFid, setCasts, setSmoothScores]);
+  }, [contextFid]);
 
   return (
     <Suspense fallback={<div>Loading casts...</div>}>
-      {!cast ? (
-        <div className="p-2 flex gap-2">
-          <ol className="list-decimal pl-4">
-            {(loading ? [] : smoothScores.items).map((cast) => {
-              const castInfo = casts.find((c) => c.castHash === cast.castHash);
-              return (
-                <li key={cast.castHash} className="whitespace-nowrap">
-                  <div className="block text-lg p-1 active:scale-95 transition-transform">
-                    <div>
-                      {castInfo?.decodedText
-                        ? `${castInfo.decodedText.slice(0, 3)}... `
-                        : null}{" "}
-                      <button
-                        type="button"
-                        className="link btn-link"
-                        onClick={() => setCast(castInfo)}
-                      >
-                        {cast.raw} views - {cast.smooth.toFixed(2)} points
-                      </button>{" "}
-                      <button
-                        type="button"
-                        className="link btn-link"
-                        onClick={() => viewProfile(cast.fid, cast.username)}
-                      >
-                        @{cast.username}
-                      </button>
-                    </div>
+      <div className="p-2 flex gap-2">
+        <ol className="list-decimal pl-4 w-full max-w-full overflow-x-hidden">
+          {(loading ? [] : smoothScores.items).map((cast) => {
+            const castInfo = casts.find((c) => c.castHash === cast.castHash);
+            return (
+              <li key={cast.castHash} className="whitespace-nowrap break-words">
+                <div className="block text-lg p-1 active:scale-95 transition-transform">
+                  <div>
+                    {cast.smooth.toFixed(2)} points{" "}
+                    <button
+                      type="button"
+                      className="link btn-link"
+                      onClick={() => viewProfile(cast.fid, cast.username)}
+                    >
+                      @{cast.username}
+                    </button>
                   </div>
-                </li>
-              );
-            })}
-          </ol>
-          <hr />
-        </div>
-      ) : (
-        <div>
-          <div className="space-y-2">
-            <button
-              type="button"
-              className="link btn-link"
-              onClick={() => setCast(undefined)}
-            >
-              ← Back
-            </button>
-            <div className="flex justify-between items-center w-full">
-              <div className="text-sm">{cast.count} attempted views (raw)</div>
-              <button
-                type="button"
-                onClick={() => setShowDecodedText(!showDecodedText)}
-              >
-                {cast.decodedText ? (showDecodedText ? "🙈" : "💅") : null}
-              </button>
-            </div>
-            {showDecodedText && (
-              <div className="text-lg">{cast.decodedText}</div>
-            )}
-            <div
-              className="w-full"
-              onClick={() =>
-                openUrl(
-                  `https://warpcast.com/${cast.username}/${cast.castHash.slice(
-                    0,
-                    8
-                  )}`
-                )
-              }
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  openUrl(
-                    `https://warpcast.com/${
-                      cast.username
-                    }/${cast.castHash.slice(0, 8)}`
-                  );
-                }
-              }}
-            >
-              <FarcasterEmbed username={cast.username} hash={cast.castHash} />
-            </div>
-          </div>
-        </div>
-      )}
+                </div>
+                <details open={!!castInfo}>
+                  <summary>
+                    {castInfo?.decodedText
+                      ? `${castInfo.decodedText.slice(0, 2)}...`
+                      : null}
+                  </summary>
+                  <div className="w-full overflow-x-hidden">
+                    {castInfo ? <SassyCast cast={castInfo} /> : null}
+                  </div>
+                </details>
+              </li>
+            );
+          })}
+        </ol>
+        <hr />
+      </div>
     </Suspense>
   );
 }

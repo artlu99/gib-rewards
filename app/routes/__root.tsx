@@ -116,7 +116,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             >
               💰
               <br />
-              Munny
+              Munnies
             </Link>
           </div>
           <div className="flex-1 text-center">
