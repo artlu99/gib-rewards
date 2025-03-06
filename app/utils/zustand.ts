@@ -18,8 +18,8 @@ export const useBearStore = create<BearStore>()(
       setCasts: (casts: LeaderboardCastInfo[]) => set({ casts }),
     }),
     {
-      name: "zustand-store", // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      name: "zustand-store",
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );
