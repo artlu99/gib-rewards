@@ -7,6 +7,7 @@ export interface SmoothScores {
   stdevRaw: number;
   sumSmooth: number;
   items: {
+    fid: number;
     username: string;
     castHash: string;
     raw: number;
@@ -29,6 +30,7 @@ export const calculateSmoothScores = (data: LeaderboardCastInfo[]) => {
     smoothData.nRaw++;
     smoothData.sumRaw += cast.count;
     smoothData.items.push({
+      fid: cast.fid,
       username: cast.username,
       castHash: cast.castHash,
       raw: cast.count,

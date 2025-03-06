@@ -12,12 +12,10 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as WinnerImport } from './routes/winner'
+import { Route as WhutImport } from './routes/whut'
 import { Route as RedirectImport } from './routes/redirect'
 import { Route as PathlessLayoutImport } from './routes/_pathlessLayout'
-import { Route as CastsRouteImport } from './routes/casts.route'
 import { Route as IndexImport } from './routes/index'
-import { Route as CastsIndexImport } from './routes/casts.index'
-import { Route as CastsCastHashImport } from './routes/casts.$castHash'
 import { Route as PathlessLayoutNestedLayoutImport } from './routes/_pathlessLayout/_nested-layout'
 import { Route as PathlessLayoutNestedLayoutRulesEsImport } from './routes/_pathlessLayout/_nested-layout/rules-es'
 import { Route as PathlessLayoutNestedLayoutRulesEnImport } from './routes/_pathlessLayout/_nested-layout/rules-en'
@@ -27,6 +25,12 @@ import { Route as PathlessLayoutNestedLayoutRulesEnImport } from './routes/_path
 const WinnerRoute = WinnerImport.update({
   id: '/winner',
   path: '/winner',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WhutRoute = WhutImport.update({
+  id: '/whut',
+  path: '/whut',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -41,28 +45,10 @@ const PathlessLayoutRoute = PathlessLayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const CastsRouteRoute = CastsRouteImport.update({
-  id: '/casts',
-  path: '/casts',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const CastsIndexRoute = CastsIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CastsRouteRoute,
-} as any)
-
-const CastsCastHashRoute = CastsCastHashImport.update({
-  id: '/$castHash',
-  path: '/$castHash',
-  getParentRoute: () => CastsRouteRoute,
 } as any)
 
 const PathlessLayoutNestedLayoutRoute = PathlessLayoutNestedLayoutImport.update(
@@ -97,13 +83,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/casts': {
-      id: '/casts'
-      path: '/casts'
-      fullPath: '/casts'
-      preLoaderRoute: typeof CastsRouteImport
-      parentRoute: typeof rootRoute
-    }
     '/_pathlessLayout': {
       id: '/_pathlessLayout'
       path: ''
@@ -116,6 +95,13 @@ declare module '@tanstack/react-router' {
       path: '/redirect'
       fullPath: '/redirect'
       preLoaderRoute: typeof RedirectImport
+      parentRoute: typeof rootRoute
+    }
+    '/whut': {
+      id: '/whut'
+      path: '/whut'
+      fullPath: '/whut'
+      preLoaderRoute: typeof WhutImport
       parentRoute: typeof rootRoute
     }
     '/winner': {
@@ -131,20 +117,6 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof PathlessLayoutNestedLayoutImport
       parentRoute: typeof PathlessLayoutImport
-    }
-    '/casts/$castHash': {
-      id: '/casts/$castHash'
-      path: '/$castHash'
-      fullPath: '/casts/$castHash'
-      preLoaderRoute: typeof CastsCastHashImport
-      parentRoute: typeof CastsRouteImport
-    }
-    '/casts/': {
-      id: '/casts/'
-      path: '/'
-      fullPath: '/casts/'
-      preLoaderRoute: typeof CastsIndexImport
-      parentRoute: typeof CastsRouteImport
     }
     '/_pathlessLayout/_nested-layout/rules-en': {
       id: '/_pathlessLayout/_nested-layout/rules-en'
@@ -164,20 +136,6 @@ declare module '@tanstack/react-router' {
 }
 
 // Create and export the route tree
-
-interface CastsRouteRouteChildren {
-  CastsCastHashRoute: typeof CastsCastHashRoute
-  CastsIndexRoute: typeof CastsIndexRoute
-}
-
-const CastsRouteRouteChildren: CastsRouteRouteChildren = {
-  CastsCastHashRoute: CastsCastHashRoute,
-  CastsIndexRoute: CastsIndexRoute,
-}
-
-const CastsRouteRouteWithChildren = CastsRouteRoute._addFileChildren(
-  CastsRouteRouteChildren,
-)
 
 interface PathlessLayoutNestedLayoutRouteChildren {
   PathlessLayoutNestedLayoutRulesEnRoute: typeof PathlessLayoutNestedLayoutRulesEnRoute
@@ -211,12 +169,10 @@ const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/casts': typeof CastsRouteRouteWithChildren
   '': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/redirect': typeof RedirectRoute
+  '/whut': typeof WhutRoute
   '/winner': typeof WinnerRoute
-  '/casts/$castHash': typeof CastsCastHashRoute
-  '/casts/': typeof CastsIndexRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
 }
@@ -225,9 +181,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/redirect': typeof RedirectRoute
+  '/whut': typeof WhutRoute
   '/winner': typeof WinnerRoute
-  '/casts/$castHash': typeof CastsCastHashRoute
-  '/casts': typeof CastsIndexRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
 }
@@ -235,13 +190,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/casts': typeof CastsRouteRouteWithChildren
   '/_pathlessLayout': typeof PathlessLayoutRouteWithChildren
   '/redirect': typeof RedirectRoute
+  '/whut': typeof WhutRoute
   '/winner': typeof WinnerRoute
   '/_pathlessLayout/_nested-layout': typeof PathlessLayoutNestedLayoutRouteWithChildren
-  '/casts/$castHash': typeof CastsCastHashRoute
-  '/casts/': typeof CastsIndexRoute
   '/_pathlessLayout/_nested-layout/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/_pathlessLayout/_nested-layout/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
 }
@@ -250,34 +203,22 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/casts'
     | ''
     | '/redirect'
+    | '/whut'
     | '/winner'
-    | '/casts/$castHash'
-    | '/casts/'
     | '/rules-en'
     | '/rules-es'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/redirect'
-    | '/winner'
-    | '/casts/$castHash'
-    | '/casts'
-    | '/rules-en'
-    | '/rules-es'
+  to: '/' | '' | '/redirect' | '/whut' | '/winner' | '/rules-en' | '/rules-es'
   id:
     | '__root__'
     | '/'
-    | '/casts'
     | '/_pathlessLayout'
     | '/redirect'
+    | '/whut'
     | '/winner'
     | '/_pathlessLayout/_nested-layout'
-    | '/casts/$castHash'
-    | '/casts/'
     | '/_pathlessLayout/_nested-layout/rules-en'
     | '/_pathlessLayout/_nested-layout/rules-es'
   fileRoutesById: FileRoutesById
@@ -285,17 +226,17 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CastsRouteRoute: typeof CastsRouteRouteWithChildren
   PathlessLayoutRoute: typeof PathlessLayoutRouteWithChildren
   RedirectRoute: typeof RedirectRoute
+  WhutRoute: typeof WhutRoute
   WinnerRoute: typeof WinnerRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CastsRouteRoute: CastsRouteRouteWithChildren,
   PathlessLayoutRoute: PathlessLayoutRouteWithChildren,
   RedirectRoute: RedirectRoute,
+  WhutRoute: WhutRoute,
   WinnerRoute: WinnerRoute,
 }
 
@@ -310,21 +251,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/casts",
         "/_pathlessLayout",
         "/redirect",
+        "/whut",
         "/winner"
       ]
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/casts": {
-      "filePath": "casts.route.tsx",
-      "children": [
-        "/casts/$castHash",
-        "/casts/"
-      ]
     },
     "/_pathlessLayout": {
       "filePath": "_pathlessLayout.tsx",
@@ -334,6 +268,9 @@ export const routeTree = rootRoute
     },
     "/redirect": {
       "filePath": "redirect.tsx"
+    },
+    "/whut": {
+      "filePath": "whut.tsx"
     },
     "/winner": {
       "filePath": "winner.tsx"
@@ -345,14 +282,6 @@ export const routeTree = rootRoute
         "/_pathlessLayout/_nested-layout/rules-en",
         "/_pathlessLayout/_nested-layout/rules-es"
       ]
-    },
-    "/casts/$castHash": {
-      "filePath": "casts.$castHash.tsx",
-      "parent": "/casts"
-    },
-    "/casts/": {
-      "filePath": "casts.index.tsx",
-      "parent": "/casts"
     },
     "/_pathlessLayout/_nested-layout/rules-en": {
       "filePath": "_pathlessLayout/_nested-layout/rules-en.tsx",

@@ -95,47 +95,55 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js" />
       </head>
       <body>
-        <div className="p-2 flex gap-2 text-lg">
-          <Link
-            to="/casts"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            🏆
-            <br /> Leaderboard
-          </Link>{" "}
-          <Link
-            to="/winner"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            💰
-            <br />
-            Me-me-meee
-          </Link>{" "}
-          <Link
-            to="/rules-en"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            🕵️‍♀️
-            <br />
-            Rules
-          </Link>{" "}
-          <Link
-            to="/"
-            activeProps={{
-              className: "font-bold",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            💅
-            <br />
-            Wat dis
-          </Link>
+        <div className="p-2 flex w-full justify-evenly items-center text-lg">
+          <div className="flex-1 text-center">
+            <Link
+              to="/"
+              activeProps={{
+                className: "font-bold",
+              }}
+            >
+              🏆
+              <br /> Top N
+            </Link>
+          </div>
+          <div className="flex-1 text-center">
+            <Link
+              to="/winner"
+              activeProps={{
+                className: "font-bold",
+              }}
+            >
+              💰
+              <br />
+              Munny
+            </Link>
+          </div>
+          <div className="flex-1 text-center">
+            <Link
+              to="/rules-en"
+              activeProps={{
+                className: "font-bold",
+              }}
+            >
+              🕵️‍♀️
+              <br />
+              Rules
+            </Link>
+          </div>
+          <div className="flex-1 text-center">
+            <Link
+              to="/whut"
+              activeProps={{
+                className: "font-bold",
+              }}
+              activeOptions={{ exact: true }}
+            >
+              💅
+              <br />
+              Wat dis
+            </Link>
+          </div>
         </div>
         <hr />
         {children}
