@@ -10,5 +10,6 @@ export default defineConfig({
       }),
       tailwindcss(),
     ],
+    ssr: { noExternal: ["@farcaster/frame-sdk"] },
   },
 });
