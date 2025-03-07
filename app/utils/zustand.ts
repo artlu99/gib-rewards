@@ -1,6 +1,6 @@
 import { create } from "zustand";
+import type { SmoothScores } from "~/utils/smoothScores";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
-import type { SmoothScores } from "./smoothScores";
 
 type BearStore = {
   casts: LeaderboardCastInfo[];

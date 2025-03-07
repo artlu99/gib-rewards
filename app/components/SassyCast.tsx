@@ -4,6 +4,8 @@ import { fetcher } from "itty-fetcher";
 import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
+import { getStoredToken } from "~/utils/auth";
+import { logCastDecode } from "~/utils/redis";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
 
@@ -37,7 +39,7 @@ interface SassyCastProps {
 }
 
 export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
-  const { openUrl } = useFrame();
+  const { contextFid, openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const [modLikes, setModLikes] = useState<number[]>([]);
   const { addExcludedCast } = useBearStore();
@@ -66,6 +68,24 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
     };
     fetchLikes();
   }, [cast]);
+
+  useEffect(() => {
+    if (cast.decodedText && showDecodedText) {
+      const token = getStoredToken(contextFid ?? undefined) ?? undefined;
+
+      logCastDecode({
+        data: {
+          hash: cast.castHash,
+          author: {
+            fid: cast.fid,
+            username: cast.username,
+          },
+          rootParentUrl: cast.rootParentUrl ?? "null",
+          token,
+        },
+      });
+    }
+  }, [cast, showDecodedText, contextFid]);
 
   return (
     <div className="max-w-screen-sm">

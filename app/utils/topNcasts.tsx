@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { defaultRulesConfig } from "~/routes/winner";
-import { verifyToken } from "./auth";
-import { getMostSeenCasts } from "./whistles";
+import { verifyToken } from "~/utils/auth";
+import { getMostSeenCasts } from "~/utils/whistles";
 
 export const fetchCasts = createServerFn({ method: "GET" })
   .validator((d: { headers?: { Authorization?: string } } | undefined) => d)
