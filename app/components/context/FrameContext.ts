@@ -49,6 +49,8 @@ export const useFrame = () => {
   const contextFid = context?.user?.fid ?? LOCAL_DEBUGGING ? 6546 : null;
   const isWarpcast = context?.client?.clientFid === 9152;
   const isInstalled = context?.client?.added ?? false;
+  const isNotificationsEnabled =
+    context?.client?.notificationDetails?.token !== undefined;
 
   const openUrl = useCallback(
     (url: string) => {
@@ -72,13 +74,32 @@ export const useFrame = () => {
     [context, isWarpcast]
   );
 
+  const addFrame = useCallback(() => {
+    if (context) {
+      sdk.actions.addFrame();
+    }
+  }, [context]);
+
+  const setPrimaryButton = useCallback(
+    (text: string) => {
+      if (context) {
+        sdk.actions.setPrimaryButton({ text });
+      }
+    },
+    [context]
+  );
+
   return {
     context,
     safeAreaInsets,
     isSDKLoaded,
     contextFid,
+    isInstalled,
+    isNotificationsEnabled,
     error,
     openUrl,
     viewProfile,
+    addFrame,
+    setPrimaryButton,
   };
 };
