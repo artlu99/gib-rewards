@@ -1,4 +1,4 @@
-# Welcome to TanStack.com!
+# Welcome to TanStack.com
 
 This site is built with TanStack Start!
 
@@ -8,11 +8,8 @@ This site is built with TanStack Start!
 - [DaiyUI v5](https://daisyui.com)
 - deployed to Netifly
 - Frames v2
-    - auth via FC Connect
-
-    - notifications
-
+  - auth via FC Connect
+  - notifications
 - Pinata FC Hubs
-- Neynar for FC data
-- Upstash Redis
-- Upstash QStash
+- Neynar for FC accounts data
+- Upstash Redis x2

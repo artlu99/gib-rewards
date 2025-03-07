@@ -95,8 +95,8 @@ export const APIRoute = createAPIFileRoute("/api/webhook")({
       console.info(fid, appFid, event, Date.now().toString());
 
       await sendFrameNotification({
-        title: "SassyHash 💅 Contest Frame",
-        body: "Welcome to SassyHash 💅 Contest",
+        title: "SassyHash 💅 Contest",
+        body: "Welcome to SassyHash 💅 Contest, a weekly rewards contest to discover and reward the most engaging casterooors.",
         targetUrl: "https://gib-rewards.artlu.xyz",
         userNotificationDetails: { url, token },
       });
