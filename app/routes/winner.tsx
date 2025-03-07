@@ -37,7 +37,7 @@ function Winner() {
   const { rulesConfig } = useLoaderData({ from: "/winner" });
   const { smoothScores } = useBearStore();
   const { viewProfile } = useFrame();
-  
+
   const aggregatedScores = smoothScores.items.reduce((acc, item) => {
     acc[item.username] = (acc[item.username] || 0) + item.smooth;
     return acc;
@@ -60,14 +60,19 @@ function Winner() {
       <div className="text-lg">
         <ol className="list-decimal pl-4">
           {sortedScores.map(([username, score]) => {
+            const castFid = smoothScores.items.find(
+              (item) => item.username === username
+            )?.fid;
+
             const payout =
               rulesConfig.minPayout + (score / totalPoints) * availablePool;
+
             return (
               <li key={username}>
                 <button
                   type="button"
                   className="link btn-link"
-                  onClick={() => viewProfile(cast.fid, cast.username)}
+                  onClick={() => viewProfile(castFid ?? 0, username)}
                 >
                   @{username}
                 </button>
