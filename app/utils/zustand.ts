@@ -10,6 +10,8 @@ type BearStore = {
   setCasts: (casts: LeaderboardCastInfo[]) => void;
   smoothScores: SmoothScores;
   setSmoothScores: (smoothScores: SmoothScores) => void;
+  excludedCasts: string[];
+  addExcludedCast: (castHash: string) => void;
 };
 
 export const useBearStore = create<BearStore>()(
@@ -28,6 +30,9 @@ export const useBearStore = create<BearStore>()(
         items: [],
       },
       setSmoothScores: (smoothScores: SmoothScores) => set({ smoothScores }),
+      excludedCasts: [],
+      addExcludedCast: (castHash: string) =>
+        set({ excludedCasts: [...get().excludedCasts, castHash] }),
     }),
     {
       name: "zustand-store",

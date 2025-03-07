@@ -16,7 +16,8 @@ function PostsLayoutComponent() {
   const { contextFid, viewProfile } = useFrame();
   const { signIn } = useSignIn();
   const [loading, setLoading] = useState(false);
-  const { casts, setCasts, smoothScores, setSmoothScores } = useBearStore();
+  const { casts, setCasts, smoothScores, setSmoothScores, excludedCasts } =
+    useBearStore();
 
   useEffect(() => {
     const token = getStoredToken(contextFid ?? undefined);
@@ -48,17 +49,28 @@ function PostsLayoutComponent() {
     fetchUserPosts();
   }, [contextFid]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore the set state functions
+  useEffect(() => {
+    const filteredCasts = casts.filter(
+      (cast) => !excludedCasts.includes(cast.castHash)
+    );
+    const smoothScores = calculateSmoothScores(filteredCasts.slice(0, 10));
+    setSmoothScores(smoothScores);
+  }, [casts, excludedCasts]);
+
   return (
     <Suspense fallback={<div>Loading casts...</div>}>
       <div className="p-2 flex gap-2">
         <ol className="list-decimal pl-4 w-full max-w-full overflow-x-hidden">
-          {(loading ? [] : smoothScores.items).map((cast) => {
-            const castInfo = casts.find((c) => c.castHash === cast.castHash);
+          {(loading ? [] : casts).map((cast) => {
+            const castInfo = smoothScores.items.find(
+              (c) => c.castHash === cast.castHash
+            );
             return (
               <li key={cast.castHash} className="whitespace-nowrap break-words">
                 <div className="block text-lg p-1 active:scale-95 transition-transform">
                   <div>
-                    {cast.smooth.toFixed(2)} points{" "}
+                    {castInfo?.smooth.toFixed(2) ?? "0"} points{" "}
                     <button
                       type="button"
                       className="link btn-link"
@@ -68,14 +80,14 @@ function PostsLayoutComponent() {
                     </button>
                   </div>
                 </div>
-                <details open={!!castInfo}>
+                <details open={false && !!castInfo}>
                   <summary>
-                    {castInfo?.decodedText
-                      ? `${castInfo.decodedText.slice(0, 2)}...`
+                    {cast.decodedText
+                      ? `${cast.decodedText.slice(0, 2)}...`
                       : null}
                   </summary>
                   <div className="w-full overflow-x-hidden">
-                    {castInfo ? <SassyCast cast={castInfo} /> : null}
+                    {castInfo ? <SassyCast cast={cast} /> : null}
                   </div>
                 </details>
               </li>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
+import { useBearStore } from "~/utils/zustand";
 
 const MAX_PAGE_SIZE = 100;
 const MODERATORS: Record<number, string> = {
@@ -38,7 +39,9 @@ export const SassyCast = ({ cast }: SassyCastProps) => {
   const { openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const [modLikes, setModLikes] = useState<number[]>([]);
+  const { addExcludedCast } = useBearStore();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore the set state functions
   useEffect(() => {
     const fetchLikes = async () => {
       const res = await client.get<{ messages: Message[] }>(
@@ -55,6 +58,9 @@ export const SassyCast = ({ cast }: SassyCastProps) => {
           .map((m) => m.data?.fid ?? 0)
           .filter((fid) => MODERATOR_FIDS.includes(fid)) ?? [];
 
+      if ([6546].includes(cast.fid) || modLikes.length < 1) {
+        addExcludedCast(cast.castHash);
+      }
       setModLikes(modLikes);
     };
     fetchLikes();
