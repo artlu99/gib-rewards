@@ -1,4 +1,5 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { useFrame } from "~/components/context/FrameContext";
 import { useBearStore } from "~/utils/zustand";
 
 interface RulesConfig {
@@ -14,7 +15,7 @@ interface RulesConfig {
 }
 
 export const defaultRulesConfig: RulesConfig = {
-  topN: 10,
+  topN: 15,
   totalPool: 100,
   minPayout: 5,
   minMods: 1,
@@ -35,6 +36,8 @@ export const Route = createFileRoute("/winner")({
 function Winner() {
   const { rulesConfig } = useLoaderData({ from: "/winner" });
   const { smoothScores } = useBearStore();
+  const { viewProfile } = useFrame();
+  
   const aggregatedScores = smoothScores.items.reduce((acc, item) => {
     acc[item.username] = (acc[item.username] || 0) + item.smooth;
     return acc;
@@ -61,7 +64,14 @@ function Winner() {
               rulesConfig.minPayout + (score / totalPoints) * availablePool;
             return (
               <li key={username}>
-                @{username}-{score.toFixed(2)}-${payout.toFixed(2)}
+                <button
+                  type="button"
+                  className="link btn-link"
+                  onClick={() => viewProfile(cast.fid, cast.username)}
+                >
+                  @{username}
+                </button>
+                -{score.toFixed(2)}-${payout.toFixed(2)}
               </li>
             );
           })}
