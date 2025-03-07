@@ -131,14 +131,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#FFB6C1]/30 via-transparent to-[#DA70D6]/30" />
-              <button
-                type="button"
-                className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 hover:bg-[#FF69B4]/30 z-10 text-base-content"
-                onClick={() => setShowDecodedText(false)}
-              >
-                ✕
-              </button>
-              <p className="text-2xl flex-1 flex items-center justify-center p-8 break-all whitespace-pre-wrap overflow-auto text-center relative z-10 text-base-content">
+              <p className="text-xl flex-1 flex items-center justify-center p-4 whitespace-pre-wrap overflow-auto text-center relative z-10 text-base-content">
                 {cast.decodedText}
               </p>
               <hr />

@@ -67,7 +67,7 @@ function PostsLayoutComponent() {
   return (
     <Suspense fallback={<div>Loading casts...</div>}>
       <div className="p-2 flex gap-2">
-        <ol className="list-decimal pl-4 w-full max-w-full overflow-x-hidden">
+        <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">
           {(loading ? [] : casts).map((cast) => {
             const castInfo = smoothScores.items.find(
               (c) => c.castHash === cast.castHash
