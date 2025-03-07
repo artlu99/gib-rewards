@@ -1,6 +1,29 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { defaultRulesConfig } from "~/routes/_pathlessLayout/_nested-layout";
 import { useBearStore } from "~/utils/zustand";
+
+interface RulesConfig {
+  topN: number;
+  totalPool: number;
+  minPayout: number;
+  minMods: number;
+  vector: {
+    views: number;
+    likes: number;
+    replies: number;
+  };
+}
+
+export const defaultRulesConfig: RulesConfig = {
+  topN: 10,
+  totalPool: 100,
+  minPayout: 5,
+  minMods: 1,
+  vector: {
+    views: 1,
+    likes: 0,
+    replies: 0,
+  },
+};
 
 export const Route = createFileRoute("/winner")({
   loader: () => ({
@@ -11,7 +34,7 @@ export const Route = createFileRoute("/winner")({
 
 function Winner() {
   const { rulesConfig } = useLoaderData({ from: "/winner" });
-  const { bears, addABear, smoothScores } = useBearStore();
+  const { smoothScores } = useBearStore();
   const aggregatedScores = smoothScores.items.reduce((acc, item) => {
     acc[item.username] = (acc[item.username] || 0) + item.smooth;
     return acc;

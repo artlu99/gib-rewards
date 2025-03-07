@@ -1,18 +1,24 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Suspense, useEffect, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
+import { defaultRulesConfig } from "~/routes/winner";
 import { getStoredToken } from "~/utils/auth";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { fetchCasts } from "~/utils/topNcasts";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/")({
+  loader: () => ({
+    rulesConfig: defaultRulesConfig,
+  }),
   component: PostsLayoutComponent,
 });
 
 function PostsLayoutComponent() {
+  const { rulesConfig } = useLoaderData({ from: "/" });
+  const { topN, minMods } = rulesConfig;
   const { contextFid, viewProfile } = useFrame();
   const { signIn } = useSignIn();
   const [loading, setLoading] = useState(false);
@@ -54,7 +60,7 @@ function PostsLayoutComponent() {
     const filteredCasts = casts.filter(
       (cast) => !excludedCasts.includes(cast.castHash)
     );
-    const smoothScores = calculateSmoothScores(filteredCasts.slice(0, 10));
+    const smoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
     setSmoothScores(smoothScores);
   }, [casts, excludedCasts]);
 
@@ -80,14 +86,14 @@ function PostsLayoutComponent() {
                     </button>
                   </div>
                 </div>
-                <details open={false && !!castInfo}>
+                <details open={!!castInfo}>
                   <summary>
                     {cast.decodedText
                       ? `${cast.decodedText.slice(0, 2)}...`
                       : null}
                   </summary>
                   <div className="w-full overflow-x-hidden">
-                    {castInfo ? <SassyCast cast={cast} /> : null}
+                    <SassyCast cast={cast} minMods={minMods} />
                   </div>
                 </details>
               </li>

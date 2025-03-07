@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { defaultRulesConfig } from "~/routes/winner";
 import { verifyToken } from "./auth";
 import { getMostSeenCasts } from "./whistles";
 
@@ -11,6 +12,6 @@ export const fetchCasts = createServerFn({ method: "GET" })
 
     return await getMostSeenCasts({
       viewerFid: auth?.fid ?? null,
-      limit: 10,
+      limit: defaultRulesConfig.topN * 2,
     });
   });

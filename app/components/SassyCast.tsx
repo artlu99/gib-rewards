@@ -33,9 +33,10 @@ const pluralize = (count: number, singular: string, plural?: string) =>
 
 interface SassyCastProps {
   cast: LeaderboardCastInfo;
+  minMods: number;
 }
 
-export const SassyCast = ({ cast }: SassyCastProps) => {
+export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const [modLikes, setModLikes] = useState<number[]>([]);
@@ -58,7 +59,7 @@ export const SassyCast = ({ cast }: SassyCastProps) => {
           .map((m) => m.data?.fid ?? 0)
           .filter((fid) => MODERATOR_FIDS.includes(fid)) ?? [];
 
-      if ([6546].includes(cast.fid) || modLikes.length < 1) {
+      if ([6546].includes(cast.fid) || modLikes.length < minMods) {
         addExcludedCast(cast.castHash);
       }
       setModLikes(modLikes);

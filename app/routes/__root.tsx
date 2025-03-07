@@ -95,7 +95,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/index.min.js" />
       </head>
       <body>
-        <div className="p-2 flex w-full justify-evenly items-center text-lg">
+        <div className="p-2 flex w-full justify-evenly items-center text-md">
           <div className="flex-1 text-center">
             <Link
               to="/"
@@ -145,7 +145,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
         </div>
-        <hr />
         {children}
         <script>frame.sdk.actions.ready();</script>
         <Scripts />

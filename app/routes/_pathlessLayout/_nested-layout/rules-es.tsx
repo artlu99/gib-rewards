@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Caret,
-  Route as parentRoute,
-} from "~/routes/_pathlessLayout/_nested-layout";
+import { Caret } from "~/components/ui/Caret";
+import { Route as parentRoute } from "~/routes/_pathlessLayout/_nested-layout";
 
 export const Route = createFileRoute(
   "/_pathlessLayout/_nested-layout/rules-es"
