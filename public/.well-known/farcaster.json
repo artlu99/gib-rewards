@@ -12,6 +12,7 @@
 		"imageUrl": "https://sassyhash.artlu.xyz/sassyhash-og.png",
 		"buttonTitle": "SassyHash 💅",
 		"splashImageUrl": "https://sassyhash.artlu.xyz/splash-square.png",
-		"splashBackgroundColor": "#0E081F"
+		"splashBackgroundColor": "#0E081F",
+		"webhookUrl": "https://gib-rewards.artlu.xyz/api/webhook"
 	}
 }
