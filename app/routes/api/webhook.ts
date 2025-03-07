@@ -5,26 +5,64 @@ import {
   parseWebhookEvent,
 } from "@farcaster/frame-node";
 import {
+  type FrameNotificationDetails,
   type SendNotificationRequest,
   sendNotificationResponseSchema,
 } from "@farcaster/frame-sdk";
 import { json } from "@tanstack/react-start";
 import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { setResponseStatus } from "@tanstack/react-start/server";
+import { Redis } from "@upstash/redis/cloudflare";
 
 const hubUrl = "https://nemes.farcaster.xyz:2281";
 
+const framesRedis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
+
+function getUserNotificationDetailsKey(fid: number): string {
+  return `gib-rewards:user:${fid}:notification-details`;
+}
+
+async function getUserNotificationDetails(
+  fid: number
+): Promise<FrameNotificationDetails | null> {
+  return await framesRedis.get<FrameNotificationDetails>(
+    getUserNotificationDetailsKey(fid)
+  );
+}
+
+async function setUserNotificationDetails(
+  fid: number,
+  notificationDetails: FrameNotificationDetails
+): Promise<void> {
+  await framesRedis.set(
+    getUserNotificationDetailsKey(fid),
+    notificationDetails
+  );
+}
+
+async function deleteUserNotificationDetails(fid: number): Promise<void> {
+  await framesRedis.del(getUserNotificationDetailsKey(fid));
+}
+
 async function sendFrameNotification({
+  fid,
   title,
   body,
-  targetUrl,
-  userNotificationDetails: { url, token },
 }: {
+  fid: number;
   title: string;
   body: string;
-  targetUrl: string;
-  userNotificationDetails: { url: string; token: string };
 }) {
+  const userNotificationDetails = await getUserNotificationDetails(fid);
+  if (!userNotificationDetails) {
+    return;
+  }
+  const { url, token } = userNotificationDetails;
+
+  const targetUrl = "https://gib-rewards.artlu.xyz";
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -89,17 +127,38 @@ export const APIRoute = createAPIFileRoute("/api/webhook")({
 
     const { fid, appFid, event } = data;
 
-    if (event.event === "frame_added" && event.notificationDetails) {
-      const { url, token } = event.notificationDetails;
+    switch (event.event) {
+      case "frame_added":
+        {
+          if (!event.notificationDetails) {
+            break;
+          }
+          await setUserNotificationDetails(fid, event.notificationDetails);
 
-      console.info(fid, appFid, event, Date.now().toString());
+          await sendFrameNotification({
+            fid,
+            title: "SassyHash 💅 Contest",
+            body: "Welcome to SassyHash 💅 Contest, a weekly rewards contest to discover and reward the most engaging casterooors.",
+          });
+        }
+        break;
+      case "frame_removed":
+        await deleteUserNotificationDetails(fid);
 
-      await sendFrameNotification({
-        title: "SassyHash 💅 Contest",
-        body: "Welcome to SassyHash 💅 Contest, a weekly rewards contest to discover and reward the most engaging casterooors.",
-        targetUrl: "https://gib-rewards.artlu.xyz",
-        userNotificationDetails: { url, token },
-      });
+        break;
+      case "notifications_enabled":
+        await setUserNotificationDetails(fid, event.notificationDetails);
+        await sendFrameNotification({
+          fid,
+          title: "SassyHash 💅 Contest",
+          body: "SassyHash 💅 Notifications are now enabled. Turn off at any time, and follow /p2p for announcements.",
+        });
+
+        break;
+      case "notifications_disabled":
+        await deleteUserNotificationDetails(fid);
+
+        break;
     }
 
     setResponseStatus(200, "OK");
