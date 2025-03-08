@@ -14,10 +14,9 @@ export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     // Pre-fetch data on the server or during navigation
     const queryClient = context.queryClient;
-    const contextFid = context.frame?.fid;
 
     // Prefetch the query so it's available immediately on client
-    await queryClient.ensureQueryData(castsQueryOptions(contextFid));
+    await queryClient.ensureQueryData(castsQueryOptions());
 
     return {
       rulesConfig: defaultRulesConfig,

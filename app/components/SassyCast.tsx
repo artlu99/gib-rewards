@@ -1,4 +1,5 @@
 import type { Message } from "@farcaster/core";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { fetcher } from "itty-fetcher";
 import { useEffect, useState } from "react";
@@ -41,12 +42,11 @@ interface SassyCastProps {
 export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
-  const [modLikes, setModLikes] = useState<number[]>([]);
   const { addExcludedCast } = useBearStore();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore the set state functions
-  useEffect(() => {
-    const fetchLikes = async () => {
+  const { data: modLikes = [] } = useQuery({
+    queryKey: ["castLikes", cast.fid, cast.castHash],
+    queryFn: async () => {
       const res = await client.get<{ messages: Message[] }>(
         `/v1/reactionsByCast?${new URLSearchParams({
           target_fid: cast.fid.toString(),
@@ -64,10 +64,11 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
       if ([6546].includes(cast.fid) || modLikes.length < minMods) {
         addExcludedCast(cast.castHash);
       }
-      setModLikes(modLikes);
-    };
-    fetchLikes();
-  }, [cast]);
+
+      return modLikes;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   useEffect(() => {
     if (cast.decodedText && showDecodedText) {
