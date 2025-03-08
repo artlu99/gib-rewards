@@ -91,7 +91,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
     <div className="max-w-screen-sm">
       <div className="flex justify-between items-center">
         <div className="text-sm">
-          {pluralize(cast.count, "attempted view")} (raw) -{" "}
+          {pluralize(cast.count, "unique view")}-{" "}
           {pluralize(modLikes.length, "SassyMod like")}
         </div>
         <button
