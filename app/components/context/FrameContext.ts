@@ -74,21 +74,6 @@ export const useFrame = () => {
     [context, isWarpcast]
   );
 
-  const addFrame = useCallback(() => {
-    if (context) {
-      sdk.actions.addFrame();
-    }
-  }, [context]);
-
-  const setPrimaryButton = useCallback(
-    (text: string) => {
-      if (context) {
-        sdk.actions.setPrimaryButton({ text });
-      }
-    },
-    [context]
-  );
-
   return {
     context,
     safeAreaInsets,
@@ -99,7 +84,5 @@ export const useFrame = () => {
     error,
     openUrl,
     viewProfile,
-    addFrame,
-    setPrimaryButton,
   };
 };

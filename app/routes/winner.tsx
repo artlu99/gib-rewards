@@ -1,5 +1,4 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useFrame } from "~/components/context/FrameContext";
 import { useBearStore } from "~/utils/zustand";
 
@@ -37,8 +36,7 @@ export const Route = createFileRoute("/winner")({
 function Winner() {
   const { rulesConfig } = useLoaderData({ from: "/winner" });
   const { smoothScores } = useBearStore();
-  const { viewProfile, isInstalled, isNotificationsEnabled, setPrimaryButton } =
-    useFrame();
+  const { viewProfile, isInstalled, isNotificationsEnabled } = useFrame();
 
   const aggregatedScores = smoothScores.items.reduce((acc, item) => {
     acc[item.username] = (acc[item.username] || 0) + item.smooth;
@@ -54,12 +52,6 @@ function Winner() {
 
   const availablePool =
     rulesConfig.totalPool - rulesConfig.minPayout * numWinners;
-
-  useEffect(() => {
-    if (!isInstalled) {
-      setPrimaryButton("Install Contest Frame");
-    }
-  }, [setPrimaryButton, isInstalled]);
 
   return isInstalled ? (
     isNotificationsEnabled ? (
