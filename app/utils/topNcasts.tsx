@@ -18,11 +18,11 @@ export const fetchCasts = createServerFn({ method: "GET" })
   });
 
 // Define query options for use with useQuery
-export const castsQueryOptions = (contextFid?: number | null) => {
+export const castsQueryOptions = (contextFid: number | null) => {
   const token = contextFid ? getStoredToken(contextFid) : null;
 
   return queryOptions({
-    queryKey: ["casts", contextFid ?? null],
+    queryKey: ["casts", contextFid],
     queryFn: async () => {
       return fetchCasts({
         data: {

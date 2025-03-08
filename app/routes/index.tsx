@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
     const queryClient = context.queryClient;
 
     // Prefetch the query so it's available immediately on client
-    await queryClient.ensureQueryData(castsQueryOptions());
+    await queryClient.ensureQueryData(castsQueryOptions(null));
 
     return {
       rulesConfig: defaultRulesConfig,
