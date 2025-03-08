@@ -15,6 +15,7 @@
     "@farcaster/frame-sdk": "^0.0.30",
     "@neynar/nodejs-sdk": "^2.17.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@tanstack/react-query": "^5.67.2",
     "@tanstack/react-router": "^1.112.7",
     "@tanstack/react-start": "^1.112.7",
     "@tanstack/router-devtools": "^1.112.7",

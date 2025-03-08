@@ -1,6 +1,7 @@
+import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { defaultRulesConfig } from "~/routes/winner";
-import { verifyToken } from "~/utils/auth";
+import { getStoredToken, verifyToken } from "~/utils/auth";
 import { getMostSeenCasts } from "~/utils/whistles";
 
 export const fetchCasts = createServerFn({ method: "GET" })
@@ -15,3 +16,19 @@ export const fetchCasts = createServerFn({ method: "GET" })
       limit: defaultRulesConfig.topN * 2,
     });
   });
+
+// Define query options for use with useQuery
+export const castsQueryOptions = (contextFid?: number | null) => {
+  const token = contextFid ? getStoredToken(contextFid) : null;
+
+  return queryOptions({
+    queryKey: ["casts", contextFid],
+    queryFn: async () => {
+      return fetchCasts({
+        data: {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        },
+      });
+    },
+  });
+};
