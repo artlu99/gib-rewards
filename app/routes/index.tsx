@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { SassyCast } from "~/components/SassyCast";
@@ -40,8 +40,9 @@ function PostsLayoutComponent() {
     isFetching,
   } = useQuery({
     ...castsQueryOptions(contextFid),
-    // Keep previous data while fetching new data
-    placeholderData: (previousData) => previousData,
+    refetchOnWindowFocus: true,
+    // This prevents null data during refetching
+    placeholderData: keepPreviousData,
   });
 
   useEffect(() => {
