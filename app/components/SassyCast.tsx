@@ -1,5 +1,5 @@
 import type { Message } from "@farcaster/core";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { fetcher } from "itty-fetcher";
 import { useEffect, useState } from "react";
@@ -67,6 +67,8 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
 
       return modLikes;
     },
+    refetchIntervalInBackground: true,
+    placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
