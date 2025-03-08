@@ -22,7 +22,7 @@ export const castsQueryOptions = (contextFid?: number | null) => {
   const token = contextFid ? getStoredToken(contextFid) : null;
 
   return queryOptions({
-    queryKey: ["casts", contextFid],
+    queryKey: ["casts", contextFid ?? null],
     queryFn: async () => {
       return fetchCasts({
         data: {

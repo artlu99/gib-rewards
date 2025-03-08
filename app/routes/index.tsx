@@ -77,13 +77,6 @@ function PostsLayoutComponent() {
 
   return (
     <div className="p-2 flex gap-2">
-      {/* Show loading indicator while fetching new data */}
-      {isFetching && (
-        <div className="fixed top-2 right-2 bg-blue-500 text-white py-1 px-2 rounded">
-          Refreshing for {contextFid ?? "<user not signed in>"}...
-        </div>
-      )}
-
       <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">
         {casts.map((cast) => {
           const castInfo = smoothScores.items.find(
