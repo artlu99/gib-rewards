@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { SassyCast } from "~/components/SassyCast";
@@ -33,6 +33,9 @@ function PostsLayoutComponent() {
   const { setCasts, smoothScores, setSmoothScores, excludedCasts } =
     useBearStore();
 
+  // Get access to queryClient to retrieve data
+  const queryClient = useQueryClient();
+
   // Use React Query instead of useEffect+fetch
   const {
     data: castsData,
@@ -41,8 +44,9 @@ function PostsLayoutComponent() {
   } = useQuery({
     ...castsQueryOptions(contextFid),
     refetchOnWindowFocus: true,
-    // This prevents null data during refetching
-    placeholderData: keepPreviousData,
+    // Get previous data from null query if available
+    placeholderData: (previousData) =>
+      previousData || queryClient.getQueryData(["casts", null]),
   });
 
   useEffect(() => {
@@ -76,7 +80,7 @@ function PostsLayoutComponent() {
       {/* Show loading indicator while fetching new data */}
       {isFetching && (
         <div className="fixed top-2 right-2 bg-blue-500 text-white py-1 px-2 rounded">
-          Refreshing...
+          Refreshing for {contextFid ?? "<user not signed in>"}...
         </div>
       )}
 
