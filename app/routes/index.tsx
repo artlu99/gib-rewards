@@ -8,6 +8,7 @@ import { defaultRulesConfig } from "~/routes/winner";
 import { getStoredToken } from "~/utils/auth";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { castsQueryOptions } from "~/utils/topNcasts";
+import type { LeaderboardCastInfo } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/")({
@@ -37,16 +38,17 @@ function PostsLayoutComponent() {
   const queryClient = useQueryClient();
 
   // Use React Query instead of useEffect+fetch
-  const {
-    data: castsData,
-    isLoading,
-    isFetching,
-  } = useQuery({
+  const { data: castsData, isPlaceholderData } = useQuery({
     ...castsQueryOptions(contextFid),
     refetchOnWindowFocus: true,
-    // Get previous data from null query if available
+    // Properly handle transitions between different contextFid values
+    // If previous query with same contextFid had data, use that
     placeholderData: (previousData) =>
-      previousData || queryClient.getQueryData(["casts", null]),
+      previousData
+        ? previousData
+        : queryClient.getQueryData<LeaderboardCastInfo[]>(["casts", null]),
+    // This makes the component use the last successful data when switching between queries
+    // staleTime: 1000,
   });
 
   useEffect(() => {
@@ -58,27 +60,27 @@ function PostsLayoutComponent() {
 
   // Update store when query data changes
   useEffect(() => {
-    if (castsData) {
+    if (castsData && !isPlaceholderData) {
       setCasts(castsData);
     }
-  }, [castsData, setCasts]);
+  }, [castsData, setCasts, isPlaceholderData]);
 
   // Calculate smooth scores when casts or excludedCasts change
   useEffect(() => {
-    const filteredCasts = (castsData || []).filter(
+    if (!castsData || isPlaceholderData) {
+      return;
+    }
+    const filteredCasts = castsData.filter(
       (cast) => !excludedCasts.includes(cast.castHash)
     );
     const newSmoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
     setSmoothScores(newSmoothScores);
-  }, [castsData, excludedCasts, topN, setSmoothScores]);
-
-  // Get the casts from the store or query data
-  const casts = castsData || [];
+  }, [castsData, isPlaceholderData, excludedCasts, topN, setSmoothScores]);
 
   return (
     <div className="p-2 flex gap-2">
       <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">
-        {casts.map((cast) => {
+        {(castsData || []).map((cast) => {
           const castInfo = smoothScores.items.find(
             (c) => c.castHash === cast.castHash
           );
