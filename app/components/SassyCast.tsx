@@ -43,6 +43,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const { addExcludedCast } = useBearStore();
+  const [currentUserLiked, setCurrentUserLiked] = useState(false);
 
   const { data: modLikes = [] } = useQuery({
     queryKey: ["castLikes", cast.fid, cast.castHash],
@@ -56,10 +57,18 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
         })}`
       );
 
-      const modLikes =
-        res?.messages
-          .map((m) => m.data?.fid ?? 0)
-          .filter((fid) => MODERATOR_FIDS.includes(fid)) ?? [];
+      // Extract all likes first (before filtering for moderators)
+      const allLikes = res?.messages.map((m) => m.data?.fid ?? 0) || [];
+
+      // Check if current user has liked and update state
+      if (contextFid && allLikes.includes(contextFid)) {
+        setCurrentUserLiked(true);
+      } else {
+        setCurrentUserLiked(false);
+      }
+
+      // Continue with the existing modLikes logic
+      const modLikes = allLikes.filter((fid) => MODERATOR_FIDS.includes(fid));
 
       if ([6546].includes(cast.fid) || modLikes.length < minMods) {
         addExcludedCast(cast.castHash);
@@ -102,6 +111,15 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
           onClick={() => setShowDecodedText(true)}
           className="btn btn-ghost btn-sm"
         >
+          {currentUserLiked ? (
+            <span className="mr-1" aria-label="You liked this cast">
+              ❤️
+            </span>
+          ) : (
+            <span className="mr-1" aria-label="You haven't liked this cast">
+              🤍
+            </span>
+          )}
           {cast.decodedText ? "💅" : null}
         </button>
       </div>
