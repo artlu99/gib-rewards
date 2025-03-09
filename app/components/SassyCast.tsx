@@ -41,12 +41,12 @@ interface SassyCastProps {
 
 export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
-  const [showDecodedText, setShowDecodedText] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showDecodedText, setShowDecodedText] = useState(false);
+  const [modLikes, setModLikes] = useState<number>();
   const { addExcludedCast } = useBearStore();
-  const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
 
-  const { data: modLikes = [] } = useQuery({
+  const { data: castLikes = [] } = useQuery({
     queryKey: ["castLikes", cast.fid, cast.castHash],
     queryFn: async () => {
       const res = await client.get<{ messages: Message[] }>(
@@ -58,24 +58,17 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
         })}`
       );
 
-      // Extract all likes first (before filtering for moderators)
       const allLikes = res?.messages.map((m) => m.data?.fid ?? 0) || [];
 
-      // Check if current user has liked and update state
-      if (contextFid && allLikes.includes(contextFid)) {
-        setCurrentUserLiked(true);
-      } else {
-        setCurrentUserLiked(false);
-      }
-
       // Continue with the existing modLikes logic
-      const modLikes = allLikes.filter((fid) => MODERATOR_FIDS.includes(fid));
+      const mLikes = allLikes.filter((fid) => MODERATOR_FIDS.includes(fid));
 
-      if ([6546].includes(cast.fid) || modLikes.length < minMods) {
+      if ([6546].includes(cast.fid) || mLikes.length < minMods) {
         addExcludedCast(cast.castHash);
       }
 
-      return modLikes;
+      setModLikes(mLikes.length);
+      return allLikes;
     },
     refetchIntervalInBackground: true,
     placeholderData: keepPreviousData,
@@ -100,6 +93,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
     }
   }, [cast, showDecodedText, contextFid]);
 
+  const currentUserLiked = castLikes.includes(contextFid ?? 0);
   useEffect(() => {
     if (cast.decodedText && !currentUserLiked) {
       setIsOpen(true);
@@ -117,7 +111,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
           }}
         >
           {pluralize(cast.count, "unique view")}-{" "}
-          {pluralize(modLikes.length, "SassyMod like")}
+          {pluralize(modLikes ?? 0, "SassyMod like")}
         </div>
 
         <div className="flex justify-between items-center">
