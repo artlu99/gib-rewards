@@ -41,9 +41,9 @@ interface SassyCastProps {
 
 export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
-  const [isOpen, setIsOpen] = useState<boolean>();
+  const [isOpen, setIsOpen] = useState(true);
   const [showDecodedText, setShowDecodedText] = useState(false);
-  const [modLikes, setModLikes] = useState<number>();
+  const [modLikes, setModLikes] = useState<number[]>([]);
   const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
   const { addExcludedCast } = useBearStore();
 
@@ -68,7 +68,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
         addExcludedCast(cast.castHash);
       }
 
-      setModLikes(mLikes.length);
+      setModLikes(mLikes);
       return allLikes;
     },
     refetchIntervalInBackground: true,
@@ -96,14 +96,14 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
 
   useEffect(() => {
     if (!contextFid) return;
-    setCurrentUserLiked(castLikes.includes(contextFid));
-  }, [contextFid, castLikes]);
 
-  useEffect(() => {
-    if (cast.decodedText && !currentUserLiked) {
-      setIsOpen(true);
+    if (castLikes.includes(contextFid)) {
+      setCurrentUserLiked(true);
+      if (cast.decodedText) {
+        setIsOpen(false);
+      }
     }
-  }, [cast, currentUserLiked]);
+  }, [contextFid, castLikes, cast]);
 
   return (
     <div className="max-w-screen-sm">
@@ -116,7 +116,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
           }}
         >
           {pluralize(cast.count, "unique view")}-{" "}
-          {pluralize(modLikes ?? 0, "SassyMod like")}
+          {pluralize(modLikes.length, "SassyMod like")}
         </div>
 
         <div className="flex justify-between items-center">
