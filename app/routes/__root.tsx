@@ -10,6 +10,7 @@ import type * as React from "react";
 import embedsCss from "react-farcaster-embed/dist/styles.css?url";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
+import { BadgedMunnies } from "~/components/ui/BadgedMunnies";
 import appCss from "~/styles/app.css?url";
 import { seo } from "~/utils/seo";
 
@@ -132,9 +133,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 className: "font-bold",
               }}
             >
-              💰
-              <br />
-              Munnies
+              <BadgedMunnies />
             </Link>
           </div>
           <div className="flex-1 text-center">
