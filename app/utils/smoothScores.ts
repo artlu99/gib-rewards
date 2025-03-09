@@ -1,3 +1,5 @@
+import { sift } from "radash";
+import type { RulesConfig } from "~/utils/rules";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 
 export interface SmoothScores {
@@ -15,6 +17,14 @@ export interface SmoothScores {
     smooth: number;
     smoothZscore: number;
   }[];
+}
+
+export interface Winners {
+  fid: number;
+  username: string;
+  rawScore: number;
+  smoothScore: number;
+  payout: number;
 }
 
 export const calculateSmoothScores = (data: LeaderboardCastInfo[]) => {
@@ -55,4 +65,44 @@ export const calculateSmoothScores = (data: LeaderboardCastInfo[]) => {
     smoothData.sumSmooth += item.smooth;
   }
   return smoothData;
+};
+
+export const calculateWinners = (smoothScores: SmoothScores, rules: RulesConfig): Winners[] => {
+  const { topN, totalPool, minPayout } = rules;
+
+  const aggregatedScores = smoothScores.items.reduce((acc, item) => {
+    acc[item.username] = (acc[item.username] || 0) + item.smooth;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const sortedScores = Object.entries(aggregatedScores)
+    .sort(([, value], [, otherValue]) => otherValue - value)
+    .slice(0, topN);
+
+  const totalPoints = sortedScores.reduce((acc, [, score]) => acc + score, 0);
+  const numWinners = Math.min(topN, sortedScores.length);
+
+  const availablePool = totalPool - minPayout * numWinners;
+
+  const winners = sift(
+    sortedScores.map(([username, score]) => {
+      const item = smoothScores.items.find(
+        (item) => item.username === username
+      );
+      if (!item) {
+        return null;
+      }
+      const { fid, raw, smooth } = item;
+      const payout = minPayout + (score / totalPoints) * availablePool;
+
+      return {
+        fid,
+        username,
+        rawScore: raw,
+        smoothScore: smooth,
+        payout,
+      };
+    })
+  );
+  return winners;
 };

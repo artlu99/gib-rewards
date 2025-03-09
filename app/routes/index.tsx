@@ -4,9 +4,8 @@ import { useEffect } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
-import { defaultRulesConfig } from "~/routes/winner";
 import { getStoredToken } from "~/utils/auth";
-import { calculateSmoothScores } from "~/utils/smoothScores";
+import { calculateSmoothScores, calculateWinners } from "~/utils/smoothScores";
 import { castsQueryOptions } from "~/utils/topNcasts";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
@@ -19,20 +18,24 @@ export const Route = createFileRoute("/")({
     // Prefetch the query so it's available immediately on client
     await queryClient.ensureQueryData(castsQueryOptions(null));
 
-    return {
-      rulesConfig: defaultRulesConfig,
-    };
+    return {};
   },
   component: PostsLayoutComponent,
 });
 
 function PostsLayoutComponent() {
-  const { rulesConfig } = useLoaderData({ from: "/" });
-  const { topN, minMods } = rulesConfig;
+  useLoaderData({ from: "/" });
   const { contextFid, viewProfile } = useFrame();
   const { signIn } = useSignIn();
-  const { setCasts, smoothScores, setSmoothScores, excludedCasts } =
-    useBearStore();
+  const {
+    rulesConfig,
+    setCasts,
+    smoothScores,
+    setSmoothScores,
+    excludedCasts,
+    setWinners,
+  } = useBearStore();
+  const { topN, minMods } = rulesConfig;
 
   // Get access to queryClient to retrieve data
   const queryClient = useQueryClient();
@@ -74,8 +77,18 @@ function PostsLayoutComponent() {
       (cast) => !excludedCasts.includes(cast.castHash)
     );
     const newSmoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
+    const winners = calculateWinners(newSmoothScores, rulesConfig);
     setSmoothScores(newSmoothScores);
-  }, [castsData, isPlaceholderData, excludedCasts, topN, setSmoothScores]);
+    setWinners(winners);
+  }, [
+    castsData,
+    isPlaceholderData,
+    excludedCasts,
+    topN,
+    rulesConfig,
+    setSmoothScores,
+    setWinners,
+  ]);
 
   return (
     <div className="p-2 flex gap-2">

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Caret } from "~/components/ui/Caret";
-import { Route as parentRoute } from "~/routes/_pathlessLayout/_nested-layout";
+import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute(
   "/_pathlessLayout/_nested-layout/rules-es"
@@ -9,7 +9,7 @@ export const Route = createFileRoute(
 });
 
 function LayoutBComponent() {
-  const { rulesConfig } = parentRoute.useLoaderData();
+  const { rulesConfig } = useBearStore();
   const { topN, totalPool, minPayout, minMods, vector } = rulesConfig;
 
   return (

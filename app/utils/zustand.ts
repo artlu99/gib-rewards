@@ -1,20 +1,37 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { SmoothScores } from "~/utils/smoothScores";
+import type { RulesConfig } from "~/utils/rules";
+import type { SmoothScores, Winners } from "~/utils/smoothScores";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 
 type BearStore = {
+  rulesConfig: RulesConfig;
+  setRulesConfig: (rulesConfig: RulesConfig) => void;
   casts: LeaderboardCastInfo[];
   setCasts: (casts: LeaderboardCastInfo[]) => void;
   smoothScores: SmoothScores;
   setSmoothScores: (smoothScores: SmoothScores) => void;
   excludedCasts: string[];
   addExcludedCast: (castHash: string) => void;
+  winners: Winners[];
+  setWinners: (winners: Winners[]) => void;
 };
 
 export const useBearStore = create<BearStore>()(
   persist(
     (set, get) => ({
+      rulesConfig: {
+        topN: 15,
+        totalPool: 100,
+        minPayout: 5,
+        minMods: 1,
+        vector: {
+          views: 1,
+          likes: 0,
+          replies: 0,
+        },
+      },
+      setRulesConfig: (rulesConfig: RulesConfig) => set({ rulesConfig }),
       casts: [],
       setCasts: (casts: LeaderboardCastInfo[]) => set({ casts }),
       smoothScores: {
@@ -29,6 +46,8 @@ export const useBearStore = create<BearStore>()(
       excludedCasts: [],
       addExcludedCast: (castHash: string) =>
         set({ excludedCasts: [...get().excludedCasts, castHash] }),
+      winners: [],
+      setWinners: (winners: Winners[]) => set({ winners }),
     }),
     { name: "bear-store", storage: createJSONStorage(() => sessionStorage) }
   )

@@ -1,8 +1,6 @@
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
-import { defaultRulesConfig } from "~/routes/winner";
 
 export const Route = createFileRoute("/_pathlessLayout/_nested-layout")({
-  loader: () => ({ rulesConfig: defaultRulesConfig }),
   component: LayoutComponent,
 });
 
