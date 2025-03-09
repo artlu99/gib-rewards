@@ -18,19 +18,12 @@ This site is built on [TanStack Start](https://tanstack.com/start)!
 - [Upstash](https://upstash.com) Redis x2
 
 messaged GM Farcaster, Los Fomos
-
 circle back Los Fomos crew
 
-$ amount on menu
 slider for topN
 slider for totalPool
-discovery for those beyond TopN
 button click profiles on leaderboard
 pfp on leaderboard (save user each time)
-liked by me already
-state persist in session storage
-state for rewards
-swr rather than refresh
 
 message Burrr, Pichi
 message Jacek, Colton, Jack, Proxy, Anonpapi, McBain

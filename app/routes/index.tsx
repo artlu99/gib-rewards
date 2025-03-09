@@ -112,7 +112,7 @@ function PostsLayoutComponent() {
                 </div>
               </div>
               <div className="w-full overflow-x-hidden">
-                <SassyCast cast={cast} minMods={minMods} castInfo={castInfo} />
+                <SassyCast cast={cast} minMods={minMods} />
               </div>
             </li>
           );

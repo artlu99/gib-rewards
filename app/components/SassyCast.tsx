@@ -37,15 +37,14 @@ const pluralize = (count: number, singular: string, plural?: string) =>
 interface SassyCastProps {
   cast: LeaderboardCastInfo;
   minMods: number;
-  castInfo: LeaderboardCastInfo | null;
 }
 
-export const SassyCast = ({ cast, minMods, castInfo }: SassyCastProps) => {
+export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { addExcludedCast } = useBearStore();
-  const [currentUserLiked, setCurrentUserLiked] = useState(false);
+  const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
 
   const { data: modLikes = [] } = useQuery({
     queryKey: ["castLikes", cast.fid, cast.castHash],
