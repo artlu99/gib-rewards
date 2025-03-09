@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { SassyCast } from "~/components/SassyCast";
@@ -11,15 +11,15 @@ export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     // Pre-fetch data on the server or during navigation
     const queryClient = context.queryClient;
-    await queryClient.ensureQueryData(castsQueryOptions(null));
+    const data = await queryClient.ensureQueryData(castsQueryOptions(null));
 
-    return {};
+    return { data };
   },
   component: PostsLayoutComponent,
 });
 
 function PostsLayoutComponent() {
-  useLoaderData({ from: "/" });
+  const { data: preload } = useLoaderData({ from: "/" });
   const { contextFid, viewProfile, openUrl } = useFrame();
   const {
     rulesConfig,
@@ -32,7 +32,12 @@ function PostsLayoutComponent() {
   } = useBearStore();
   const { topN, minMods } = rulesConfig;
 
-  const { data, isFetching, refetch } = useQuery(castsQueryOptions(contextFid));
+  const { data, isFetching, refetch } = useQuery({
+    ...castsQueryOptions(contextFid),
+    // if contextFid is not set, use the data preloaded
+    placeholderData: contextFid ? keepPreviousData : preload,
+    staleTime: 1000 * 60, // 1 minute
+  });
 
   // Update store when query data changes
   useEffect(() => {
