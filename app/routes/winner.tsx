@@ -10,7 +10,7 @@ export const Route = createFileRoute("/winner")({
 
 function Winner() {
   const { viewProfile, isInstalled, isNotificationsEnabled } = useFrame();
-  const { winners } = useBearStore();
+  const { winners, casts } = useBearStore();
 
   return (
     <>
@@ -26,11 +26,14 @@ function Winner() {
 
             <div className="flex flex-col gap-2">
               {winners.map((winner, index) => {
-                const { fid, username, smoothScore, numCasts, payout } = winner;
+                const { fid, username, smoothScore, payout, numCasts } = winner;
+                const totalCasts = casts.filter(
+                  (cast) => cast.fid === fid
+                ).length;
                 return (
                   <div
                     key={username}
-                    className="card bg-base-100 shadow-sm rounded-md m-2"
+                    className="card card-bordered border-base-200 bg-base-100"
                   >
                     <div className="card-body p-3">
                       <div className="flex items-center gap-2">
@@ -64,7 +67,12 @@ function Winner() {
                           <div className="stat-title text-xs opacity-60">
                             Casts 💅
                           </div>
-                          <div className="stat-value text-md">{numCasts}</div>
+                          <div className="stat-value flex items-baseline">
+                            {numCasts}
+                            <span className="stat-desc ml-1">
+                              / {totalCasts}
+                            </span>
+                          </div>
                         </div>
 
                         <div className="stat px-2 py-1">
