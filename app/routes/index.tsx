@@ -111,16 +111,9 @@ function PostsLayoutComponent() {
                   </button>
                 </div>
               </div>
-              <details open={!!castInfo}>
-                <summary>
-                  {cast.decodedText
-                    ? `${cast.decodedText.slice(0, 2)}...`
-                    : null}
-                </summary>
-                <div className="w-full overflow-x-hidden">
-                  <SassyCast cast={cast} minMods={minMods} />
-                </div>
-              </details>
+              <div className="w-full overflow-x-hidden">
+                <SassyCast cast={cast} minMods={minMods} castInfo={castInfo} />
+              </div>
             </li>
           );
         })}
