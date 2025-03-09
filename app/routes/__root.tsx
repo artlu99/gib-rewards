@@ -7,11 +7,15 @@ import {
   createRootRoute,
 } from "@tanstack/react-router";
 import type * as React from "react";
+import { useEffect } from "react";
 import embedsCss from "react-farcaster-embed/dist/styles.css?url";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
+import { useFrame } from "~/components/context/FrameContext";
 import { BadgedMunnies } from "~/components/ui/BadgedMunnies";
+import { useSignIn } from "~/hooks/use-sign-in";
 import appCss from "~/styles/app.css?url";
+import { getStoredToken } from "~/utils/auth";
 import { seo } from "~/utils/seo";
 
 // Create a client
@@ -19,17 +23,13 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60, // 1 minute
-      refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     },
   },
 });
 
 export const Route = createRootRoute({
-  // Make queryClient available in context for loaders
-  context: () => ({
-    queryClient,
-  }),
   head: () => ({
     meta: [
       {
@@ -107,6 +107,16 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { contextFid } = useFrame();
+  const { signIn } = useSignIn();
+
+  useEffect(() => {
+    const token = getStoredToken(contextFid ?? undefined);
+    if (!token) {
+      signIn();
+    }
+  }, [signIn, contextFid]);
+
   return (
     <html lang="en">
       <head>

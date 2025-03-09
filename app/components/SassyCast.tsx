@@ -41,9 +41,10 @@ interface SassyCastProps {
 
 export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>();
   const [showDecodedText, setShowDecodedText] = useState(false);
   const [modLikes, setModLikes] = useState<number>();
+  const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
   const { addExcludedCast } = useBearStore();
 
   const { data: castLikes = [] } = useQuery({
@@ -93,7 +94,11 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
     }
   }, [cast, showDecodedText, contextFid]);
 
-  const currentUserLiked = castLikes.includes(contextFid ?? 0);
+  useEffect(() => {
+    if (!contextFid) return;
+    setCurrentUserLiked(castLikes.includes(contextFid));
+  }, [contextFid, castLikes]);
+
   useEffect(() => {
     if (cast.decodedText && !currentUserLiked) {
       setIsOpen(true);
