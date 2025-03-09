@@ -30,6 +30,10 @@ const queryClient = new QueryClient({
 });
 
 export const Route = createRootRoute({
+  // Make queryClient available in context for loaders
+  context: () => ({
+    queryClient,
+  }),
   head: () => ({
     meta: [
       {

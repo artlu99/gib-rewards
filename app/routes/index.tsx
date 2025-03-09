@@ -1,23 +1,25 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { calculateSmoothScores, calculateWinners } from "~/utils/smoothScores";
 import { castsQueryOptions } from "~/utils/topNcasts";
-import { getMostSeenCasts } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/")({
-  loader: async () => {
-    // preload data using viewerFid: null
-    const queryClient = useQueryClient();
-    queryClient.prefetchQuery(castsQueryOptions(null));
+  loader: async ({ context }) => {
+    // Pre-fetch data on the server or during navigation
+    const queryClient = context.queryClient;
+    await queryClient.ensureQueryData(castsQueryOptions(null));
+
+    return {};
   },
   component: PostsLayoutComponent,
 });
 
 function PostsLayoutComponent() {
+  useLoaderData({ from: "/" });
   const { contextFid, viewProfile, openUrl } = useFrame();
   const {
     rulesConfig,
