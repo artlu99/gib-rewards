@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
 import { getStoredToken } from "~/utils/auth";
+import { pluralize } from "~/utils/pluralize";
 import { logCastDecode } from "~/utils/redis";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
@@ -28,11 +29,6 @@ const MODERATORS: Record<number, string> = {
 const MODERATOR_FIDS = Object.keys(MODERATORS).map(Number);
 
 const client = fetcher({ base: "https://nemes.farcaster.xyz:2281" });
-
-const pluralize = (count: number, singular: string, plural?: string) =>
-  count === 1
-    ? `${count} ${singular}`
-    : `${count.toLocaleString()} ${plural ?? `${singular}s`}`;
 
 interface SassyCastProps {
   cast: LeaderboardCastInfo;

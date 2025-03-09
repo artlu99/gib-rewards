@@ -24,6 +24,7 @@ export interface Winners {
   username: string;
   rawScore: number;
   smoothScore: number;
+  numCasts: number;
   payout: number;
 }
 
@@ -67,7 +68,10 @@ export const calculateSmoothScores = (data: LeaderboardCastInfo[]) => {
   return smoothData;
 };
 
-export const calculateWinners = (smoothScores: SmoothScores, rules: RulesConfig): Winners[] => {
+export const calculateWinners = (
+  smoothScores: SmoothScores,
+  rules: RulesConfig
+): Winners[] => {
   const { topN, totalPool, minPayout } = rules;
 
   const aggregatedScores = smoothScores.items.reduce((acc, item) => {
@@ -86,20 +90,24 @@ export const calculateWinners = (smoothScores: SmoothScores, rules: RulesConfig)
 
   const winners = sift(
     sortedScores.map(([username, score]) => {
-      const item = smoothScores.items.find(
+      const items = smoothScores.items.filter(
         (item) => item.username === username
       );
-      if (!item) {
+      if (!items.length) {
         return null;
       }
-      const { fid, raw, smooth } = item;
+      const { fid } = items[0];
+      const rawScore = items.reduce((acc, item) => acc + item.raw, 0);
+      const smoothScore = items.reduce((acc, item) => acc + item.smooth, 0);
+      const numCasts = items.length;
       const payout = minPayout + (score / totalPoints) * availablePool;
 
       return {
         fid,
         username,
-        rawScore: raw,
-        smoothScore: smooth,
+        rawScore,
+        smoothScore,
+        numCasts,
         payout,
       };
     })
