@@ -134,46 +134,30 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
           </button>
         </div>
       </div>
-      <div>
+      <div className="relative">
         <AnimatePresence>
           {showDecodedText && (
-            <motion.dialog
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{
-                scale: 1,
-                opacity: 1,
-                transition: {
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 20,
-                },
-              }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="modal modal-open"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) setShowDecodedText(false);
+            <motion.div
+              className="absolute inset-0 z-20 w-full h-full overflow-hidden rounded-xl"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
               }}
             >
-              <motion.div
-                className="modal-box w-[95vw] h-[70vh] max-w-none flex flex-col 
-                bg-gradient-to-br from-[#FFD700]/60 via-[#FFA07A]/50 to-[#DEB887]/60
-                after:absolute after:inset-0 after:bg-gradient-to-tr after:from-[#F4C430]/40 after:via-[#FFB6C1]/30 after:to-[#DEB887]/50
-                border border-[#FF69B4]/30 shadow-[0_0_70px_-12px] shadow-[#DA70D6]/40
-                overflow-hidden"
-                initial={{ y: 50 }}
-                animate={{
-                  y: 0,
-                  transition: {
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 20,
-                  },
-                }}
+              <div
+                className="w-full h-full 
+                bg-gradient-to-br from-[#FFD700] via-[#FFA07A] to-[#DEB887]
+                border border-[#FF69B4] shadow-[0_0_70px_-12px] shadow-[#DA70D6]
+                relative overflow-hidden flex flex-col rounded-xl"
               >
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-[#FFD700]/60 via-[#FFA07A]/40 to-[#DEB887]/60"
+                  className="absolute inset-0 bg-gradient-to-t from-[#FFD700] via-[#FFA07A] to-[#DEB887] rounded-xl"
                   animate={{
-                    opacity: [0.5, 0.8, 0.5],
+                    opacity: [0.7, 1, 0.7],
                     scale: [1, 1.1, 1],
                   }}
                   transition={{
@@ -182,12 +166,20 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
                     ease: "easeInOut",
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#FFB6C1]/30 via-transparent to-[#DA70D6]/30" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#FFB6C1] via-white to-[#DA70D6] opacity-20 rounded-xl" />
+
+                <button
+                  className="absolute top-2 right-2 z-30 p-2 bg-white rounded-full"
+                  onClick={() => setShowDecodedText(false)}
+                >
+                  ✕
+                </button>
+
                 <p className="text-xl flex-1 flex items-center justify-center p-4 whitespace-pre-wrap overflow-auto text-center relative z-10 text-base-content">
                   {cast.decodedText}
                 </p>
-                <hr />
-                <div className="text-sm">
+                <hr className="border-[#FF69B4]" />
+                <div className="text-sm p-2 relative z-10">
                   {modLikes.length > 0 ? (
                     <div>
                       Liked by:{" "}
@@ -199,8 +191,8 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
                     </div>
                   )}
                 </div>
-              </motion.div>
-            </motion.dialog>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
 
