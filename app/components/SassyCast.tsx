@@ -118,7 +118,12 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
         <div className="flex justify-between items-center">
           <button
             type="button"
-            onClick={() => setShowDecodedText(true)}
+            onClick={() => {
+              if (cast.decodedText && !showDecodedText) {
+                setIsOpen(true);
+              }
+              setShowDecodedText(!showDecodedText);
+            }}
             className="btn btn-ghost btn-sm"
           >
             {currentUserLiked ? (
@@ -130,7 +135,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
                 🤍
               </span>
             )}
-            {cast.decodedText ? "💅" : null}
+            {cast.decodedText ? (showDecodedText ? "🙈" : "💅") : null}
           </button>
         </div>
       </div>
@@ -167,13 +172,6 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#FFB6C1] via-white to-[#DA70D6] opacity-20 rounded-xl" />
-
-                <button
-                  className="absolute top-2 right-2 z-30 p-2 bg-white rounded-full"
-                  onClick={() => setShowDecodedText(false)}
-                >
-                  ✕
-                </button>
 
                 <p className="text-xl flex-1 flex items-center justify-center p-4 whitespace-pre-wrap overflow-auto text-center relative z-10 text-base-content">
                   {cast.decodedText}
