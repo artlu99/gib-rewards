@@ -21,10 +21,7 @@ function LayoutBComponent() {
         </summary>
         <div className="prose dark:prose-invert prose-neutral mt-4 px-3 pb-4 max-w-none">
           <ul>
-            <li>
-              Concursa en el concurso semanal, mismo horario que Warpcast
-              Rewards
-            </li>
+            <li>Concursa semanal, mismo horario que Warpcast Rewards</li>
             <li>
               <strong>{topN}</strong> SassyHash más engajadas compartirán un{" "}
               <strong>${totalPool}</strong> pool

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useFrame } from "~/components/context/FrameContext";
 import { useBearStore } from "~/utils/zustand";
 
@@ -34,7 +34,9 @@ function Winner() {
                   >
                     <div className="card-body p-3">
                       <div className="flex items-center gap-2">
-                        <div className="badge btn-soft badge-ghost">{index + 1}</div>
+                        <div className="badge btn-soft badge-ghost">
+                          {index + 1}
+                        </div>
                         <button
                           type="button"
                           className="text-lg font-medium hover:underline active:scale-95 transition-transform"
@@ -44,7 +46,11 @@ function Winner() {
                         </button>
                       </div>
 
-                      <div className="stats stats-horizontal w-full bg-transparent text-sm">
+                      <Link
+                        to="/"
+                        search={{ fid }}
+                        className="stats stats-horizontal w-full bg-transparent text-sm no-underline"
+                      >
                         <div className="stat px-2 py-1">
                           <div className="stat-title text-xs opacity-60">
                             Score🏆
@@ -69,7 +75,7 @@ function Winner() {
                             ${payout.toFixed(2)}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 );

@@ -8,6 +8,11 @@ import { castsQueryOptions } from "~/utils/topNcasts";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      fid: search.fid ? Number(search.fid) : undefined,
+    };
+  },
   loader: async ({ context }) => {
     // Pre-fetch data on the server or during navigation
     const queryClient = context.queryClient;
@@ -20,6 +25,8 @@ export const Route = createFileRoute("/")({
 
 function PostsLayoutComponent() {
   const { data: preload } = useLoaderData({ from: "/" });
+  const { fid } = Route.useSearch();
+
   const { contextFid, viewProfile, openUrl } = useFrame();
   const {
     rulesConfig,
@@ -64,30 +71,35 @@ function PostsLayoutComponent() {
     <div className="p-2 flex gap-2">
       {casts.length > 0 ? (
         <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">
-          {(casts || []).map((cast) => {
-            const castInfo = smoothScores.items.find(
-              (c) => c.castHash === cast.castHash
-            );
-            return (
-              <li key={cast.castHash} className="whitespace-nowrap break-words">
-                <div className="block text-lg p-1 active:scale-95 transition-transform">
-                  <div>
-                    {castInfo?.smooth.toFixed(2) ?? "0"} points{" "}
-                    <button
-                      type="button"
-                      className="link btn-link"
-                      onClick={() => viewProfile(cast.fid, cast.username)}
-                    >
-                      @{cast.username}
-                    </button>
+          {(casts || [])
+            .filter((cast) => (fid ? cast.fid === fid : true))
+            .map((cast) => {
+              const castInfo = smoothScores.items.find(
+                (c) => c.castHash === cast.castHash
+              );
+              return (
+                <li
+                  key={cast.castHash}
+                  className="whitespace-nowrap break-words"
+                >
+                  <div className="block text-lg p-1 active:scale-95 transition-transform">
+                    <div>
+                      {castInfo?.smooth.toFixed(2) ?? "0"} points{" "}
+                      <button
+                        type="button"
+                        className="link btn-link"
+                        onClick={() => viewProfile(cast.fid, cast.username)}
+                      >
+                        @{cast.username}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="w-full overflow-x-hidden">
-                  <SassyCast cast={cast} minMods={minMods} />
-                </div>
-              </li>
-            );
-          })}
+                  <div className="w-full overflow-x-hidden">
+                    <SassyCast cast={cast} minMods={minMods} />
+                  </div>
+                </li>
+              );
+            })}
         </ol>
       ) : isFetching ? (
         <div className="flex flex-col w-full items-center p-4">

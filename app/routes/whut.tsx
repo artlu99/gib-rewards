@@ -9,11 +9,14 @@ function Home() {
   const { openUrl } = useFrame();
 
   return (
-    <div className="prose dark:prose-invert p-2">
+    <div className="prose dark:prose-invert p-8">
       <h3>Contest 🏆</h3>
-      <p>Weekly contest to elevate the sassiest hashes.</p>
+      <p className="text-xl">
+        Get paid weekly for content that the most people want to see.
+      </p>
+      <p> </p>
       <h3>SassyHash 💅</h3>
-      <p>
+      <p className="text-sm">
         SassyHash leverages cryptographic building blocks and the open Farcaster
         Protocol, to share restricted-distribution information in
         self-sovereign, transparent, and sufficiently decentralized blah blah.
