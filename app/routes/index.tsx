@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { unique } from "radash";
 import { useCallback, useEffect, useRef } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
@@ -15,19 +16,17 @@ export const Route = createFileRoute("/")({
   },
   loader: async ({ context }) => {
     const queryClient = context.queryClient;
-    await queryClient.prefetchInfiniteQuery(castsInfiniteQueryOptions(null));
-
-    // Get the cached data
-    const data = queryClient.getQueryData(
-      castsInfiniteQueryOptions(null).queryKey
-    );
-    return { data };
+    return {
+      preload: queryClient.getQueryData(
+        castsInfiniteQueryOptions(null).queryKey
+      ),
+    };
   },
   component: PostsLayoutComponent,
 });
 
 function PostsLayoutComponent() {
-  const { data: preload } = useLoaderData({ from: "/" });
+  const { preload } = useLoaderData({ from: "/" });
   const { fid } = Route.useSearch();
 
   const { contextFid, viewProfile, openUrl } = useFrame();
@@ -54,8 +53,7 @@ function PostsLayoutComponent() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     ...castsInfiniteQueryOptions(contextFid),
-    initialData: contextFid ? undefined : preload,
-    staleTime: 1000 * 60, // 1 minute
+    initialData: preload as any,
   });
 
   // Callback for intersection observer
@@ -91,7 +89,7 @@ function PostsLayoutComponent() {
     if (data?.pages && data.pages.length > 0) {
       // Flatten all pages of data and extract the casts
       const allPagesCasts = data.pages.flatMap((page) => page.data);
-      setCasts(allPagesCasts);
+      setCasts(unique(allPagesCasts, (c) => c.castHash));
     }
   }, [data, setCasts]);
 
