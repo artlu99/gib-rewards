@@ -47,7 +47,7 @@ export const APIRoute = createAPIFileRoute("/api/sign-in")({
   POST: async ({ request }) => {
     const { fid, signature, message, referrerFid } = await request.json();
 
-    if (!fid || !signature || !message) {
+    if (!signature || !message) {
       return json({ error: "Missing required fields" }, { status: 400 });
     }
 
