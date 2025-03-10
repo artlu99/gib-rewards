@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { RulesConfig } from "~/utils/rules";
-import type { SmoothScores, Winners } from "~/utils/smoothScores";
+import type { SmoothScores } from "~/utils/smoothScores";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
+import type { RulesConfig, Winners } from "~/utils/winners";
 
 type BearStore = {
   rulesConfig: RulesConfig;

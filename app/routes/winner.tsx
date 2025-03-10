@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
 import { useBearStore } from "~/utils/zustand";
 
@@ -10,7 +11,41 @@ export const Route = createFileRoute("/winner")({
 
 function Winner() {
   const { viewProfile, isInstalled, isNotificationsEnabled } = useFrame();
-  const { winners, casts } = useBearStore();
+  const { winners, casts, rulesConfig } = useBearStore();
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
+
+  const handleSaveWinners = async () => {
+    try {
+      setIsSaving(true);
+      const response = await fetch("/api/munnies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: {
+            winners: winners,
+            rulesConfig: rulesConfig,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setSavedMessage(error.message || "Failed to save winners");
+      } else {
+        setSavedMessage("Winners saved successfully!");
+      }
+    } catch (error) {
+      console.error("Error saving winners:", error);
+      setSavedMessage(
+        error instanceof Error ? error.message : "Failed to save winners"
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -88,6 +123,22 @@ function Winner() {
                   </div>
                 );
               })}
+            </div>
+
+            <div className="flex justify-between">
+              <a href="/api/munnies">
+                <button type="button" className="btn btn-ghost">
+                  View Snapshot
+                </button>
+              </a>
+              <button
+                type="button"
+                onClick={handleSaveWinners}
+                className="btn btn-ghost"
+                disabled={isSaving}
+              >
+                {isSaving ? savedMessage : "Save Snapshot"}
+              </button>
             </div>
           </div>
         ) : (
