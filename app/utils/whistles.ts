@@ -1,3 +1,5 @@
+"use server";
+
 import { Redis } from "@upstash/redis/cloudflare";
 import { GraphQLClient, gql } from "graphql-request";
 import { sift, sort, unique } from "radash";
