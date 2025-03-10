@@ -9,6 +9,7 @@ import { getStoredToken } from "~/utils/auth";
 import { pluralize } from "~/utils/pluralize";
 import { logCastDecode } from "~/utils/redis";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
+import { BLOCKLIST } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
 
 const MAX_PAGE_SIZE = 100;
@@ -60,7 +61,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
       // Continue with the existing modLikes logic
       const mLikes = allLikes.filter((fid) => MODERATOR_FIDS.includes(fid));
 
-      if ([6546].includes(cast.fid) || mLikes.length < minMods) {
+      if (BLOCKLIST.includes(cast.fid) || mLikes.length < minMods) {
         addExcludedCast(cast.castHash);
       }
 

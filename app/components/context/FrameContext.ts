@@ -6,6 +6,7 @@ import sdk from "@farcaster/frame-sdk";
 import { useCallback, useEffect, useState } from "react";
 
 const LOCAL_DEBUGGING = import.meta.env.DEV;
+const LOCAL_GDD_MODE_FID = 3;
 
 export const useFrame = () => {
   const [context, setContext] = useState<FrameContext | null>(null);
@@ -46,7 +47,7 @@ export const useFrame = () => {
     }
   }, [isSDKLoaded]);
 
-  const contextFid = context?.user?.fid ?? LOCAL_DEBUGGING ? 6546 : null;
+  const contextFid = context?.user?.fid ?? LOCAL_DEBUGGING ? LOCAL_GDD_MODE_FID : null;
   const isWarpcast = context?.client?.clientFid === 9152;
   const isInstalled = context?.client?.added ?? false;
   const isNotificationsEnabled =

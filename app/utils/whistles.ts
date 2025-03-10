@@ -5,6 +5,7 @@ import type { ZodObject, ZodRawShape } from "zod";
 import { z } from "zod";
 
 const GRAPHQL_ENDPOINT = "https://whistles.artlu.xyz/graphql";
+export const BLOCKLIST = [6546];
 
 const redis = new Redis({
   url: process.env.YOGA_REDIS_REST_URL,
@@ -87,16 +88,28 @@ const getTextByCastHash = async (castHash: string, fid: number | null) => {
 export async function getMostSeenCasts({
   viewerFid,
   limit = 10,
-  excludeFids = [6546],
+  cursor = null,
+  excludeFids = BLOCKLIST,
 }: {
   viewerFid: number | null;
   limit?: number;
+  cursor?: string | null;
   excludeFids?: number[];
-}): Promise<LeaderboardCastInfo[]> {
+}): Promise<{ data: LeaderboardCastInfo[]; cursor: string | null }> {
   const usage = await redis.hgetall("action-usage");
 
   if (!usage) {
-    return [];
+    return { data: [], cursor: null };
+  }
+
+  // Parse cursor if it exists
+  let cursorData: { count: number; lastCastHash: string } | null = null;
+  if (cursor) {
+    try {
+      cursorData = JSON.parse(Buffer.from(cursor, "base64").toString());
+    } catch (e) {
+      console.error("Invalid cursor format:", e);
+    }
   }
 
   const allCasts = Object.entries(usage)
@@ -116,9 +129,22 @@ export async function getMostSeenCasts({
       };
     });
 
+  // Apply cursor-based pagination if cursor exists
+  let paginatedCasts = allCasts;
+  if (cursorData) {
+    paginatedCasts = allCasts.filter((cast) => {
+      // If count is less than cursor count, include it
+      if (cast.count < cursorData.count) return true;
+      // If count is equal to cursor count, only include if castHash comes after the last one
+      if (cast.count === cursorData.count)
+        return cast.castHash > cursorData.lastCastHash;
+      return false;
+    });
+  }
+
   // Keep track of how many times we've seen each fid
   const fidCounts: { [key: string]: number } = {};
-  const filteredCasts = allCasts
+  const filteredCasts = paginatedCasts
     .filter((cast) => {
       fidCounts[cast.fid] = (fidCounts[cast.fid] || 0) + 1;
       return fidCounts[cast.fid] <= 3;
@@ -166,7 +192,19 @@ export async function getMostSeenCasts({
       })
     )
   );
-  return enhancedTopNCasts;
+
+  // Generate next cursor if we have enough results
+  let nextCursor: string | null = null;
+  if (enhancedTopNCasts.length === limit) {
+    const lastItem = enhancedTopNCasts[enhancedTopNCasts.length - 1];
+    const cursorPayload = {
+      count: lastItem.count,
+      lastCastHash: lastItem.castHash,
+    };
+    nextCursor = Buffer.from(JSON.stringify(cursorPayload)).toString("base64");
+  }
+
+  return { data: enhancedTopNCasts, cursor: nextCursor };
 }
 
 const genericGraphQLQuery = async <T>(
