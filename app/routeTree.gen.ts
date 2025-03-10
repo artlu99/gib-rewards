@@ -17,6 +17,7 @@ import { Route as RedirectImport } from './routes/redirect'
 import { Route as PathlessLayoutImport } from './routes/_pathlessLayout'
 import { Route as IndexImport } from './routes/index'
 import { Route as PathlessLayoutNestedLayoutImport } from './routes/_pathlessLayout/_nested-layout'
+import { Route as PathlessLayoutNestedLayoutRulesIdImport } from './routes/_pathlessLayout/_nested-layout/rules-id'
 import { Route as PathlessLayoutNestedLayoutRulesEsImport } from './routes/_pathlessLayout/_nested-layout/rules-es'
 import { Route as PathlessLayoutNestedLayoutRulesEnImport } from './routes/_pathlessLayout/_nested-layout/rules-en'
 
@@ -57,6 +58,13 @@ const PathlessLayoutNestedLayoutRoute = PathlessLayoutNestedLayoutImport.update(
     getParentRoute: () => PathlessLayoutRoute,
   } as any,
 )
+
+const PathlessLayoutNestedLayoutRulesIdRoute =
+  PathlessLayoutNestedLayoutRulesIdImport.update({
+    id: '/rules-id',
+    path: '/rules-id',
+    getParentRoute: () => PathlessLayoutNestedLayoutRoute,
+  } as any)
 
 const PathlessLayoutNestedLayoutRulesEsRoute =
   PathlessLayoutNestedLayoutRulesEsImport.update({
@@ -132,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutNestedLayoutRulesEsImport
       parentRoute: typeof PathlessLayoutNestedLayoutImport
     }
+    '/_pathlessLayout/_nested-layout/rules-id': {
+      id: '/_pathlessLayout/_nested-layout/rules-id'
+      path: '/rules-id'
+      fullPath: '/rules-id'
+      preLoaderRoute: typeof PathlessLayoutNestedLayoutRulesIdImport
+      parentRoute: typeof PathlessLayoutNestedLayoutImport
+    }
   }
 }
 
@@ -140,6 +155,7 @@ declare module '@tanstack/react-router' {
 interface PathlessLayoutNestedLayoutRouteChildren {
   PathlessLayoutNestedLayoutRulesEnRoute: typeof PathlessLayoutNestedLayoutRulesEnRoute
   PathlessLayoutNestedLayoutRulesEsRoute: typeof PathlessLayoutNestedLayoutRulesEsRoute
+  PathlessLayoutNestedLayoutRulesIdRoute: typeof PathlessLayoutNestedLayoutRulesIdRoute
 }
 
 const PathlessLayoutNestedLayoutRouteChildren: PathlessLayoutNestedLayoutRouteChildren =
@@ -148,6 +164,8 @@ const PathlessLayoutNestedLayoutRouteChildren: PathlessLayoutNestedLayoutRouteCh
       PathlessLayoutNestedLayoutRulesEnRoute,
     PathlessLayoutNestedLayoutRulesEsRoute:
       PathlessLayoutNestedLayoutRulesEsRoute,
+    PathlessLayoutNestedLayoutRulesIdRoute:
+      PathlessLayoutNestedLayoutRulesIdRoute,
   }
 
 const PathlessLayoutNestedLayoutRouteWithChildren =
@@ -175,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/winner': typeof WinnerRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
+  '/rules-id': typeof PathlessLayoutNestedLayoutRulesIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -185,6 +204,7 @@ export interface FileRoutesByTo {
   '/winner': typeof WinnerRoute
   '/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
+  '/rules-id': typeof PathlessLayoutNestedLayoutRulesIdRoute
 }
 
 export interface FileRoutesById {
@@ -197,6 +217,7 @@ export interface FileRoutesById {
   '/_pathlessLayout/_nested-layout': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/_pathlessLayout/_nested-layout/rules-en': typeof PathlessLayoutNestedLayoutRulesEnRoute
   '/_pathlessLayout/_nested-layout/rules-es': typeof PathlessLayoutNestedLayoutRulesEsRoute
+  '/_pathlessLayout/_nested-layout/rules-id': typeof PathlessLayoutNestedLayoutRulesIdRoute
 }
 
 export interface FileRouteTypes {
@@ -209,8 +230,17 @@ export interface FileRouteTypes {
     | '/winner'
     | '/rules-en'
     | '/rules-es'
+    | '/rules-id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/redirect' | '/whut' | '/winner' | '/rules-en' | '/rules-es'
+  to:
+    | '/'
+    | ''
+    | '/redirect'
+    | '/whut'
+    | '/winner'
+    | '/rules-en'
+    | '/rules-es'
+    | '/rules-id'
   id:
     | '__root__'
     | '/'
@@ -221,6 +251,7 @@ export interface FileRouteTypes {
     | '/_pathlessLayout/_nested-layout'
     | '/_pathlessLayout/_nested-layout/rules-en'
     | '/_pathlessLayout/_nested-layout/rules-es'
+    | '/_pathlessLayout/_nested-layout/rules-id'
   fileRoutesById: FileRoutesById
 }
 
@@ -280,7 +311,8 @@ export const routeTree = rootRoute
       "parent": "/_pathlessLayout",
       "children": [
         "/_pathlessLayout/_nested-layout/rules-en",
-        "/_pathlessLayout/_nested-layout/rules-es"
+        "/_pathlessLayout/_nested-layout/rules-es",
+        "/_pathlessLayout/_nested-layout/rules-id"
       ]
     },
     "/_pathlessLayout/_nested-layout/rules-en": {
@@ -289,6 +321,10 @@ export const routeTree = rootRoute
     },
     "/_pathlessLayout/_nested-layout/rules-es": {
       "filePath": "_pathlessLayout/_nested-layout/rules-es.tsx",
+      "parent": "/_pathlessLayout/_nested-layout"
+    },
+    "/_pathlessLayout/_nested-layout/rules-id": {
+      "filePath": "_pathlessLayout/_nested-layout/rules-id.tsx",
       "parent": "/_pathlessLayout/_nested-layout"
     }
   }

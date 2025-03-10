@@ -24,6 +24,14 @@ function LayoutComponent() {
         >
           [Esp]
         </Link>
+        <Link
+          to="/rules-id"
+          activeProps={{
+            className: "font-bold",
+          }}
+        >
+          [Bahasa]
+        </Link>
       </div>
       <div>
         <Outlet />
