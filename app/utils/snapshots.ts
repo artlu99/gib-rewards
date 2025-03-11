@@ -71,7 +71,7 @@ export const saveWinners = createServerFn({ method: "POST" })
       throw new Error("Invalid winners data");
     }
 
-    await redis.set("snapshot--winners", {
+    await redis.set("snapshot-winners", {
       winners: validated.data,
       rulesConfig,
       timestamp: Date.now(),

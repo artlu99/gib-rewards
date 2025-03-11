@@ -2,9 +2,8 @@
 
 import { json } from "@tanstack/react-start";
 import { createAPIFileRoute } from "@tanstack/react-start/api";
-import { getWinners } from "~/utils/snapshots";
+import { getWinners, saveWinners } from "~/utils/snapshots";
 
-import { saveWinners } from "~/utils/snapshots";
 export const APIRoute = createAPIFileRoute("/api/munnies")({
   GET: async ({ request, params }) => {
     try {
@@ -12,9 +11,7 @@ export const APIRoute = createAPIFileRoute("/api/munnies")({
       return new Response(JSON.stringify(winners, null, 2), {
         headers: {
           "Content-Type": "application/json",
-          "Content-Disposition": `attachment; filename="winners-snapshot-${
-            new Date().toISOString()
-          }.json"`,
+          "Content-Disposition": `attachment; filename="winners-snapshot-${new Date().toISOString()}.json"`,
         },
       });
     } catch (error) {
