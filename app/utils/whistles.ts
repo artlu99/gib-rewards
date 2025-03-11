@@ -33,16 +33,18 @@ interface TextByCastHashResponse {
     timestamp: string;
     text: string;
     decodedText: string | null;
-  };
+  } | null;
 }
 
 const TextByCastHashSchema = z.object({
-  getTextByCastHash: z.object({
-    isDecrypted: z.boolean(),
-    timestamp: z.string(),
-    text: z.string(),
-    decodedText: z.string().nullable(),
-  }),
+  getTextByCastHash: z
+    .object({
+      isDecrypted: z.boolean(),
+      timestamp: z.string(),
+      text: z.string(),
+      decodedText: z.string().nullable(),
+    })
+    .nullable(),
 });
 
 export interface LeaderboardCastInfo {
@@ -105,7 +107,7 @@ export async function getMostSeenCasts({
   }
 
   // Parse cursor if it exists
-  let cursorData: { count: number; lastCastHash: string } | null = null;
+  let cursorData: { idx: number } | null = null;
   if (cursor) {
     try {
       cursorData = JSON.parse(Buffer.from(cursor, "base64").toString());
@@ -131,37 +133,15 @@ export async function getMostSeenCasts({
       };
     });
 
-  // Apply cursor-based pagination if cursor exists
-  let paginatedCasts = allCasts;
-  if (cursorData) {
-    paginatedCasts = allCasts.filter((cast) => {
-      // If count is less than cursor count, include it
-      if (cast.count < cursorData.count) return true;
-      // If count is equal to cursor count, only include if castHash comes after the last one
-      if (cast.count === cursorData.count)
-        return cast.castHash > cursorData.lastCastHash;
-      return false;
-    });
-  }
-
-  // Keep track of how many times we've seen each fid
-  const fidCounts: { [key: string]: number } = {};
-  const filteredCasts = paginatedCasts
-    .filter((cast) => {
-      fidCounts[cast.fid] = (fidCounts[cast.fid] || 0) + 1;
-      return fidCounts[cast.fid] <= 3;
-    })
-    .filter((cast) => !excludeFids.includes(cast.fid));
-
-  const topNCasts = filteredCasts
+  const filteredCasts = allCasts
+    .filter((cast) => !excludeFids.includes(cast.fid))
     .map((cast) => {
       return {
         ...cast,
         rootParentUrl:
           cast.rootParentUrl === "null" ? null : cast.rootParentUrl,
       };
-    })
-    .slice(0, limit);
+    });
 
   const viewersCasts = allCasts
     .filter((cast) => cast.fid === viewerFid)
@@ -173,20 +153,25 @@ export async function getMostSeenCasts({
           : stringifiedCast.rootParentUrl,
     }));
 
-  const topNCastsPlusViewersCasts = sort(
-    unique(topNCasts.concat(viewersCasts), (c) => c.castHash),
+  const filteredCastsPlusViewersCasts = sort(
+    unique(filteredCasts.concat(viewersCasts), (c) => c.castHash),
     (c) => c.count,
     true // descending === true
-  );
+  ).map((c, idx) => ({ ...c, idx }));
+
+  // Apply cursor-based pagination if cursor exists
+  const paginatedCasts = cursorData
+    ? filteredCastsPlusViewersCasts.filter((cast) => cast.idx > cursorData.idx)
+    : filteredCastsPlusViewersCasts;
 
   const enhancedTopNCasts = sift(
     await Promise.all(
-      topNCastsPlusViewersCasts.map(async (cast) => {
+      paginatedCasts.slice(0, limit).map(async (cast) => {
         try {
           const res = await getTextByCastHash(cast.castHash, viewerFid);
           return {
             ...cast,
-            decodedText: res?.getTextByCastHash.decodedText,
+            decodedText: res?.getTextByCastHash?.decodedText,
           };
         } catch (error) {
           return cast;
@@ -197,12 +182,9 @@ export async function getMostSeenCasts({
 
   // Generate next cursor if we have enough results
   let nextCursor: string | null = null;
-  if (enhancedTopNCasts.length === limit) {
+  if (paginatedCasts.length >= limit) {
     const lastItem = enhancedTopNCasts[enhancedTopNCasts.length - 1];
-    const cursorPayload = {
-      count: lastItem.count,
-      lastCastHash: lastItem.castHash,
-    };
+    const cursorPayload = { idx: lastItem.idx };
     nextCursor = Buffer.from(JSON.stringify(cursorPayload)).toString("base64");
   }
 
@@ -227,12 +209,12 @@ const genericGraphQLQuery = async <T>(
 
     const validated = schema.safeParse(res);
     if (!validated.success) {
+      console.error("res:", res);
       throw new Error(`Failed to validate response: ${validated.error}`);
     }
 
     return validated.data as T;
   } catch (error: any) {
-    console.error("Error response:", error.response || error);
     throw new Error(
       `Failed to get ${queryName} ${
         variables ? ` on: ${JSON.stringify(variables)}` : ""
