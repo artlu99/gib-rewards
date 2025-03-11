@@ -60,6 +60,20 @@ function PostsLayoutComponent() {
     initialData: preload as any,
   });
 
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      setShowScrollButton(scrollY > windowHeight);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleSaveBestOfSassy = async () => {
     try {
       setIsSavingBestOfSassy(true);
@@ -231,6 +245,16 @@ function PostsLayoutComponent() {
               </button>
             </div>
           </div>
+        )}
+        {showScrollButton && (
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="btn btn-circle btn-ghost fixed text-2xl animate-bounce hover:animate-none"
+            style={{ bottom: "25vh", right: "1rem" }}
+          >
+            🚀
+          </button>
         )}
       </div>
       <div className="h-16" />
