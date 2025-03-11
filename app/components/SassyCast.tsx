@@ -58,20 +58,26 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
 
       const allLikes = res?.messages.map((m) => m.data?.fid ?? 0) || [];
 
-      // Continue with the existing modLikes logic
-      const mLikes = allLikes.filter((fid) => MODERATOR_FIDS.includes(fid));
-
-      if (BLOCKLIST.includes(cast.fid) || mLikes.length < minMods) {
-        addExcludedCast(cast.castHash);
-      }
-
-      setModLikes(mLikes);
       return allLikes;
     },
     refetchIntervalInBackground: true,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  useEffect(() => {
+    if (castLikes.length > 0) {
+      setModLikes(castLikes.filter((fid) => MODERATOR_FIDS.includes(fid)));
+    }
+  }, [castLikes]);
+
+  useEffect(() => {
+    if (modLikes.length > 0) {
+      if (BLOCKLIST.includes(cast.fid) || modLikes.length < minMods) {
+        addExcludedCast(cast.castHash);
+      }
+    }
+  }, [modLikes, addExcludedCast, cast, minMods]);
 
   useEffect(() => {
     if (cast.decodedText && showDecodedText) {

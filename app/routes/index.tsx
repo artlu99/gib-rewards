@@ -36,14 +36,30 @@ function PostsLayoutComponent() {
   const { contextFid, viewProfile, openUrl } = useFrame();
   const {
     rulesConfig,
+    setRulesConfig,
     casts,
     setCasts,
     smoothScores,
     setSmoothScores,
     excludedCasts,
+    clearExcludedCasts,
     setWinners,
   } = useBearStore();
   const { topN, minMods } = rulesConfig;
+
+  const handleRemoveMod = () => {
+    if (minMods > 0) {
+      setRulesConfig({ ...rulesConfig, minMods: minMods - 1 });
+      clearExcludedCasts();
+    }
+  };
+
+  const handleAddMod = () => {
+    if (minMods < 12) {
+      setRulesConfig({ ...rulesConfig, minMods: minMods + 1 });
+      clearExcludedCasts();
+    }
+  };
 
   // Create ref for intersection observer
   const observerTarget = useRef(null);
@@ -139,7 +155,7 @@ function PostsLayoutComponent() {
     }
   }, [data, setCasts]);
 
-  // Calculate smooth scores when casts or excludedCasts change
+  // Use count in effect dependency
   useEffect(() => {
     if (casts.length === 0) {
       return;
@@ -151,7 +167,15 @@ function PostsLayoutComponent() {
     const winners = calculateWinners(newSmoothScores, rulesConfig);
     setSmoothScores(newSmoothScores);
     setWinners(winners);
-  }, [casts, excludedCasts, topN, rulesConfig, setSmoothScores, setWinners]);
+  }, [
+    casts,
+    excludedCasts,
+    excludedCasts.length,
+    topN,
+    rulesConfig,
+    setSmoothScores,
+    setWinners,
+  ]);
 
   return (
     <>

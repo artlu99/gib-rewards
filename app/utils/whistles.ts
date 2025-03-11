@@ -84,7 +84,7 @@ const getTextByCastHash = async (castHash: string, fid: number | null) => {
   const cacheKey = `getTextByCastHash-${fid}-${castHash}`;
   const cached = await cache.get<string | undefined>(cacheKey);
   if (cached) {
-    return JSON.parse(cached) as TextByCastHashResponse;
+    return cached as unknown as TextByCastHashResponse;
   }
 
   try {
@@ -186,9 +186,10 @@ export async function getMostSeenCasts({
           const res = await getTextByCastHash(cast.castHash, viewerFid);
           return {
             ...cast,
-            decodedText: res?.getTextByCastHash?.decodedText,
+            decodedText: res?.getTextByCastHash?.decodedText ?? null,
           };
         } catch (error) {
+          console.log("error:", error.message);
           return cast;
         }
       })

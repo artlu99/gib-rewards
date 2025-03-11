@@ -1,3 +1,4 @@
+import { unique } from "radash";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { SmoothScores } from "~/utils/smoothScores";
@@ -13,6 +14,7 @@ type BearStore = {
   setSmoothScores: (smoothScores: SmoothScores) => void;
   excludedCasts: string[];
   addExcludedCast: (castHash: string) => void;
+  clearExcludedCasts: () => void;
   winners: Winners[];
   setWinners: (winners: Winners[]) => void;
 };
@@ -45,7 +47,10 @@ export const useBearStore = create<BearStore>()(
       setSmoothScores: (smoothScores: SmoothScores) => set({ smoothScores }),
       excludedCasts: [],
       addExcludedCast: (castHash: string) =>
-        set({ excludedCasts: [...get().excludedCasts, castHash] }),
+        set({
+          excludedCasts: unique([...get().excludedCasts, castHash]),
+        }),
+      clearExcludedCasts: () => set({ excludedCasts: [] }),
       winners: [],
       setWinners: (winners: Winners[]) => set({ winners }),
     }),

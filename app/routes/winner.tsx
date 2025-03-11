@@ -57,7 +57,7 @@ function Winner() {
       {isInstalled || LOCAL_DEBUGGING ? (
         isNotificationsEnabled || LOCAL_DEBUGGING ? (
           <div className="prose dark:prose-invert p-2">
-            <h2 className="text-center mb-4">Week March 4 ~ March 11</h2>
+            <h2 className="text-center mb-4">Week March 11 ~ March 18</h2>
 
             <div className="flex flex-col gap-2">
               {winners.map((winner, index) => {
