@@ -185,15 +185,40 @@ function PostsLayoutComponent() {
           download={`best-of-sassy-snapshot-${new Date().toISOString()}.json`}
           className="btn btn-ghost no-underline"
         >
-          Download Snapshot
+          Download
         </a>
+
+        <div className="">
+          <div className="join">
+            <button
+              type="button"
+              className="join-item btn "
+              onClick={handleRemoveMod}
+              disabled={rulesConfig.minMods === 0}
+            >
+              -
+            </button>
+            <span className="join-item btn btn-ghost">
+              {rulesConfig.minMods}
+            </span>
+            <button
+              type="button"
+              className="join-item btn"
+              onClick={handleAddMod}
+              disabled={rulesConfig.minMods >= 12}
+            >
+              +
+            </button>
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={handleSaveBestOfSassy}
           className="btn btn-ghost"
           disabled={isSavingBestOfSassy}
         >
-          {isSavingBestOfSassy ? savedMessageBestOfSassy : "Take Snapshot"}
+          {isSavingBestOfSassy ? savedMessageBestOfSassy : "Snapshot"}
         </button>
       </div>
       <div className="p-2 flex gap-2">

@@ -76,8 +76,7 @@ function LayoutBComponent() {
               SassyMods 💁‍♀️ / Sassquatch 🦧
             </li>
             <li>
-              Comienza con <strong>{minMods}</strong>, aumentará según sea
-              necesario
+              Comienza a 1, actualmente <strong>{minMods}</strong>, se ajustará según sea necesario
             </li>
             <li>
               Ningún moderador individual tiene influencia desproporcionada

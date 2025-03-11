@@ -82,7 +82,7 @@ function LayoutAComponent() {
               Sassquatch 🦧 agar dihitung
             </li>
             <li>
-              Awalnya butuh <strong>{minMods}</strong> like, tapi bisa naik
+              Awalnya butuh 1, saat ini <strong>{minMods}</strong>, bisa naik
               kalau perlu
             </li>
             <li>Nggak ada satu moderator yang punya pengaruh besar</li>

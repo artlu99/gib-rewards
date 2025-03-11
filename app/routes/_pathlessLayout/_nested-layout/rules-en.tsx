@@ -76,7 +76,7 @@ function LayoutAComponent() {
               SassyMods 💁‍♀️ / Sassquatch 🦧
             </li>
             <li>
-              Starts at <strong>{minMods}</strong>, will increase as necessary
+              Starts at 1, currently <strong>{minMods}</strong>, will tune as necessary
             </li>
             <li>No individual moderator has outsized influence</li>
             <li>
