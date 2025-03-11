@@ -22,7 +22,6 @@ circle back Los Fomos crew
 
 slider for topN
 slider for totalPool
-button click profiles on leaderboard
 users
 pfp on leaderboard (save user each time)
 
