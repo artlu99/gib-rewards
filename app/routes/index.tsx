@@ -4,8 +4,9 @@ import { unique } from "radash";
 import { useCallback, useEffect, useRef } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
-import { calculateSmoothScores, calculateWinners } from "~/utils/smoothScores";
+import { calculateSmoothScores } from "~/utils/smoothScores";
 import { castsInfiniteQueryOptions } from "~/utils/topNcasts";
+import { calculateWinners } from "~/utils/winners";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute("/")({

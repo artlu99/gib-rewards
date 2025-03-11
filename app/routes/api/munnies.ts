@@ -9,7 +9,14 @@ export const APIRoute = createAPIFileRoute("/api/munnies")({
   GET: async ({ request, params }) => {
     try {
       const winners = await getWinners();
-      return json(winners);
+      return new Response(JSON.stringify(winners, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Disposition": `attachment; filename="winners-snapshot-${
+            new Date().toISOString()
+          }.json"`,
+        },
+      });
     } catch (error) {
       console.error("Error in GET route:", error);
       return json({ error: "Failed to fetch winners" }, { status: 500 });

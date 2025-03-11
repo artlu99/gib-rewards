@@ -126,10 +126,12 @@ function Winner() {
             </div>
 
             <div className="flex justify-between">
-              <a href="/api/munnies">
-                <button type="button" className="btn btn-ghost">
-                  View Snapshot
-                </button>
+              <a
+                href="/api/munnies/download"
+                download={`winners-snapshot-${new Date().toISOString()}.json`}
+                className="btn btn-ghost no-underline"
+              >
+                Download Snapshot
               </a>
               <button
                 type="button"
@@ -137,7 +139,7 @@ function Winner() {
                 className="btn btn-ghost"
                 disabled={isSaving}
               >
-                {isSaving ? savedMessage : "Save Snapshot"}
+                {isSaving ? savedMessage : "Take Snapshot"}
               </button>
             </div>
           </div>
@@ -151,6 +153,11 @@ function Winner() {
           Please install Frame to see payouts
         </div>
       )}
+
+      <div className="h-16" />
+      <div className="h-16" />
+      <div className="h-16" />
+      <div className="h-16" />
     </>
   );
 }
