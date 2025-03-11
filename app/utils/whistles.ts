@@ -14,6 +14,11 @@ const redis = new Redis({
   token: process.env.YOGA_REDIS_REST_READ_ONLY_TOKEN,
 });
 
+const cache = new Redis({
+  url: process.env.YOGA_REDIS_CACHE_REST_URL,
+  token: process.env.YOGA_REDIS_CACHE_REST_TOKEN,
+});
+
 const queries: Record<string, string> = {
   getTextByCastHash: gql`
     query getTextByCastHash($castHash: String!, $fid: Int!) {
@@ -197,6 +202,12 @@ const genericGraphQLQuery = async <T>(
   variables?: Record<string, unknown>,
   bearerToken?: string
 ) => {
+  const cacheKey = `${queryName}-${JSON.stringify(variables)}`;
+  const cached = await cache.get<string | undefined>(cacheKey);
+  if (cached) {
+    return JSON.parse(cached) as T;
+  }
+
   const graphQLClient = bearerToken
     ? new GraphQLClient(GRAPHQL_ENDPOINT, {
         headers: { authorization: `Bearer ${bearerToken}` },
@@ -212,6 +223,9 @@ const genericGraphQLQuery = async <T>(
       console.error("res:", res);
       throw new Error(`Failed to validate response: ${validated.error}`);
     }
+
+    await cache.set(cacheKey, JSON.stringify(validated.data));
+    await cache.expire(cacheKey, 60 * 60 * 24 * 1); // 1 day
 
     return validated.data as T;
   } catch (error: any) {
