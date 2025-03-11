@@ -15,8 +15,8 @@ const redis = new Redis({
 });
 
 const cache = new Redis({
-  url: process.env.YOGA_REDIS_CACHE_REST_URL,
-  token: process.env.YOGA_REDIS_CACHE_REST_TOKEN,
+  url: process.env.UPSTASH_REDIS_YOGA_CACHE_REST_URL,
+  token: process.env.UPSTASH_REDIS_YOGA_CACHE_REST_TOKEN,
 });
 
 const queries: Record<string, string> = {
