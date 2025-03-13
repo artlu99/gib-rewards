@@ -1,15 +1,23 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import type { Message } from "@farcaster/core";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { unique } from "radash";
+import { fetcher } from "itty-fetcher";
+import { cluster, unique } from "radash";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { useFollowing } from "~/hooks/useFollowing";
-import { pluralize } from "~/utils/pluralize";
+import { moderatorFids } from "~/utils/moderators";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { castsInfiniteQueryOptions } from "~/utils/topNcasts";
 import { calculateWinners } from "~/utils/winners";
 import { useBearStore } from "~/utils/zustand";
+
+const MAX_REACTIONS_PAGE_SIZE = 100;
+
+const TEMP_SHOW_BUTTONS = true;
+
+const client = fetcher({ base: "https://nemes.farcaster.xyz:2281" });
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -55,12 +63,19 @@ function PostsLayoutComponent() {
   const handleSort = (sortType: "views" | "likes") => {
     setSortBy(sortType);
 
-    // You'd implement your sorting logic here
-    // This will depend on your data structure
+    // Now we can implement sorting with our hoisted data
     if (sortType === "views") {
-      // Sort your data by views
+      // Sort by view count (already in casts data)
+      setCasts([...casts].sort((a, b) => b.count - a.count));
     } else if (sortType === "likes") {
-      // Sort your data by likes from people you follow
+      // Sort by following likes count using our hoisted data
+      setCasts(
+        [...casts].sort((a, b) => {
+          const aLikes = castsLikesMap[a.castHash]?.followingLikes?.length || 0;
+          const bLikes = castsLikesMap[b.castHash]?.followingLikes?.length || 0;
+          return bLikes - aLikes;
+        })
+      );
     }
   };
 
@@ -90,6 +105,7 @@ function PostsLayoutComponent() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     ...castsInfiniteQueryOptions(contextFid),
+    // biome-ignore lint/suspicious/noExplicitAny: too gnarly
     initialData: preload as any,
   });
 
@@ -172,7 +188,7 @@ function PostsLayoutComponent() {
     }
   }, [data, setCasts]);
 
-  // Use count in effect dependency
+  // biome-ignore lint/correctness/useExhaustiveDependencies: also use count in effect dependency
   useEffect(() => {
     if (casts.length === 0) {
       return;
@@ -193,6 +209,86 @@ function PostsLayoutComponent() {
     setSmoothScores,
     setWinners,
   ]);
+
+  // Add new state for consolidated likes data
+  const [castsLikesMap, setCastsLikesMap] = useState<
+    Record<
+      string,
+      {
+        allLikes: number[];
+        modLikes: number[];
+        followingLikes: number[];
+      }
+    >
+  >({});
+
+  // Fetch all likes in batches
+  const { data: likesData, isLoading: isLoadingLikes } = useQuery({
+    queryKey: ["allCastsLikes", casts.map((c) => c.castHash).join(",")],
+    queryFn: async () => {
+      // You could batch this in chunks of ~20 casts if needed
+      const allLikesData: Record<string, number[]> = {};
+
+      // Process in smaller batches to avoid request size limits
+      const castBatches = cluster(casts, 20);
+
+      for (const batch of castBatches) {
+        await Promise.all(
+          batch.map(async (cast) => {
+            try {
+              const res = await client.get<{ messages: Message[] }>(
+                `/v1/reactionsByCast?${new URLSearchParams({
+                  target_fid: cast.fid.toString(),
+                  target_hash: cast.castHash,
+                  reaction_type: "1", // 1 === likes
+                  page_size: MAX_REACTIONS_PAGE_SIZE.toString(),
+                })}`
+              );
+
+              allLikesData[cast.castHash] =
+                res?.messages.map((m) => m.data?.fid ?? 0) || [];
+            } catch (error) {
+              console.error(
+                `Error fetching likes for cast ${cast.castHash}`,
+                error
+              );
+              allLikesData[cast.castHash] = [];
+            }
+          })
+        );
+      }
+
+      return allLikesData;
+    },
+    enabled: casts.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Process the likes data
+  useEffect(() => {
+    if (!likesData || !following) return;
+
+    const processedLikesMap: Record<
+      string,
+      {
+        allLikes: number[];
+        modLikes: number[];
+        followingLikes: number[];
+      }
+    > = {};
+
+    for (const [castHash, likes] of Object.entries(likesData)) {
+      processedLikesMap[castHash] = {
+        allLikes: likes,
+        modLikes: likes.filter((fid) => moderatorFids.includes(fid)),
+        followingLikes: likes.filter((fid) =>
+          (following?.following ?? []).includes(fid)
+        ),
+      };
+    }
+
+    setCastsLikesMap(processedLikesMap);
+  }, [likesData, following]);
 
   return (
     <>
@@ -238,52 +334,60 @@ function PostsLayoutComponent() {
           {isSavingBestOfSassy ? savedMessageBestOfSassy : "Snapshot"}
         </button>
       </div>
-      
-      {/* Add sorting buttons */}
-      {1 === 0 && (
-        <div className="flex justify-between mb-4">
-          <button
-            type="button"
-            className="btn btn-sm btn-primary"
-            onClick={() => handleSort("views")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <title>Sort by Views</title>
-              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-              <path
-                fillRule="evenodd"
-                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Sort by Views
-          </button>
 
-          <button
-            type="button"
-            className="btn btn-sm btn-secondary"
-            onClick={() => handleSort("likes")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+      {/* Add sorting buttons */}
+      {TEMP_SHOW_BUTTONS && (
+        <div className="flex justify-between m-4">
+          <div className="join rounded-full">
+            <button
+              type="button"
+              className="join-item btn btn-sm btn-outline rounded-l-full"
             >
-              <title>Sort by Likes by Following</title>
-              <path
-                fillRule="evenodd"
-                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Sort by Likes by Following
-          </button>
+              Sort by
+            </button>
+            <button
+              type="button"
+              className="join-item btn btn-sm btn-primary"
+              onClick={() => handleSort("views")}
+            >
+              Views
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 ml-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <title>Sort by Views</title>
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path
+                  fillRule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              className="join-item btn btn-sm btn-secondary rounded-r-full"
+              onClick={() => handleSort("likes")}
+            >
+              Likes by Following
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 ml-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <title>Sort by Likes by Following</title>
+                <path
+                  fillRule="evenodd"
+                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
 
@@ -314,7 +418,11 @@ function PostsLayoutComponent() {
                       </div>
                     </div>
                     <div className="w-full overflow-x-hidden">
-                      <SassyCast cast={cast} minMods={minMods} />
+                      <SassyCast
+                        cast={cast}
+                        minMods={minMods}
+                        likesData={castsLikesMap[cast.castHash]}
+                      />
                     </div>
                   </li>
                 );

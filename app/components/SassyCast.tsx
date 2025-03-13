@@ -1,81 +1,38 @@
-import type { Message } from "@farcaster/core";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { fetcher } from "itty-fetcher";
 import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
-import { useFollowing } from "~/hooks/useFollowing";
 import { getStoredToken } from "~/utils/auth";
+import { ModeratorsMap } from "~/utils/moderators";
 import { pluralize } from "~/utils/pluralize";
 import { logCastDecode } from "~/utils/redis";
 import type { LeaderboardCastInfo } from "~/utils/whistles";
 import { BLOCKLIST } from "~/utils/whistles";
 import { useBearStore } from "~/utils/zustand";
 
-const MAX_PAGE_SIZE = 100;
-const MODERATORS: Record<number, string> = {
-  533: "alexpaden",
-  3115: "ghostlinkz.eth",
-  4163: "kmacb.eth",
-  6546: "artlu",
-  8004: "ahn.eth",
-  10174: "cryptowenmoon.eth",
-  10215: "zoo",
-  15850: "christin",
-  16567: "serendipity",
-  191780: "agrimony.eth",
-  475488: "hankmoody",
-  535389: "xbornid.eth",
-};
-const MODERATOR_FIDS = Object.keys(MODERATORS).map(Number);
-
-const client = fetcher({ base: "https://nemes.farcaster.xyz:2281" });
-
 interface SassyCastProps {
   cast: LeaderboardCastInfo;
   minMods: number;
+  likesData?: {
+    allLikes: number[];
+    modLikes: number[];
+    followingLikes: number[];
+  };
 }
 
-export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
+export const SassyCast = ({ cast, minMods, likesData }: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [showDecodedText, setShowDecodedText] = useState(false);
-  const [modLikes, setModLikes] = useState<number[]>([]);
-  const [followingLikes, setFollowingLikes] = useState<number[]>([]);
   const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
   const { addExcludedCast } = useBearStore();
-  const { data: following } = useFollowing(contextFid);
 
-  const { data: castLikes = [] } = useQuery({
-    queryKey: ["castLikes", cast.fid, cast.castHash],
-    queryFn: async () => {
-      const res = await client.get<{ messages: Message[] }>(
-        `/v1/reactionsByCast?${new URLSearchParams({
-          target_fid: cast.fid.toString(),
-          target_hash: cast.castHash,
-          reaction_type: "1",
-          page_size: MAX_PAGE_SIZE.toString(),
-        })}`
-      );
+  // If likesData is provided, use it instead of fetching
+  const modLikes = likesData?.modLikes || [];
+  const followingLikes = likesData?.followingLikes || [];
+  const castLikes = likesData?.allLikes || [];
 
-      const allLikes = res?.messages.map((m) => m.data?.fid ?? 0) || [];
-
-      return allLikes;
-    },
-    refetchIntervalInBackground: true,
-    placeholderData: keepPreviousData,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-  useEffect(() => {
-    if (castLikes.length > 0) {
-      setModLikes(castLikes.filter((fid) => MODERATOR_FIDS.includes(fid)));
-      setFollowingLikes(
-        castLikes.filter((fid) => (following?.following ?? []).includes(fid))
-      );
-    }
-  }, [castLikes, following]);
+  // Remove the useQuery for castLikes since data is now passed in
 
   useEffect(() => {
     if (modLikes.length > 0) {
@@ -204,7 +161,7 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
                   {modLikes.length > 0 ? (
                     <div>
                       Liked by:{" "}
-                      {modLikes.map((fid) => MODERATORS[fid]).join(", ")}
+                      {modLikes.map((fid) => ModeratorsMap[fid]).join(", ")}
                     </div>
                   ) : (
                     <div>
