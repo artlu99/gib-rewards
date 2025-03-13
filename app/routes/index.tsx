@@ -336,7 +336,7 @@ function PostsLayoutComponent() {
         </button>
       </div>
 
-      <div className="flex justify-between m-4">
+      <div className="flex justify-center m-4">
         <div className="join rounded-full">
           <button
             type="button"
