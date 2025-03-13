@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Caret } from "~/components/ui/Caret";
+import { Caret } from "~/components/ui/Icons";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute(

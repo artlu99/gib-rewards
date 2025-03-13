@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Caret } from "~/components/ui/Caret";
+import { Caret } from "~/components/ui/Icons";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute(
@@ -76,7 +76,8 @@ function LayoutBComponent() {
               SassyMods 💁‍♀️ / Sassquatch 🦧
             </li>
             <li>
-              Comienza a 1, actualmente <strong>{minMods}</strong>, se ajustará según sea necesario
+              Comienza a 1, actualmente <strong>{minMods}</strong>, se ajustará
+              según sea necesario
             </li>
             <li>
               Ningún moderador individual tiene influencia desproporcionada

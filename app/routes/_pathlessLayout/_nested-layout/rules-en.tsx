@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Caret } from "~/components/ui/Caret";
+import { Caret } from "~/components/ui/Icons";
 import { useBearStore } from "~/utils/zustand";
 
 export const Route = createFileRoute(
@@ -76,7 +76,8 @@ function LayoutAComponent() {
               SassyMods 💁‍♀️ / Sassquatch 🦧
             </li>
             <li>
-              Starts at 1, currently <strong>{minMods}</strong>, will tune as necessary
+              Starts at 1, currently <strong>{minMods}</strong>, will tune as
+              necessary
             </li>
             <li>No individual moderator has outsized influence</li>
             <li>
