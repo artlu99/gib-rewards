@@ -129,11 +129,11 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
           {
             <>
               <br />
-              {`${followingLikes.length} / ${pluralize(
+              {`${followingLikes.length.toLocaleString()}/${pluralize(
                 castLikes.length,
                 "like"
               )}`}{" "}
-              (protocol) by accounts I follow
+              by accounts I follow
             </>
           }
         </div>
