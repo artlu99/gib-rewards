@@ -1,5 +1,6 @@
 import { Redis } from "@upstash/redis/cloudflare";
 import { fetcher } from "itty-fetcher";
+import { unique } from "radash";
 import { z } from "zod";
 
 const pinataHubApi = fetcher({ base: "https://hub.pinata.cloud/v1" });
@@ -176,31 +177,37 @@ export const getPfpUrl = async (fid: number): Promise<string | undefined> => {
   }
 };
 
-const getAllFollowingMax5kUncached = async (fid: number) => {
+const getAllFollowingMax10kUncached = async (fid: number) => {
   try {
     let allFollowing: number[] = [];
     let nextPageToken: string | undefined;
     const pageSize = 100;
-    const maxIterations = 50;
+    const maxIterations = 100;
 
     for (let i = 0; i < maxIterations; i++) {
       const endpoint = `/linksByFid?fid=${fid}&pageSize=${pageSize}&reverse=true${
-        nextPageToken ? `&cursor=${nextPageToken}` : ""
+        nextPageToken ? `&pageToken=${nextPageToken}` : ""
       }`;
 
       const res = await pinataHubApi.get(endpoint);
       const parsedLinksData = LinkResponseSchema.parse(res);
+
+      // If we got an empty array of messages, we're done
+      if (parsedLinksData.messages.length === 0) break;
 
       const newFollowing = parsedLinksData.messages.map(
         (message) => message.data.linkBody.targetFid
       );
       allFollowing = [...allFollowing, ...newFollowing];
 
+      // Get the new nextPageToken from the response
       nextPageToken = parsedLinksData.nextPageToken;
-      if (!nextPageToken) break; // Exit if there are no more pages
+
+      // If there's no nextPageToken, we've reached the end
+      if (!nextPageToken) break;
     }
 
-    return allFollowing;
+    return unique(allFollowing);
   } catch (error) {
     console.error("Error fetching all following:", error);
     return [];
@@ -219,7 +226,7 @@ export const getAllFollowing = async (fid: number) => {
     return cache as number[];
   }
 
-  const res = await getAllFollowingMax5kUncached(fid);
+  const res = await getAllFollowingMax10kUncached(fid);
   await redis.set(`pinataHub:getAllFollowing:${fid}`, JSON.stringify(res), {
     ex: 14400,
   }); // 4 hours

@@ -4,6 +4,8 @@ import { unique } from "radash";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
+import { useFollowing } from "~/hooks/useFollowing";
+import { pluralize } from "~/utils/pluralize";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { castsInfiniteQueryOptions } from "~/utils/topNcasts";
 import { calculateWinners } from "~/utils/winners";
@@ -32,6 +34,7 @@ function PostsLayoutComponent() {
 
   const [isSavingBestOfSassy, setIsSavingBestOfSassy] = useState(false);
   const [savedMessageBestOfSassy, setSavedMessageBestOfSassy] = useState("");
+  const [sortBy, setSortBy] = useState<"views" | "likes">("views"); // default sort
 
   const { contextFid, viewProfile, openUrl } = useFrame();
   const {
@@ -46,6 +49,20 @@ function PostsLayoutComponent() {
     setWinners,
   } = useBearStore();
   const { topN, minMods } = rulesConfig;
+
+  const { data: following } = useFollowing(contextFid);
+
+  const handleSort = (sortType: "views" | "likes") => {
+    setSortBy(sortType);
+
+    // You'd implement your sorting logic here
+    // This will depend on your data structure
+    if (sortType === "views") {
+      // Sort your data by views
+    } else if (sortType === "likes") {
+      // Sort your data by likes from people you follow
+    }
+  };
 
   const handleRemoveMod = () => {
     if (minMods > 0) {
@@ -221,6 +238,55 @@ function PostsLayoutComponent() {
           {isSavingBestOfSassy ? savedMessageBestOfSassy : "Snapshot"}
         </button>
       </div>
+      
+      {/* Add sorting buttons */}
+      {1 === 0 && (
+        <div className="flex justify-between mb-4">
+          <button
+            type="button"
+            className="btn btn-sm btn-primary"
+            onClick={() => handleSort("views")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <title>Sort by Views</title>
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+              <path
+                fillRule="evenodd"
+                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Sort by Views
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-sm btn-secondary"
+            onClick={() => handleSort("likes")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <title>Sort by Likes by Following</title>
+              <path
+                fillRule="evenodd"
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Sort by Likes by Following
+          </button>
+        </div>
+      )}
+
       <div className="p-2 flex gap-2">
         {data && data.pages.length > 0 && data.pages[0].data.length > 0 ? (
           <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">

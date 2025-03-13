@@ -5,6 +5,7 @@ import { fetcher } from "itty-fetcher";
 import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
+import { useFollowing } from "~/hooks/useFollowing";
 import { getStoredToken } from "~/utils/auth";
 import { pluralize } from "~/utils/pluralize";
 import { logCastDecode } from "~/utils/redis";
@@ -41,8 +42,10 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const [showDecodedText, setShowDecodedText] = useState(false);
   const [modLikes, setModLikes] = useState<number[]>([]);
+  const [followingLikes, setFollowingLikes] = useState<number[]>([]);
   const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
   const { addExcludedCast } = useBearStore();
+  const { data: following } = useFollowing(contextFid);
 
   const { data: castLikes = [] } = useQuery({
     queryKey: ["castLikes", cast.fid, cast.castHash],
@@ -68,8 +71,11 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
   useEffect(() => {
     if (castLikes.length > 0) {
       setModLikes(castLikes.filter((fid) => MODERATOR_FIDS.includes(fid)));
+      setFollowingLikes(
+        castLikes.filter((fid) => (following?.following ?? []).includes(fid))
+      );
     }
-  }, [castLikes]);
+  }, [castLikes, following]);
 
   useEffect(() => {
     if (modLikes.length > 0) {
@@ -120,6 +126,16 @@ export const SassyCast = ({ cast, minMods }: SassyCastProps) => {
         >
           {pluralize(cast.count, "unique view")}-{" "}
           {pluralize(modLikes.length, "SassyMod like")}
+          {
+            <>
+              <br />
+              {`${followingLikes.length} / ${pluralize(
+                castLikes.length,
+                "like"
+              )}`}{" "}
+              (protocol) by accounts I follow
+            </>
+          }
         </div>
 
         <div className="flex justify-between items-center">

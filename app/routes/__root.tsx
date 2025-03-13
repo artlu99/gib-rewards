@@ -135,6 +135,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               activeProps={{
                 className: "font-bold",
               }}
+              search={{ fid: undefined }}
             >
               🏆
               <br /> Top N
