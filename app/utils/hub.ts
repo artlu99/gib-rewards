@@ -1,3 +1,4 @@
+import { Redis } from "@upstash/redis/cloudflare";
 import { fetcher } from "itty-fetcher";
 import { z } from "zod";
 
@@ -173,4 +174,55 @@ export const getPfpUrl = async (fid: number): Promise<string | undefined> => {
     console.error("Error fetching PFP URL:", error);
     return undefined;
   }
+};
+
+const getAllFollowingMax5kUncached = async (fid: number) => {
+  try {
+    let allFollowing: number[] = [];
+    let nextPageToken: string | undefined;
+    const pageSize = 100;
+    const maxIterations = 50;
+
+    for (let i = 0; i < maxIterations; i++) {
+      const endpoint = `/linksByFid?fid=${fid}&pageSize=${pageSize}&reverse=true${
+        nextPageToken ? `&cursor=${nextPageToken}` : ""
+      }`;
+
+      const res = await pinataHubApi.get(endpoint);
+      const parsedLinksData = LinkResponseSchema.parse(res);
+
+      const newFollowing = parsedLinksData.messages.map(
+        (message) => message.data.linkBody.targetFid
+      );
+      allFollowing = [...allFollowing, ...newFollowing];
+
+      nextPageToken = parsedLinksData.nextPageToken;
+      if (!nextPageToken) break; // Exit if there are no more pages
+    }
+
+    return allFollowing;
+  } catch (error) {
+    console.error("Error fetching all following:", error);
+    return [];
+  }
+};
+
+export const getAllFollowing = async (fid: number) => {
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+
+  const cache = await redis.get(`pinataHub:getAllFollowing:${fid}`);
+
+  if (cache) {
+    return cache as number[];
+  }
+
+  const res = await getAllFollowingMax5kUncached(fid);
+  await redis.set(`pinataHub:getAllFollowing:${fid}`, JSON.stringify(res), {
+    ex: 14400,
+  }); // 4 hours
+
+  return res;
 };
