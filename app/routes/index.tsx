@@ -16,8 +16,6 @@ import { useBearStore } from "~/utils/zustand";
 
 const MAX_REACTIONS_PAGE_SIZE = 100;
 
-const TEMP_SHOW_BUTTONS = true;
-
 const client = fetcher({ base: "https://nemes.farcaster.xyz:2281" });
 
 export const Route = createFileRoute("/")({
