@@ -6,10 +6,11 @@ import { cluster, unique } from "radash";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
-import { Eyeball, Heart } from "~/components/ui/Icons";
+import { Eyeball, Flame, Heart } from "~/components/ui/Icons";
 import { useSignIn } from "~/hooks/use-sign-in";
 import { useFollowing } from "~/hooks/useFollowing";
 import { getStoredToken, verifyToken } from "~/utils/auth";
+import { FARCASTER_EPOCH } from "~/utils/hub";
 import { moderatorFids } from "~/utils/moderators";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { castsInfiniteQueryOptions } from "~/utils/topNcasts";
@@ -44,7 +45,9 @@ function PostsLayoutComponent() {
 
   const [isSavingBestOfSassy, setIsSavingBestOfSassy] = useState(false);
   const [savedMessageBestOfSassy, setSavedMessageBestOfSassy] = useState("");
-  const [sortBy, setSortBy] = useState<"views" | "likes">("views"); // default sort
+  const [sortBy, setSortBy] = useState<"views" | "likes" | "timestamp">(
+    "views"
+  ); // default sort
 
   const { logout, signIn } = useSignIn();
 
@@ -75,13 +78,21 @@ function PostsLayoutComponent() {
 
   const { data: following } = useFollowing(contextFid);
 
-  const handleSort = (sortType: "views" | "likes") => {
+  const handleSort = (sortType: "views" | "likes" | "timestamp") => {
     setSortBy(sortType);
 
-    // Now we can implement sorting with our hoisted data
     if (sortType === "views") {
       // Sort by view count (already in casts data)
       setCasts([...casts].sort((a, b) => b.count - a.count));
+    } else if (sortType === "timestamp") {
+      // Sort by timestamp using our hoisted data
+      setCasts(
+        [...casts].sort((a, b) => {
+          const aTimestamp = likesData?.lastLikedTimes[a.castHash] ?? 0;
+          const bTimestamp = likesData?.lastLikedTimes[b.castHash] ?? 0;
+          return bTimestamp - aTimestamp;
+        })
+      );
     } else if (sortType === "likes") {
       // Sort by following likes count using our hoisted data
       setCasts(
@@ -243,6 +254,7 @@ function PostsLayoutComponent() {
     queryFn: async () => {
       // You could batch this in chunks of ~20 casts if needed
       const allLikesData: Record<string, number[]> = {};
+      const lastLikedTimes: Record<string, number> = {};
 
       // Process in smaller batches to avoid request size limits
       const castBatches = cluster(casts, 20);
@@ -262,6 +274,14 @@ function PostsLayoutComponent() {
 
               allLikesData[cast.castHash] =
                 res?.messages.map((m) => m.data?.fid ?? 0) || [];
+
+              // Update last liked time for each cast with the timestamp of the most recent like
+              lastLikedTimes[cast.castHash] =
+                res?.messages.reduce((max, m) => {
+                  const timestamp =
+                    ((m.data?.timestamp ?? 0) + FARCASTER_EPOCH) * 1000;
+                  return Math.max(max, timestamp);
+                }, 0) ?? 0;
             } catch (error) {
               console.error(
                 `Error fetching likes for cast ${cast.castHash}`,
@@ -273,7 +293,7 @@ function PostsLayoutComponent() {
         );
       }
 
-      return allLikesData;
+      return { allLikesData, lastLikedTimes };
     },
     enabled: casts.length > 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -292,7 +312,7 @@ function PostsLayoutComponent() {
       }
     > = {};
 
-    for (const [castHash, likes] of Object.entries(likesData)) {
+    for (const [castHash, likes] of Object.entries(likesData.allLikesData)) {
       processedLikesMap[castHash] = {
         allLikes: likes,
         modLikes: likes.filter((fid) => moderatorFids.includes(fid)),
@@ -351,28 +371,47 @@ function PostsLayoutComponent() {
       </div>
 
       <div className="flex justify-center m-4">
-        <div className="join rounded-full">
-          <button
-            type="button"
-            className="join-item btn btn-sm btn-outline rounded-l-full"
-          >
+        <div className="join bg-outline bg-base-300 rounded-full shadow-sm p-1">
+          <span className="flex items-center px-3 text-sm font-medium text-base-content/70">
             Sort by
-          </button>
+          </span>
+
           <button
             type="button"
-            className="join-item btn btn-sm btn-primary"
+            className={`join-item btn btn-sm normal-case px-3 ${
+              sortBy === "views"
+                ? "bg-white text-primary-content hover:bg-white"
+                : "bg-transparent text-base-content/80 hover:bg-base-300"
+            }`}
             onClick={() => handleSort("views")}
           >
-            Views
+            <span>Views</span>
             <Eyeball />
           </button>
 
           <button
             type="button"
-            className="join-item btn btn-sm btn-secondary rounded-r-full"
+            className={`join-item btn btn-sm normal-case px-3 ${
+              sortBy === "timestamp"
+                ? "bg-white text-secondary-content hover:bg-white"
+                : "bg-transparent text-base-content/80 hover:bg-base-300"
+            }`}
+            onClick={() => handleSort("timestamp")}
+          >
+            <Flame />
+            <span>Fresh</span>
+          </button>
+
+          <button
+            type="button"
+            className={`join-item btn btn-sm normal-case px-3 rounded-r-full ${
+              sortBy === "likes"
+                ? "bg-white text-accent-content hover:bg-white"
+                : "bg-transparent text-base-content/80 hover:bg-base-300"
+            }`}
             onClick={() => handleSort("likes")}
           >
-            Likes by Following
+            <span>Likes</span>
             <Heart />
           </button>
         </div>
@@ -409,6 +448,9 @@ function PostsLayoutComponent() {
                         cast={cast}
                         minMods={minMods}
                         likesData={castsLikesMap[cast.castHash]}
+                        lastLikedTime={
+                          likesData?.lastLikedTimes[cast.castHash] ?? null
+                        }
                       />
                     </div>
                   </li>

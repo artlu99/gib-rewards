@@ -49,8 +49,8 @@ function Home() {
             className="btn btn-wide btn-secondary"
             onClick={() => logout()}
           >
+            <img src={context?.user?.pfpUrl} alt="pfp" className="w-6 h-6" />
             Sign Out
-            <img src={context?.user?.pfpUrl} alt="pfp" className="w-4 h-4" />
           </button>
         ) : (
           <button

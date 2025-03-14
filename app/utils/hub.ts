@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const pinataHubApi = fetcher({ base: "https://hub.pinata.cloud/v1" });
 
-const FARCASTER_EPOCH = 1609459200;
+export const FARCASTER_EPOCH = 1609459200;
 
 const hubTimestampToBrowserTimestamp = (timestamp: number) => {
   return (timestamp + FARCASTER_EPOCH) * 1000;

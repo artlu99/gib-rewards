@@ -55,3 +55,54 @@ export const Heart = () => {
     </svg>
   );
 };
+
+export const Clock = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-4 w-4 ml-1"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>Clock</title>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </svg>
+  );
+};
+
+export const Flame = ({
+  className = "h-4 w-4 ml-1",
+  colorFrom = "#ff4500", // Fiery orange-red
+  colorTo = "#ffcc00", // Bright yellow
+}) => {
+  const gradientId = `flameGradient-${Math.random().toString(36).substr(2, 9)}`;
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 24 24"
+      fill={`url(#${gradientId})`}
+      stroke="none"
+    >
+      <title>Flame</title>
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={colorFrom} />
+          <stop offset="100%" stopColor={colorTo} />
+        </linearGradient>
+      </defs>
+      <path d="M12,2c0,0-7,5.09-7,11c0,3.97,3.14,7,7,7s7-3.03,7-7C19,7.09,12,2,12,2z" />
+      <path
+        d="M12,5c0,0-3.5,3.5-3.5,6.5c0,1.93,1.57,3.5,3.5,3.5s3.5-1.57,3.5-3.5C15.5,8.5,12,5,12,5z"
+        fill="#ffffaa"
+        opacity="0.6"
+      />
+    </svg>
+  );
+};

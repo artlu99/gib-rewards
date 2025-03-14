@@ -1,3 +1,4 @@
+import { intlFormatDistance } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
@@ -18,9 +19,15 @@ interface SassyCastProps {
     modLikes: number[];
     followingLikes: number[];
   };
+  lastLikedTime: number | null;
 }
 
-export const SassyCast = ({ cast, minMods, likesData }: SassyCastProps) => {
+export const SassyCast = ({
+  cast,
+  minMods,
+  likesData,
+  lastLikedTime,
+}: SassyCastProps) => {
   const { contextFid, openUrl } = useFrame();
   const [isOpen, setIsOpen] = useState(false);
   const [showDecodedText, setShowDecodedText] = useState(false);
@@ -83,6 +90,14 @@ export const SassyCast = ({ cast, minMods, likesData }: SassyCastProps) => {
         >
           {pluralize(cast.count, "unique view")}-{" "}
           {pluralize(modLikes.length, "SassyMod like")}
+          {
+            <>
+              <br />
+              {lastLikedTime
+                ? `last liked ${intlFormatDistance(lastLikedTime, new Date())}`
+                : ""}
+            </>
+          }
           {
             <>
               <br />
