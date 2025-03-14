@@ -12,6 +12,11 @@ export const useSignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const logout = useCallback(() => {
+    localStorage.removeItem(`token-${contextFid}`);
+    setIsSignedIn(false);
+  }, [contextFid]);
+
   const signIn = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -37,10 +42,7 @@ export const useSignIn = () => {
               Date.now() + MESSAGE_EXPIRATION_TIME
             ).toISOString(),
           })
-        : {
-            signature: "0x123",
-            message: "0x123",
-          };
+        : { signature: "0x123", message: "0x123" };
 
       const referrerFid =
         context?.location?.type === "cast_embed"
@@ -49,9 +51,7 @@ export const useSignIn = () => {
 
       const res = await fetch("/api/sign-in", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           signature: result.signature,
           message: result.message,
@@ -61,6 +61,8 @@ export const useSignIn = () => {
       });
 
       if (!res.ok) {
+        logout();
+
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || "Sign in failed (specific)");
       }
@@ -77,12 +79,7 @@ export const useSignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [context, contextFid, contextError]);
+  }, [context, contextFid, contextError, logout]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(`token-${contextFid}`);
-    setIsSignedIn(false);
-  }, [contextFid]);
-
-  return { signIn, logout, isSignedIn, isLoading, error };
+  return { signIn, isSignedIn, isLoading, error };
 };
