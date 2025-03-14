@@ -2,7 +2,7 @@ import type { Message } from "@farcaster/core";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { fetcher } from "itty-fetcher";
-import { cluster, unique } from "radash";
+import { cluster, sift, unique } from "radash";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
@@ -47,7 +47,8 @@ function PostsLayoutComponent() {
   const [savedMessageBestOfSassy, setSavedMessageBestOfSassy] = useState("");
   const [sortBy, setSortBy] = useState<"views" | "likes" | "timestamp">(
     "views"
-  ); // default sort
+  );
+  const [filterZeros, setFilterZeros] = useState(false);
 
   const { logout, signIn } = useSignIn();
 
@@ -82,10 +83,8 @@ function PostsLayoutComponent() {
     setSortBy(sortType);
 
     if (sortType === "views") {
-      // Sort by view count (already in casts data)
       setCasts([...casts].sort((a, b) => b.count - a.count));
     } else if (sortType === "timestamp") {
-      // Sort by timestamp using our hoisted data
       setCasts(
         [...casts].sort((a, b) => {
           const aTimestamp = likesData?.lastLikedTimes[a.castHash] ?? 0;
@@ -94,7 +93,6 @@ function PostsLayoutComponent() {
         })
       );
     } else if (sortType === "likes") {
-      // Sort by following likes count using our hoisted data
       setCasts(
         [...casts].sort((a, b) => {
           const aLikes = castsLikesMap[a.castHash]?.followingLikes?.length || 0;
@@ -299,6 +297,8 @@ function PostsLayoutComponent() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  console.log("filterZeros:", filterZeros);
+
   // Process the likes data
   useEffect(() => {
     if (!likesData || !following) return;
@@ -372,9 +372,13 @@ function PostsLayoutComponent() {
 
       <div className="flex justify-center m-4">
         <div className="join bg-outline bg-base-300 rounded-full shadow-sm p-1">
-          <span className="flex items-center px-3 text-sm font-medium text-base-content/70">
+          <button
+            type="button"
+            className="flex items-center px-3 text-sm font-medium text-base-content/70"
+            onClick={() => setFilterZeros(!filterZeros)}
+          >
             Sort by
-          </span>
+          </button>
 
           <button
             type="button"
@@ -420,42 +424,44 @@ function PostsLayoutComponent() {
       <div className="p-2 flex gap-2">
         {data && data.pages.length > 0 && data.pages[0].data.length > 0 ? (
           <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">
-            {casts
-              .filter((cast) => (fid ? cast.fid === fid : true))
-              .map((cast) => {
-                const castInfo = smoothScores.items.find(
-                  (c) => c.castHash === cast.castHash
-                );
-                return (
-                  <li
-                    key={cast.castHash}
-                    className="whitespace-nowrap break-words"
-                  >
-                    <div className="block text-lg p-1 active:scale-95 transition-transform">
-                      <div>
-                        {castInfo?.smooth.toFixed(2) ?? "0"} points{" "}
-                        <button
-                          type="button"
-                          className="link btn-link"
-                          onClick={() => viewProfile(cast.fid, cast.username)}
-                        >
-                          @{cast.username}
-                        </button>
+            {sift(
+              casts
+                .filter((cast) => (fid ? cast.fid === fid : true))
+                .map((cast) => {
+                  const castInfo = smoothScores.items.find(
+                    (c) => c.castHash === cast.castHash
+                  );
+                  return filterZeros && (castInfo?.smooth ?? 0) === 0 ? null : (
+                    <li
+                      key={cast.castHash}
+                      className="whitespace-nowrap break-words"
+                    >
+                      <div className="block text-lg p-1 active:scale-95 transition-transform">
+                        <div>
+                          {castInfo?.smooth.toFixed(2) ?? "0"} points{" "}
+                          <button
+                            type="button"
+                            className="link btn-link"
+                            onClick={() => viewProfile(cast.fid, cast.username)}
+                          >
+                            @{cast.username}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="w-full overflow-x-hidden">
-                      <SassyCast
-                        cast={cast}
-                        minMods={minMods}
-                        likesData={castsLikesMap[cast.castHash]}
-                        lastLikedTime={
-                          likesData?.lastLikedTimes[cast.castHash] ?? null
-                        }
-                      />
-                    </div>
-                  </li>
-                );
-              })}
+                      <div className="w-full overflow-x-hidden">
+                        <SassyCast
+                          cast={cast}
+                          minMods={minMods}
+                          likesData={castsLikesMap[cast.castHash]}
+                          lastLikedTime={
+                            likesData?.lastLikedTimes[cast.castHash] ?? null
+                          }
+                        />
+                      </div>
+                    </li>
+                  );
+                })
+            )}
 
             {/* Intersection observer target */}
             <div ref={observerTarget} className="h-10 mt-4">
