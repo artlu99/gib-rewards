@@ -380,8 +380,8 @@ function PostsLayoutComponent() {
             type="button"
             className={`join-item btn btn-sm normal-case px-3 ${
               sortBy === "views"
-                ? "bg-white text-primary-content hover:bg-white"
-                : "bg-transparent text-base-content/80 hover:bg-base-300"
+                ? "bg-base/50 text-accent-content"
+                : "bg-transparent text-base-content/80"
             }`}
             onClick={() => handleSort("views")}
           >
@@ -393,8 +393,8 @@ function PostsLayoutComponent() {
             type="button"
             className={`join-item btn btn-sm normal-case px-3 ${
               sortBy === "timestamp"
-                ? "bg-white text-secondary-content hover:bg-white"
-                : "bg-transparent text-base-content/80 hover:bg-base-300"
+                ? "bg-base/50 text-accent-content "
+                : "bg-transparent text-base-content/80 "
             }`}
             onClick={() => handleSort("timestamp")}
           >
@@ -406,8 +406,8 @@ function PostsLayoutComponent() {
             type="button"
             className={`join-item btn btn-sm normal-case px-3 rounded-r-full ${
               sortBy === "likes"
-                ? "bg-white text-accent-content hover:bg-white"
-                : "bg-transparent text-base-content/80 hover:bg-base-300"
+                ? "bg-base/50 text-accent-content"
+                : "bg-transparent text-base-content/80"
             }`}
             onClick={() => handleSort("likes")}
           >
