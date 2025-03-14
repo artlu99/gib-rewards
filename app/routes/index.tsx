@@ -297,8 +297,6 @@ function PostsLayoutComponent() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  console.log("filterZeros:", filterZeros);
-
   // Process the likes data
   useEffect(() => {
     if (!likesData || !following) return;
