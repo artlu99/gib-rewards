@@ -7,8 +7,8 @@ export const Route = createFileRoute("/whut")({
 });
 
 function Home() {
-  const { openUrl } = useFrame();
-  const { logout, signIn, isSignedIn } = useSignIn();
+  const { context, contextFid, openUrl } = useFrame();
+  const { error, logout, signIn, isSignedIn } = useSignIn();
 
   return (
     <>
@@ -36,7 +36,13 @@ function Home() {
           .
         </p>
       </div>
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center justify-center">
+        {error && (
+          <p className="text-error">
+            {error}
+            <br />
+          </p>
+        )}
         {isSignedIn ? (
           <button
             type="button"
@@ -44,6 +50,7 @@ function Home() {
             onClick={() => logout()}
           >
             Sign Out
+            <img src={context?.user?.pfpUrl} alt="pfp" className="w-4 h-4" />
           </button>
         ) : (
           <button
@@ -51,7 +58,7 @@ function Home() {
             className="btn btn-wide btn-secondary"
             onClick={() => signIn()}
           >
-            Sign In
+            Sign In as {contextFid}
           </button>
         )}
       </div>

@@ -62,7 +62,7 @@ export const useSignIn = () => {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Sign in failed (specific)");
+        throw new Error(errorData.error || "Sign in failed (specific)");
       }
 
       const data = await res.json();
