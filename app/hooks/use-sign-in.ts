@@ -61,8 +61,6 @@ export const useSignIn = () => {
       });
 
       if (!res.ok) {
-        logout();
-
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || "Sign in failed (specific)");
       }
@@ -79,7 +77,7 @@ export const useSignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [context, contextFid, contextError, logout]);
+  }, [context, contextFid, contextError]);
 
-  return { signIn, isSignedIn, isLoading, error };
+  return { logout, signIn, isSignedIn, isLoading, error };
 };

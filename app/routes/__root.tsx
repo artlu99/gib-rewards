@@ -15,7 +15,7 @@ import { useFrame } from "~/components/context/FrameContext";
 import { BadgedMunnies } from "~/components/ui/BadgedMunnies";
 import { useSignIn } from "~/hooks/use-sign-in";
 import appCss from "~/styles/app.css?url";
-import { getStoredToken } from "~/utils/auth";
+import { getStoredToken, verifyToken } from "~/utils/auth";
 import { seo } from "~/utils/seo";
 
 // Create a client
@@ -112,14 +112,18 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { contextFid } = useFrame();
-  const { signIn } = useSignIn();
+  const { logout, signIn } = useSignIn();
 
   useEffect(() => {
     const token = getStoredToken(contextFid ?? undefined);
+
     if (!token) {
       signIn();
+    } else if (!verifyToken(token)) {
+      logout();
+      signIn();
     }
-  }, [signIn, contextFid]);
+  }, [contextFid, logout, signIn]);
 
   return (
     <html lang="en">
