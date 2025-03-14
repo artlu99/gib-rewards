@@ -17,6 +17,7 @@ import { calculateWinners } from "~/utils/winners";
 import { useBearStore } from "~/utils/zustand";
 
 const MAX_REACTIONS_PAGE_SIZE = 100;
+const DO_NOT_PAY = [6546];
 
 const client = fetcher({ base: "https://nemes.farcaster.xyz:2281" });
 
@@ -207,9 +208,9 @@ function PostsLayoutComponent() {
     if (casts.length === 0) {
       return;
     }
-    const filteredCasts = casts.filter(
-      (cast) => !excludedCasts.includes(cast.castHash)
-    );
+    const filteredCasts = casts
+      .filter((cast) => !excludedCasts.includes(cast.castHash))
+      .filter((cast) => !DO_NOT_PAY.includes(cast.fid));
     const newSmoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
     const winners = calculateWinners(newSmoothScores, rulesConfig);
     setSmoothScores(newSmoothScores);

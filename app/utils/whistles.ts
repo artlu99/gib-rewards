@@ -5,7 +5,7 @@ import type { ZodObject, ZodRawShape } from "zod";
 import { z } from "zod";
 
 const GRAPHQL_ENDPOINT = "https://whistles.artlu.xyz/graphql";
-export const BLOCKLIST = [6546];
+export const BLOCKLIST = [];
 
 const redis = new Redis({
   url: process.env.YOGA_REDIS_REST_URL,
