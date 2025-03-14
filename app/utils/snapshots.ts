@@ -1,5 +1,3 @@
-"use server";
-
 import { createServerFn } from "@tanstack/react-start";
 import { Redis } from "@upstash/redis/cloudflare";
 import { z } from "zod";

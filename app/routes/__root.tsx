@@ -111,20 +111,6 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { contextFid } = useFrame();
-  const { logout, signIn } = useSignIn();
-
-  useEffect(() => {
-    const token = getStoredToken(contextFid ?? undefined);
-
-    if (!token) {
-      signIn();
-    } else if (!verifyToken(token)) {
-      logout();
-      signIn();
-    }
-  }, [contextFid, logout, signIn]);
-
   return (
     <html lang="en">
       <head>

@@ -7,7 +7,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { Eyeball, Heart } from "~/components/ui/Icons";
+import { useSignIn } from "~/hooks/use-sign-in";
 import { useFollowing } from "~/hooks/useFollowing";
+import { getStoredToken, verifyToken } from "~/utils/auth";
 import { moderatorFids } from "~/utils/moderators";
 import { calculateSmoothScores } from "~/utils/smoothScores";
 import { castsInfiniteQueryOptions } from "~/utils/topNcasts";
@@ -43,6 +45,8 @@ function PostsLayoutComponent() {
   const [savedMessageBestOfSassy, setSavedMessageBestOfSassy] = useState("");
   const [sortBy, setSortBy] = useState<"views" | "likes">("views"); // default sort
 
+  const { logout, signIn } = useSignIn();
+
   const { contextFid, viewProfile, openUrl } = useFrame();
   const {
     rulesConfig,
@@ -56,6 +60,17 @@ function PostsLayoutComponent() {
     setWinners,
   } = useBearStore();
   const { topN, minMods } = rulesConfig;
+
+  useEffect(() => {
+    const token = getStoredToken(contextFid ?? undefined);
+
+    if (!token) {
+      signIn();
+    } else if (!verifyToken(token)) {
+      logout();
+      signIn();
+    }
+  }, [contextFid, logout, signIn]);
 
   const { data: following } = useFollowing(contextFid);
 

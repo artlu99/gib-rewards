@@ -1,5 +1,3 @@
-"use server";
-
 import { json } from "@tanstack/react-start";
 import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { getWinners, saveWinners } from "~/utils/snapshots";
