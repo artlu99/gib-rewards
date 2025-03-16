@@ -6,7 +6,7 @@ import sdk from "@farcaster/frame-sdk";
 import { useCallback, useEffect, useState } from "react";
 
 const LOCAL_DEBUGGING = import.meta.env.DEV;
-const LOCAL_GDD_MODE_FID = 6546;
+export const LOCAL_GDD_MODE_FID = 6546;
 
 export const useFrame = () => {
   const [context, setContext] = useState<FrameContext | null>(null);

@@ -1,14 +1,52 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useFrame } from "~/components/context/FrameContext";
+import {
+  LOCAL_GDD_MODE_FID,
+  useFrame,
+} from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
 
 export const Route = createFileRoute("/whut")({
   component: Home,
 });
 
-function Home() {
-  const { context, contextFid, openUrl } = useFrame();
+function Me() {
+  const { contextFid, context } = useFrame();
   const { error, logout, signIn, isSignedIn } = useSignIn();
+
+  return contextFid === LOCAL_GDD_MODE_FID ? (
+    <div className="flex flex-col items-center justify-center">
+      {error && (
+        <p className="text-error">
+          {error}
+          <br />
+        </p>
+      )}
+
+      {isSignedIn ? (
+        <button
+          type="button"
+          className="btn btn-wide btn-secondary"
+          onClick={() => logout()}
+        >
+          <img src={context?.user?.pfpUrl} alt="pfp" className="w-6 h-6" />
+          Sign Out
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="btn btn-wide btn-secondary"
+          onClick={() => signIn()}
+        >
+          Sign In as {contextFid}
+        </button>
+      )}
+    </div>
+  ) : null;
+}
+
+function Home() {
+  const { openUrl } = useFrame();
+  const { error } = useSignIn();
 
   return (
     <>
@@ -36,32 +74,7 @@ function Home() {
           .
         </p>
       </div>
-      <div className="flex flex-col items-center justify-center">
-        {error && (
-          <p className="text-error">
-            {error}
-            <br />
-          </p>
-        )}
-        {isSignedIn ? (
-          <button
-            type="button"
-            className="btn btn-wide btn-secondary"
-            onClick={() => logout()}
-          >
-            <img src={context?.user?.pfpUrl} alt="pfp" className="w-6 h-6" />
-            Sign Out
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="btn btn-wide btn-secondary"
-            onClick={() => signIn()}
-          >
-            Sign In as {contextFid}
-          </button>
-        )}
-      </div>
+      <Me />
     </>
   );
 }
