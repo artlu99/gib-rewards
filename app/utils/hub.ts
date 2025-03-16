@@ -1,3 +1,5 @@
+"use server";
+
 import { Redis } from "@upstash/redis/cloudflare";
 import { fetcher } from "itty-fetcher";
 import { unique } from "radash";

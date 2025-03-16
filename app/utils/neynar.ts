@@ -1,3 +1,5 @@
+"use server";
+
 import type {
   BulkUsersResponse,
   User as NeynarUser,
