@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  LOCAL_GDD_MODE_FID,
-  useFrame,
-} from "~/components/context/FrameContext";
+import { useFrame } from "~/components/context/FrameContext";
 import { useSignIn } from "~/hooks/use-sign-in";
 
 export const Route = createFileRoute("/whut")({
@@ -13,7 +10,7 @@ function Me() {
   const { contextFid, context } = useFrame();
   const { error, logout, signIn, isSignedIn } = useSignIn();
 
-  return contextFid === LOCAL_GDD_MODE_FID ? (
+  return (
     <div className="flex flex-col items-center justify-center">
       {error && (
         <p className="text-error">
@@ -41,12 +38,11 @@ function Me() {
         </button>
       )}
     </div>
-  ) : null;
+  );
 }
 
 function Home() {
   const { openUrl } = useFrame();
-  const { error } = useSignIn();
 
   return (
     <>
