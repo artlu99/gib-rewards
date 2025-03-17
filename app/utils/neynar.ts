@@ -9,7 +9,7 @@ import { fetcher } from "itty-fetcher";
 
 const neynarApi = fetcher({ base: "https://api.neynar.com" });
 
-const cachedFetcherGet = async <T>(url: string) => {
+const cachedFetcherGet = async <T>(url: string, experimental = false) => {
   const redis = new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL,
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
@@ -23,7 +23,7 @@ const cachedFetcherGet = async <T>(url: string) => {
   const res = await neynarApi.get(url, undefined, {
     headers: {
       "x-api-key": process.env.NEYNAR_API_KEY,
-      "x-neynar-experimental": "false",
+      "x-neynar-experimental": experimental ? "true" : "false",
     },
   });
 
@@ -41,4 +41,15 @@ export const fetchUser = async (fid: number): Promise<NeynarUser> => {
   } catch (error) {
     throw new Error("Failed to fetch Farcaster user on Neynar");
   }
+};
+
+export const getUsers = async (
+  fids: number[],
+  viewerFid = 6546
+): Promise<BulkUsersResponse> => {
+  const res = await cachedFetcherGet<BulkUsersResponse>(
+    `/v2/farcaster/user/bulk?viewer_fid=${viewerFid}&fids=${fids.join(",")}`,
+    true
+  );
+  return res;
 };

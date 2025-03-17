@@ -1,4 +1,5 @@
 "use server";
+
 import {
   type ParseWebhookEvent,
   type ParseWebhookEventResult,
@@ -6,56 +7,28 @@ import {
   parseWebhookEvent,
 } from "@farcaster/frame-node";
 import {
-  type FrameNotificationDetails,
   type SendNotificationRequest,
   sendNotificationResponseSchema,
 } from "@farcaster/frame-sdk";
 import { json } from "@tanstack/react-start";
 import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { setResponseStatus } from "@tanstack/react-start/server";
-import { Redis } from "@upstash/redis/cloudflare";
+import {
+  deleteUserNotificationDetails,
+  getUserNotificationDetails,
+  setUserNotificationDetails,
+} from "~/utils/notifications";
 
 const hubUrl = "https://nemes.farcaster.xyz:2281";
 
-const framesRedis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-function getUserNotificationDetailsKey(fid: number): string {
-  return `gib-rewards:user:${fid}:notification-details`;
-}
-
-async function getUserNotificationDetails(
-  fid: number
-): Promise<FrameNotificationDetails | null> {
-  return await framesRedis.get<FrameNotificationDetails>(
-    getUserNotificationDetailsKey(fid)
-  );
-}
-
-async function setUserNotificationDetails(
-  fid: number,
-  notificationDetails: FrameNotificationDetails
-): Promise<void> {
-  await framesRedis.set(
-    getUserNotificationDetailsKey(fid),
-    notificationDetails
-  );
-}
-
-async function deleteUserNotificationDetails(fid: number): Promise<void> {
-  await framesRedis.del(getUserNotificationDetailsKey(fid));
-}
-
 async function sendFrameNotification({
   fid,
-  title,
   body,
+  title = "SassyHash 💅 Contest",
 }: {
   fid: number;
-  title: string;
   body: string;
+  title?: string;
 }) {
   const userNotificationDetails = await getUserNotificationDetails(fid);
   if (!userNotificationDetails) {
@@ -138,7 +111,6 @@ export const APIRoute = createAPIFileRoute("/api/webhook")({
 
           await sendFrameNotification({
             fid,
-            title: "SassyHash 💅 Contest",
             body: "Welcome to SassyHash 💅 Contest, a weekly rewards contest to discover and reward the most engaging casterooors.",
           });
         }
@@ -151,7 +123,6 @@ export const APIRoute = createAPIFileRoute("/api/webhook")({
         await setUserNotificationDetails(fid, event.notificationDetails);
         await sendFrameNotification({
           fid,
-          title: "SassyHash 💅 Contest",
           body: "SassyHash 💅 Notifications are now enabled. Turn off at any time, and follow /p2p for announcements.",
         });
 
