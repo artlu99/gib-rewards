@@ -45,10 +45,6 @@ function PostsLayoutComponent() {
 
   const [isSavingBestOfSassy, setIsSavingBestOfSassy] = useState(false);
   const [savedMessageBestOfSassy, setSavedMessageBestOfSassy] = useState("");
-  const [sortBy, setSortBy] = useState<"views" | "likes" | "timestamp">(
-    "views"
-  );
-  const [filterZeros, setFilterZeros] = useState(false);
 
   const { logout, signIn } = useSignIn();
 
@@ -63,6 +59,10 @@ function PostsLayoutComponent() {
     excludedCasts,
     clearExcludedCasts,
     setWinners,
+    sortBy,
+    setSortBy,
+    filterZeros,
+    setFilterZeros,
   } = useBearStore();
   const { topN, minMods } = rulesConfig;
 
@@ -77,7 +77,7 @@ function PostsLayoutComponent() {
     }
   }, [contextFid, logout, signIn]);
 
-  const { data: following } = useFollowing(contextFid);
+  const { data: following } = useFollowing(contextFid ?? null);
 
   const handleSort = (sortType: "views" | "likes" | "timestamp") => {
     setSortBy(sortType);
@@ -128,7 +128,7 @@ function PostsLayoutComponent() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    ...castsInfiniteQueryOptions(contextFid),
+    ...castsInfiniteQueryOptions(contextFid ?? null),
     // biome-ignore lint/suspicious/noExplicitAny: too gnarly
     initialData: preload as any,
   });

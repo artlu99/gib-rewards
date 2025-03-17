@@ -17,6 +17,10 @@ type BearStore = {
   clearExcludedCasts: () => void;
   winners: Winners[];
   setWinners: (winners: Winners[]) => void;
+  sortBy: "views" | "likes" | "timestamp";
+  setSortBy: (sortBy: "views" | "likes" | "timestamp") => void;
+  filterZeros: boolean;
+  setFilterZeros: (filterZeros: boolean) => void;
 };
 
 export const useBearStore = create<BearStore>()(
@@ -53,6 +57,10 @@ export const useBearStore = create<BearStore>()(
       clearExcludedCasts: () => set({ excludedCasts: [] }),
       winners: [],
       setWinners: (winners: Winners[]) => set({ winners }),
+      sortBy: "views",
+      setSortBy: (sortBy: "views" | "likes" | "timestamp") => set({ sortBy }),
+      filterZeros: false,
+      setFilterZeros: (filterZeros: boolean) => set({ filterZeros }),
     }),
     { name: "bear-store", storage: createJSONStorage(() => sessionStorage) }
   )
