@@ -25,6 +25,26 @@ slider for totalPool
 users
 pfp on leaderboard (save user each time)
 
-message Burrr, Pichi
-message Jacek, Colton, Jack, Proxy, Anonpapi, McBain
 message top 20 on leaderboard
+
+
+
+
+An open letter:
+
+As one of the Top 20 on the Warpcast Rewards leaderboard, you have been clearly identified as a leader in the space: for your
+wisdom, insights, creativity, and creativity.
+
+I invite you to try SassyHash 💅 Rewards this week, in parallel with your regular pursuit of personal excellence.
+
+How: install frame, use Keccak256 Composer Action to write, use SassyHash Keccak256 Cast Action to read. 
+
+Please ask in public or private about anything that remains unclear!
+
+Best,
+Sassy 💅 
+
+https://gib-rewards.artlu.xyz
+
+
+one-time tagging 1/3
