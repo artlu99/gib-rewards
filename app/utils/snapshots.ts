@@ -74,8 +74,10 @@ export const saveWinners = createServerFn({ method: "POST" })
     await redis.set("snapshot-winners", {
       winners: validated.data,
       rulesConfig,
-      timestamp: Date.now(),
-    });
+        timestamp: Date.now(),
+      },
+      { ex: 60 * 60 * 24 * 3 } // 3 days
+    );
 
     return { success: true };
   });
@@ -105,7 +107,9 @@ export const saveBestOfSassy = createServerFn({ method: "POST" })
       bestOfSassy: validated.data,
       rulesConfig,
       timestamp: Date.now(),
-    });
+    },
+      { ex: 60 * 60 * 24 * 3 } // 3 days
+    );
 
     return { success: true };
   });
