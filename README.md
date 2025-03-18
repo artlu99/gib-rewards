@@ -33,18 +33,23 @@ message top 20 on leaderboard
 An open letter:
 
 As one of the Top 20 on the Warpcast Rewards leaderboard, you have been clearly identified as a leader in the space: for your
-wisdom, insights, creativity, and creativity.
+wisdom, insights, attractiveness, creativity, and creativity.
 
 I invite you to try SassyHash 💅 Rewards this week, in parallel with your regular pursuit of personal excellence.
 
 How: install frame, use Keccak256 Composer Action to write, use SassyHash Keccak256 Cast Action to read. 
 
-Please ask in public or private about anything that remains unclear!
+Cast SassyHash anywhere. You are responsible for your own consequences. /p2p is a safe space.
+
+Please ask in public or private if anything remains unclear! 
 
 Best,
-Sassy 💅 
+artlu 💅 
 
 https://gib-rewards.artlu.xyz
 
 
 one-time tagging 1/3
+
+@tricil.eth
+

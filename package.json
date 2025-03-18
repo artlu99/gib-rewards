@@ -7,6 +7,7 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "notifs": "tsx scripts/notifs.ts",
+    "reset": "tsx scripts/reset.ts",
     "start": "vinxi start"
   },
   "dependencies": {

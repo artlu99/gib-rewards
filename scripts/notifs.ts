@@ -124,7 +124,7 @@ const sendNotifications = async (
       chunk.map(async (fid) => {
         await sendFrameNotification({
           fid,
-          body: `Weekly Rewards begins now! $${totalPool} for the top ${topN} qualified SassyHash casts`,
+          body: `Weekly Rewards has begun! $${totalPool} for the top ${topN} qualified SassyHash casts`,
         });
       })
     );
@@ -133,14 +133,14 @@ const sendNotifications = async (
 };
 
 if (!DO_NOT_RUN) {
-  const minUserScore = 0.8;
+  const minUserScore = 0.7;
 
   const res = await getNotifications(minUserScore);
   console.log(res.length, "users above score", minUserScore);
 
   console.log(
     "sending notifications to",
-    res.map((r) => `${r.username}:${r.fid} (${r.userScore})`)
+    res.map((r) => `${r.username}:${r.fid} (${r.userScore}) ${r.followerCount} followers`)
   );
 
   if (!DO_NOT_SEND) {

@@ -59,9 +59,9 @@ function Home() {
           self-sovereign, transparent, and sufficiently decentralized blah blah.
         </p>
         <p>
-          Read more
+          Warpcast channel
           <button
-            onClick={() => openUrl("https://sassyhash.artlu.xyz/blog")}
+            onClick={() => openUrl("https://warpcast.com/~/channel/p2p")}
             type="button"
             className="link link-secondary text-lg p-1 active:scale-95 transition-transform"
           >
