@@ -1,6 +1,8 @@
 "use server";
 
 import type {
+  AddressBalance,
+  BalanceResponse,
   BulkUsersResponse,
   User as NeynarUser,
 } from "@neynar/nodejs-sdk/build/api";
@@ -52,4 +54,17 @@ export const getUsers = async (
     true
   );
   return res;
+};
+
+export const getTokenBalances = async (
+  fid: number
+): Promise<AddressBalance[] | undefined> => {
+  try {
+    const res = await cachedFetcherGet<BalanceResponse>(
+      `/v2/farcaster/user/balance?fid=${fid}&networks=base`
+    );
+    return res.user_balance?.address_balances;
+  } catch (error) {
+    throw new Error("Failed to fetch Token Balances on Neynar");
+  }
 };
