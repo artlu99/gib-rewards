@@ -250,12 +250,11 @@ function PostsLayoutComponent() {
   const { data: likesData, isLoading: isLoadingLikes } = useQuery({
     queryKey: ["allCastsLikes", casts.map((c) => c.castHash).join(",")],
     queryFn: async () => {
-      // You could batch this in chunks of ~20 casts if needed
       const allLikesData: Record<string, number[]> = {};
       const lastLikedTimes: Record<string, number> = {};
 
       // Process in smaller batches to avoid request size limits
-      const castBatches = cluster(casts, 20);
+      const castBatches = cluster(casts, 25);
 
       for (const batch of castBatches) {
         await Promise.all(
