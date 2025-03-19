@@ -76,7 +76,7 @@ function LayoutBComponent() {
               SassyMods 💁‍♀️ / Sassquatch 🦧
             </li>
             <li>
-              Comienza a 1, actualmente <strong>{minMods}</strong>, se ajustará
+              Mínimo: <strong>{minMods}</strong>, se ajustará
               según sea necesario
             </li>
             <li>
@@ -97,16 +97,16 @@ function LayoutBComponent() {
         </summary>
         <div className="prose dark:prose-invert prose-neutral mt-4 px-3 pb-4 max-w-none">
           <ul>
-            <li>Puntuación bruta para cada cast: </li>
-            <ol>
-              <li>miradas x {vector.views.toLocaleString()}</li>
-              <li>likes de SassyMods: x {vector.likes.toLocaleString()}</li>
+            <li>Puntuación bruta para cada cast es suma de: </li>
+            <ul>
+              <li>miradas x <strong>{vector.views.toLocaleString()}</strong></li>
+              <li>likes de SassyMods: x <strong>{vector.likes.toLocaleString()}</strong></li>
               <li>
                 respuestas de otros usuarios, que reciben likes del caster
-                original: x {vector.replies.toLocaleString()}
+                original: x <strong>{vector.replies.toLocaleString()}</strong>
               </li>
-            </ol>
-            <li>Puntuación bruta ➡️ Puntuación suave via función arctan 🤓</li>
+            </ul>
+            <li>Puntuación suave = Z'(arctan(Z(Puntuación bruta))) 🤓</li>
             <ul>
               <li>toma de extremos, los mueve al medio</li>
               <li>

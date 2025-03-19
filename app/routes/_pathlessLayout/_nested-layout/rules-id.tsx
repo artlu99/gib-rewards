@@ -82,8 +82,7 @@ function LayoutAComponent() {
               Sassquatch 🦧 agar dihitung
             </li>
             <li>
-              Awalnya butuh 1, saat ini <strong>{minMods}</strong>, bisa naik
-              kalau perlu
+              Minimum: <strong>{minMods}</strong>, bisa naik kalau perlu
             </li>
             <li>Nggak ada satu moderator yang punya pengaruh besar</li>
             <li>
@@ -103,16 +102,16 @@ function LayoutAComponent() {
         </summary>
         <div className="prose dark:prose-invert prose-neutral mt-4 px-3 pb-4 max-w-none">
           <ul>
-            <li>Skor mentah setiap cast dihitung dari: </li>
-            <ol>
-              <li>views x {vector.views.toLocaleString()}</li>
-              <li>like dari SassyMods: x {vector.likes.toLocaleString()}</li>
+            <li>Skor mentah setiap cast adalah jumlah: </li>
+            <ul>
+              <li>views x <strong>{vector.views.toLocaleString()}</strong></li>
+              <li>like dari SassyMods: x <strong>{vector.likes.toLocaleString()}</strong></li>
               <li>
                 balasan dari user lain yang dapat like dari caster asli: x{" "}
-                {vector.replies.toLocaleString()}
+                <strong>{vector.replies.toLocaleString()}</strong>
               </li>
-            </ol>
-            <li>Skor mentah ➡️ dihaluskan pakai fungsi arctan 🤓</li>
+            </ul>
+            <li>Skor dihaluskan = Z'(arctan(Z(Skor mentah))) 🤓</li>
             <ul>
               <li>Ambil nilai ekstrim, geser ke tengah</li>
               <li>

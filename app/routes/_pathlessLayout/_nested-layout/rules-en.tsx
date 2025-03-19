@@ -76,7 +76,7 @@ function LayoutAComponent() {
               SassyMods 💁‍♀️ / Sassquatch 🦧
             </li>
             <li>
-              Starts at 1, currently <strong>{minMods}</strong>, will tune as
+              Minimum: <strong>{minMods}</strong>, will tune as
               necessary
             </li>
             <li>No individual moderator has outsized influence</li>
@@ -95,16 +95,16 @@ function LayoutAComponent() {
         </summary>
         <div className="prose dark:prose-invert prose-neutral mt-4 px-3 pb-4 max-w-none">
           <ul>
-            <li>Raw score for each cast: </li>
-            <ol>
-              <li>views x {vector.views.toLocaleString()}</li>
-              <li>SassyMod likes: x {vector.likes.toLocaleString()}</li>
+            <li>Raw score for each cast is sum of: </li>
+            <ul>
+              <li>views x <strong>{vector.views.toLocaleString()}</strong></li>
+              <li>SassyMod likes: x <strong>{vector.likes.toLocaleString()}</strong></li>
               <li>
                 replies by other users, that get liked by original caster: x{" "}
-                {vector.replies.toLocaleString()}
+                <strong>{vector.replies.toLocaleString()}</strong>
               </li>
-            </ol>
-            <li>Raw score ➡️ Smooth score via arctan function 🤓</li>
+            </ul>
+            <li>Smooth score = Z'(arctan(Z(Raw score))) 🤓</li>
             <ul>
               <li>takes from extremes, moves them to the middle</li>
               <li>
