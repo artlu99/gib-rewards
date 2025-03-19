@@ -8,6 +8,7 @@
     "build": "vinxi build",
     "notifs": "tsx scripts/notifs.ts",
     "reset": "tsx scripts/reset.ts",
+    "refresh-spam-labels": "tsx scripts/refresh-spam-labels.ts",
     "start": "vinxi start"
   },
   "dependencies": {

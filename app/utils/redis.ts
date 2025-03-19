@@ -47,6 +47,10 @@ class RedisCache {
     await this.redis.expire(interactionsSetKey, ttl);
     await this.redis.expire("action-usage", ttl);
   }
+
+  async getSpamLabel(fid: number): Promise<string | null> {
+    return await this.redis.hget("gib-rewards:labels", fid.toString());
+  }
 }
 
 export const logCastDecode = createServerFn({ method: "POST" })
