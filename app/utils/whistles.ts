@@ -149,8 +149,8 @@ export async function getMostSeenCasts({
           count: Number(cnt),
         };
       }
-      // fid 1019684 is username iluv-u (with hyphens in the username)
-      if (fid === 1019684) {
+      // fid 1019684 is username iluv-u, fid 476033 is username torii-stories (with hyphens in the username)
+      if ([1019684, 476033].includes(fid)) {
         const username = `${parts[1]}-${parts[2]}`;
         const castHash = parts[parts.length - 1];
         const rootParentUrl = parts.slice(3, -1).join("-");
