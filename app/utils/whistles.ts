@@ -136,6 +136,19 @@ export async function getMostSeenCasts({
     .map(([key, cnt]) => {
       const parts = key.split("-");
       const fid = Number(parts[0]);
+      // fid 875987 is username i-d0-care (with hyphens in the username)
+      if (fid === 875987) {
+        const username = `${parts[1]}-${parts[2]}-${parts[3]}`;
+        const castHash = parts[parts.length - 1];
+        const rootParentUrl = parts.slice(4, -1).join("-");
+        return {
+          fid,
+          username,
+          rootParentUrl,
+          castHash,
+          count: Number(cnt),
+        };
+      }
       const username = parts[1];
       const castHash = parts[parts.length - 1];
       const rootParentUrl = parts.slice(2, -1).join("-");
