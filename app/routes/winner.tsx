@@ -1,9 +1,24 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
+import { getUsers } from "~/utils/neynar";
 import { useBearStore } from "~/utils/zustand";
 
 const LOCAL_DEBUGGING = import.meta.env.DEV;
+
+const fetchUsers = createServerFn({
+  method: "GET",
+})
+  .validator((d: { fids: number[] }) => d)
+  .handler(async ({ data }) => {
+    const { fids } = data;
+
+    const users = await getUsers(fids);
+
+    return users;
+  });
 
 export const Route = createFileRoute("/winner")({
   component: Winner,
@@ -47,6 +62,12 @@ function Winner() {
     }
   };
 
+  const { data: users } = useQuery({
+    queryKey: ["users", winners.map((winner) => winner.fid)],
+    queryFn: () =>
+      fetchUsers({ data: { fids: winners.map((winner) => winner.fid) } }),
+  });
+
   return (
     <>
       {isInstalled || LOCAL_DEBUGGING ? (
@@ -60,6 +81,7 @@ function Winner() {
                 const totalCasts = casts.filter(
                   (cast) => cast.fid === fid
                 ).length;
+                const user = users?.users.find((user) => user.fid === fid);
                 return (
                   <div
                     key={username}
@@ -72,10 +94,17 @@ function Winner() {
                         </div>
                         <button
                           type="button"
-                          className="text-lg font-medium hover:underline active:scale-95 transition-transform"
+                          className="flex items-center justify-between w-full text-lg font-medium hover:underline active:scale-95 transition-transform relative"
                           onClick={() => viewProfile(fid, username)}
                         >
-                          @{username}
+                          <span> @{username}</span>
+                          {user?.pfp_url ? (
+                            <img
+                              src={user.pfp_url}
+                              alt={user.username}
+                              className="w-10 h-10 rounded-md absolute right-4 translate-y-2 opacity-70"
+                            />
+                          ) : null}
                         </button>
                       </div>
 
