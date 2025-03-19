@@ -149,6 +149,19 @@ export async function getMostSeenCasts({
           count: Number(cnt),
         };
       }
+      // fid 1019684 is username iluv-u (with hyphens in the username)
+      if (fid === 1019684) {
+        const username = `${parts[1]}-${parts[2]}`;
+        const castHash = parts[parts.length - 1];
+        const rootParentUrl = parts.slice(3, -1).join("-");
+        return {
+          fid,
+          username,
+          rootParentUrl,
+          castHash,
+          count: Number(cnt),
+        };
+      }
       const username = parts[1];
       const castHash = parts[parts.length - 1];
       const rootParentUrl = parts.slice(2, -1).join("-");
