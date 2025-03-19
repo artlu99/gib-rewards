@@ -104,7 +104,7 @@ function LayoutAComponent() {
           <ul>
             <li>Skor mentah setiap cast adalah jumlah: </li>
             <ul>
-              <li>views x <strong>{vector.views.toLocaleString()}</strong></li>
+              <li>views unik x <strong>{vector.views.toLocaleString()}</strong></li>
               <li>like dari SassyMods: x <strong>{vector.likes.toLocaleString()}</strong></li>
               <li>
                 balasan dari user lain yang dapat like dari caster asli: x{" "}

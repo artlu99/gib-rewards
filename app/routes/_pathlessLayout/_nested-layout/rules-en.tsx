@@ -97,7 +97,7 @@ function LayoutAComponent() {
           <ul>
             <li>Raw score for each cast is sum of: </li>
             <ul>
-              <li>views x <strong>{vector.views.toLocaleString()}</strong></li>
+              <li>unique views x <strong>{vector.views.toLocaleString()}</strong></li>
               <li>SassyMod likes: x <strong>{vector.likes.toLocaleString()}</strong></li>
               <li>
                 replies by other users, that get liked by original caster: x{" "}

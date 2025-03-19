@@ -99,7 +99,7 @@ function LayoutBComponent() {
           <ul>
             <li>Puntuación bruta para cada cast es suma de: </li>
             <ul>
-              <li>miradas x <strong>{vector.views.toLocaleString()}</strong></li>
+              <li>miradas únicas x <strong>{vector.views.toLocaleString()}</strong></li>
               <li>likes de SassyMods: x <strong>{vector.likes.toLocaleString()}</strong></li>
               <li>
                 respuestas de otros usuarios, que reciben likes del caster
