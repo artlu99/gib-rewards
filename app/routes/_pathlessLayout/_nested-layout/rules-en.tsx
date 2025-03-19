@@ -28,7 +28,7 @@ function LayoutAComponent() {
             </li>
             <li>One user can win rewards for multiple casts</li>
             <li>
-              Attempts to farm/game are welcome, and will be rewarded! <br />
+              Attempts to farm/game are welcome, and success will be rewarded! <br />
               We learn in public
             </li>
             <li>

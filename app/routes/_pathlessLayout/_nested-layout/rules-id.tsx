@@ -31,7 +31,7 @@ function LayoutAComponent() {
             </li>
             <li>
               Mau farming atau coba trik? Silakan! Justru bisa dapat hadiah
-              juga.
+              juga jika berhasil.
               <br />
               Semua proses transparan, kita belajar bareng{" "}
             </li>

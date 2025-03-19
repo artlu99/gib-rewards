@@ -28,7 +28,7 @@ function LayoutBComponent() {
             </li>
             <li>Un usuario puede ganar más por múltiples casts</li>
             <li>
-              Intentos de farming/juego son bienvenidos y serán recompensados!
+              Intentos de farming/juego son bienvenidos y el éxito será recompensado!
               Aprendemos en público
             </li>
             <li>
