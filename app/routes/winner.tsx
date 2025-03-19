@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
 import { getUsers } from "~/utils/neynar";
+import { fetchUserLabel } from "~/utils/redis";
 import { useBearStore } from "~/utils/zustand";
 
 const LOCAL_DEBUGGING = import.meta.env.DEV;
@@ -18,6 +19,20 @@ const fetchUsers = createServerFn({
     const users = await getUsers(fids);
 
     return users;
+  });
+
+const fetchUserLabels = createServerFn({
+  method: "GET",
+})
+  .validator((d: { fids: number[] }) => d)
+  .handler(async ({ data }) => {
+    const { fids } = data;
+
+    const labels = await Promise.all(
+      fids.map((fid) => fetchUserLabel({ data: { fid } }))
+    );
+
+    return labels;
   });
 
 export const Route = createFileRoute("/winner")({
@@ -63,9 +78,17 @@ function Winner() {
   };
 
   const { data: users } = useQuery({
+    enabled: winners.length > 0,
     queryKey: ["users", winners.map((winner) => winner.fid)],
     queryFn: () =>
       fetchUsers({ data: { fids: winners.map((winner) => winner.fid) } }),
+  });
+
+  const { data: userLabels } = useQuery({
+    enabled: winners.length > 0,
+    queryKey: ["userLabels", winners.map((winner) => winner.fid)],
+    queryFn: () =>
+      fetchUserLabels({ data: { fids: winners.map((winner) => winner.fid) } }),
   });
 
   return (
@@ -82,6 +105,7 @@ function Winner() {
                   (cast) => cast.fid === fid
                 ).length;
                 const user = users?.users.find((user) => user.fid === fid);
+                const label = userLabels?.[index];
                 return (
                   <div
                     key={username}
@@ -102,7 +126,11 @@ function Winner() {
                             {user?.experimental?.neynar_user_score ? (
                               <span className="text-xs opacity-50 align-middle">
                                 {user.experimental.neynar_user_score} Neynar
-                                Score
+                              </span>
+                            ) : null}
+                            {label !== null ? (
+                              <span className="text-xs opacity-50 align-middle">
+                                {" "}/ WC {label}
                               </span>
                             ) : null}
                           </span>

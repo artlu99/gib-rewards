@@ -53,6 +53,19 @@ class RedisCache {
   }
 }
 
+export const fetchUserLabel = createServerFn({
+  method: "GET",
+})
+  .validator((d: { fid: number }) => d)
+  .handler(async ({ data }) => {
+    const { fid } = data;
+
+    const redisCache = new RedisCache();
+    const label = await redisCache.getSpamLabel(fid);
+
+    return label;
+  });
+  
 export const logCastDecode = createServerFn({ method: "POST" })
   .validator(
     (
