@@ -97,7 +97,15 @@ function Winner() {
                           className="flex items-center justify-between w-full text-lg font-medium hover:underline active:scale-95 transition-transform relative"
                           onClick={() => viewProfile(fid, username)}
                         >
-                          <span> @{username}</span>
+                          <span>
+                            @{username}{" "}
+                            {user?.experimental?.neynar_user_score ? (
+                              <span className="text-xs opacity-50 align-middle">
+                                {user.experimental.neynar_user_score} Neynar
+                                Score
+                              </span>
+                            ) : null}
+                          </span>
                           {user?.pfp_url ? (
                             <img
                               src={user.pfp_url}
