@@ -42,12 +42,12 @@ export const SassyCast = ({
   // Remove the useQuery for castLikes since data is now passed in
 
   useEffect(() => {
-    if (modLikes.length > 0) {
+    if (lastLikedTime) {
       if (BLOCKLIST.includes(cast.fid) || modLikes.length < minMods) {
         addExcludedCast(cast.castHash);
       }
     }
-  }, [modLikes, addExcludedCast, cast, minMods]);
+  }, [lastLikedTime, modLikes, addExcludedCast, cast, minMods]);
 
   useEffect(() => {
     if (cast.decodedText && showDecodedText) {
