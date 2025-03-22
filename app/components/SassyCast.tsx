@@ -34,12 +34,9 @@ export const SassyCast = ({
   const [currentUserLiked, setCurrentUserLiked] = useState<boolean>();
   const { addExcludedCast } = useBearStore();
 
-  // If likesData is provided, use it instead of fetching
   const modLikes = likesData?.modLikes || [];
   const followingLikes = likesData?.followingLikes || [];
   const castLikes = likesData?.allLikes || [];
-
-  // Remove the useQuery for castLikes since data is now passed in
 
   useEffect(() => {
     if (lastLikedTime) {

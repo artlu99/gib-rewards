@@ -121,7 +121,7 @@ function PostsLayoutComponent() {
   const observerTarget = useRef(null);
 
   const {
-    data,
+    data: castsData,
     isFetching,
     refetch,
     fetchNextPage,
@@ -132,6 +132,108 @@ function PostsLayoutComponent() {
     // biome-ignore lint/suspicious/noExplicitAny: too gnarly
     initialData: preload as any,
   });
+
+  const { data: likesData, isLoading: isLoadingLikes } = useQuery({
+    queryKey: ["allCastsLikes", casts.map((c) => c.castHash).join(",")],
+    queryFn: async () => {
+      const allLikesData: Record<string, number[]> = {};
+      const lastLikedTimes: Record<string, number> = {};
+
+      // Process in smaller batches to avoid request size limits
+      const castBatches = cluster(casts, 25);
+
+      for (const batch of castBatches) {
+        await Promise.all(
+          batch.map(async (cast) => {
+            try {
+              const res = await client.get<{ messages: Message[] }>(
+                `/v1/reactionsByCast?${new URLSearchParams({
+                  target_fid: cast.fid.toString(),
+                  target_hash: cast.castHash,
+                  reaction_type: "1", // 1 === likes
+                  page_size: MAX_REACTIONS_PAGE_SIZE.toString(),
+                })}`
+              );
+
+              allLikesData[cast.castHash] =
+                res?.messages.map((m) => m.data?.fid ?? 0) || [];
+
+              // Update last liked time for each cast with the timestamp of the most recent like
+              lastLikedTimes[cast.castHash] =
+                res?.messages.reduce((max, m) => {
+                  const timestamp =
+                    ((m.data?.timestamp ?? 0) + FARCASTER_EPOCH) * 1000;
+                  return Math.max(max, timestamp);
+                }, 0) ?? 0;
+            } catch (error) {
+              console.error(
+                `Error fetching likes for cast ${cast.castHash}`,
+                error
+              );
+              allLikesData[cast.castHash] = [];
+            }
+          })
+        );
+      }
+
+      return { allLikesData, lastLikedTimes };
+    },
+    enabled: casts.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    // Wait for initial casts data
+    if (!castsData?.pages || castsData.pages.length === 0) {
+      return;
+    }
+
+    // Process casts
+    const allPagesCasts = castsData.pages.flatMap((page) => page.data);
+    const uniqueCasts = unique(allPagesCasts, (c) => c.castHash);
+    setCasts(uniqueCasts);
+
+    // Filter and calculate scores
+    const filteredCasts = uniqueCasts
+      .filter((cast) => !excludedCasts.includes(cast.castHash))
+      .filter((cast) => !DO_NOT_PAY.includes(cast.fid));
+
+    const newSmoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
+    const winners = calculateWinners(newSmoothScores, rulesConfig);
+
+    setSmoothScores(newSmoothScores);
+    setWinners(winners);
+
+    // Handle sorting if likes data is available
+    if (sortBy === "likes" && likesData) {
+      const sortedCasts = [...uniqueCasts].sort((a, b) => {
+        const aLikes = castsLikesMap[a.castHash]?.followingLikes?.length || 0;
+        const bLikes = castsLikesMap[b.castHash]?.followingLikes?.length || 0;
+        return bLikes - aLikes;
+      });
+      setCasts(sortedCasts);
+    } else if (sortBy === "views") {
+      setCasts([...uniqueCasts].sort((a, b) => b.count - a.count));
+    } else if (sortBy === "timestamp" && likesData) {
+      setCasts(
+        [...uniqueCasts].sort((a, b) => {
+          const aTimestamp = likesData.lastLikedTimes[a.castHash] ?? 0;
+          const bTimestamp = likesData.lastLikedTimes[b.castHash] ?? 0;
+          return bTimestamp - aTimestamp;
+        })
+      );
+    }
+  }, [
+    castsData,
+    likesData,
+    excludedCasts,
+    topN,
+    rulesConfig,
+    sortBy,
+    setCasts,
+    setSmoothScores,
+    setWinners,
+  ]);
 
   const [showScrollButton, setShowScrollButton] = useState(false);
 
@@ -203,37 +305,6 @@ function PostsLayoutComponent() {
     };
   }, [handleObserver]);
 
-  // Update effect to update casts when data changes
-  useEffect(() => {
-    if (data?.pages && data.pages.length > 0) {
-      // Flatten all pages of data and extract the casts
-      const allPagesCasts = data.pages.flatMap((page) => page.data);
-      setCasts(unique(allPagesCasts, (c) => c.castHash));
-    }
-  }, [data, setCasts]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: also use count in effect dependency
-  useEffect(() => {
-    if (casts.length === 0) {
-      return;
-    }
-    const filteredCasts = casts
-      .filter((cast) => !excludedCasts.includes(cast.castHash))
-      .filter((cast) => !DO_NOT_PAY.includes(cast.fid));
-    const newSmoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
-    const winners = calculateWinners(newSmoothScores, rulesConfig);
-    setSmoothScores(newSmoothScores);
-    setWinners(winners);
-  }, [
-    casts,
-    excludedCasts,
-    excludedCasts.length,
-    topN,
-    rulesConfig,
-    setSmoothScores,
-    setWinners,
-  ]);
-
   // Add new state for consolidated likes data
   const [castsLikesMap, setCastsLikesMap] = useState<
     Record<
@@ -245,56 +316,6 @@ function PostsLayoutComponent() {
       }
     >
   >({});
-
-  // Fetch all likes in batches
-  const { data: likesData, isLoading: isLoadingLikes } = useQuery({
-    queryKey: ["allCastsLikes", casts.map((c) => c.castHash).join(",")],
-    queryFn: async () => {
-      const allLikesData: Record<string, number[]> = {};
-      const lastLikedTimes: Record<string, number> = {};
-
-      // Process in smaller batches to avoid request size limits
-      const castBatches = cluster(casts, 25);
-
-      for (const batch of castBatches) {
-        await Promise.all(
-          batch.map(async (cast) => {
-            try {
-              const res = await client.get<{ messages: Message[] }>(
-                `/v1/reactionsByCast?${new URLSearchParams({
-                  target_fid: cast.fid.toString(),
-                  target_hash: cast.castHash,
-                  reaction_type: "1", // 1 === likes
-                  page_size: MAX_REACTIONS_PAGE_SIZE.toString(),
-                })}`
-              );
-
-              allLikesData[cast.castHash] =
-                res?.messages.map((m) => m.data?.fid ?? 0) || [];
-
-              // Update last liked time for each cast with the timestamp of the most recent like
-              lastLikedTimes[cast.castHash] =
-                res?.messages.reduce((max, m) => {
-                  const timestamp =
-                    ((m.data?.timestamp ?? 0) + FARCASTER_EPOCH) * 1000;
-                  return Math.max(max, timestamp);
-                }, 0) ?? 0;
-            } catch (error) {
-              console.error(
-                `Error fetching likes for cast ${cast.castHash}`,
-                error
-              );
-              allLikesData[cast.castHash] = [];
-            }
-          })
-        );
-      }
-
-      return { allLikesData, lastLikedTimes };
-    },
-    enabled: casts.length > 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
 
   // Process the likes data
   useEffect(() => {
@@ -419,7 +440,7 @@ function PostsLayoutComponent() {
       </div>
 
       <div className="p-2 flex gap-2">
-        {data && data.pages.length > 0 && data.pages[0].data.length > 0 ? (
+        {casts && casts.length > 0 ? (
           <ol className="list-decimal pl-6 w-full max-w-full overflow-x-hidden text-xs">
             {sift(
               casts
