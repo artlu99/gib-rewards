@@ -35,7 +35,7 @@ const getCachedSpamLabel = async (fid: number) => {
     await spamLabelsRedis.hset(spamLabelsKey(), {
       [fid.toString()]: spamLabelFresh,
     });
-    await spamLabelsRedis.expire(spamLabelsKey(), 60 * 60 * 24 * 1); // 1 day
+    await spamLabelsRedis.expire(spamLabelsKey(), 60 * 60 * 24 * 4); // 4 days
     return spamLabelFresh;
   } catch (e) {
     console.error(e);
