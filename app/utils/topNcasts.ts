@@ -58,7 +58,7 @@ export const castsInfiniteQueryOptions = (contextFid: number | null) => {
     queryFn: async ({ pageParam }) => {
       return fetchCasts({
         data: {
-          limit: 50,
+          limit: 200,
           cursor: pageParam ?? undefined,
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         },
