@@ -30,7 +30,7 @@ export const useBearStore = create<BearStore>()(
         topN: 15,
         totalPool: 100,
         minPayout: 5,
-        minMods: 1,
+        minMods: 2,
         vector: {
           views: 1,
           likes: 0,
