@@ -228,16 +228,13 @@ function PostsLayoutComponent() {
     }
 
     // First enrich casts with their likes data
-    const castsWithLikes = filteredCasts.map((cast) => {
-      const enrichedCast = {
-        ...cast,
-        modLikes: castsLikesMap[cast.castHash]?.modLikes || [],
-        followingLikes: castsLikesMap[cast.castHash]?.followingLikes || [],
-        allLikes: castsLikesMap[cast.castHash]?.allLikes || [],
-        lastLikedTime: likesData.lastLikedTimes[cast.castHash] || 0,
-      };
-      return enrichedCast;
-    });
+    const castsWithLikes = filteredCasts.map((cast) => ({
+      ...cast,
+      modLikes: castsLikesMap[cast.castHash]?.modLikes || [],
+      followingLikes: castsLikesMap[cast.castHash]?.followingLikes || [],
+      allLikes: castsLikesMap[cast.castHash]?.allLikes || [],
+      lastLikedTime: likesData.lastLikedTimes[cast.castHash] || 0,
+    }));
 
     // Then filter for mod threshold
     const eligibleCasts = castsWithLikes.filter(
@@ -255,9 +252,17 @@ function PostsLayoutComponent() {
     const winners = calculateWinners(newSmoothScores, rulesConfig);
 
     return { smoothScores: newSmoothScores, winners };
-  }, [filteredCasts, likesData, castsLikesMap, minMods, topN, rulesConfig]);
+  }, [
+    filteredCasts,
+    likesData,
+    castsLikesMap,
+    minMods,
+    topN,
+    rulesConfig,
+    rulesConfig.minMods,
+  ]);
 
-  // Update scores immediately when calculated
+  // Update scores and winners when calculated
   useEffect(() => {
     if (!calculatedScores) return;
 
