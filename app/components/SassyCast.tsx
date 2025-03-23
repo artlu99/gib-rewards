@@ -1,6 +1,6 @@
 import { intlFormatDistance } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
 import { useFrame } from "~/components/context/FrameContext";
 import { getStoredToken } from "~/utils/auth";
@@ -38,13 +38,25 @@ export const SassyCast = ({
   const followingLikes = likesData?.followingLikes || [];
   const castLikes = likesData?.allLikes || [];
 
-  useEffect(() => {
-    if (lastLikedTime) {
-      if (BLOCKLIST.includes(cast.fid) || modLikes.length < minMods) {
-        addExcludedCast(cast.castHash);
-      }
+  const memoizedExcludedCheck = useMemo(() => {
+    // Don't exclude if we don't have likes data yet
+    if (!likesData) {
+      return false;
     }
-  }, [lastLikedTime, modLikes, addExcludedCast, cast, minMods]);
+
+    const shouldExclude =
+      BLOCKLIST.includes(cast.fid) ||
+      (likesData.modLikes?.length || 0) < minMods;
+
+    return shouldExclude;
+  }, [cast.fid, likesData, minMods]);
+
+  useEffect(() => {
+    // Only run exclusion logic when we have likes data
+    if (likesData && memoizedExcludedCheck) {
+      addExcludedCast(cast.castHash);
+    }
+  }, [memoizedExcludedCheck, cast, addExcludedCast, likesData]);
 
   useEffect(() => {
     if (cast.decodedText && showDecodedText) {

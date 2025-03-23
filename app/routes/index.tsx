@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { fetcher } from "itty-fetcher";
 import { cluster, sift, unique } from "radash";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SassyCast } from "~/components/SassyCast";
 import { useFrame } from "~/components/context/FrameContext";
 import { Eyeball, Flame, Heart } from "~/components/ui/Icons";
@@ -13,6 +13,7 @@ import { getStoredToken, verifyToken } from "~/utils/auth";
 import { FARCASTER_EPOCH } from "~/utils/hub";
 import { moderatorFids } from "~/utils/moderators";
 import { calculateSmoothScores } from "~/utils/smoothScores";
+import { sortCasts } from "~/utils/sorting";
 import { castsInfiniteQueryOptions } from "~/utils/topNcasts";
 import { calculateWinners } from "~/utils/winners";
 import { useBearStore } from "~/utils/zustand";
@@ -45,6 +46,16 @@ function PostsLayoutComponent() {
 
   const [isSavingBestOfSassy, setIsSavingBestOfSassy] = useState(false);
   const [savedMessageBestOfSassy, setSavedMessageBestOfSassy] = useState("");
+  const [castsLikesMap, setCastsLikesMap] = useState<
+    Record<
+      string,
+      {
+        allLikes: number[];
+        modLikes: number[];
+        followingLikes: number[];
+      }
+    >
+  >({});
 
   const { logout, signIn } = useSignIn();
 
@@ -63,6 +74,7 @@ function PostsLayoutComponent() {
     setSortBy,
     filterZeros,
     setFilterZeros,
+    addExcludedCast,
   } = useBearStore();
   const { topN, minMods } = rulesConfig;
 
@@ -79,51 +91,10 @@ function PostsLayoutComponent() {
 
   const { data: following } = useFollowing(contextFid ?? null);
 
-  const handleSort = (sortType: "views" | "likes" | "timestamp") => {
-    setSortBy(sortType);
-
-    if (sortType === "views") {
-      setCasts([...casts].sort((a, b) => b.count - a.count));
-    } else if (sortType === "timestamp") {
-      setCasts(
-        [...casts].sort((a, b) => {
-          const aTimestamp = likesData?.lastLikedTimes[a.castHash] ?? 0;
-          const bTimestamp = likesData?.lastLikedTimes[b.castHash] ?? 0;
-          return bTimestamp - aTimestamp;
-        })
-      );
-    } else if (sortType === "likes") {
-      setCasts(
-        [...casts].sort((a, b) => {
-          const aLikes = castsLikesMap[a.castHash]?.followingLikes?.length || 0;
-          const bLikes = castsLikesMap[b.castHash]?.followingLikes?.length || 0;
-          return bLikes - aLikes;
-        })
-      );
-    }
-  };
-
-  const handleRemoveMod = () => {
-    if (minMods > 0) {
-      setRulesConfig({ ...rulesConfig, minMods: minMods - 1 });
-      clearExcludedCasts();
-    }
-  };
-
-  const handleAddMod = () => {
-    if (minMods < 12) {
-      setRulesConfig({ ...rulesConfig, minMods: minMods + 1 });
-      clearExcludedCasts();
-    }
-  };
-
-  // Create ref for intersection observer
-  const observerTarget = useRef(null);
-
+  // 1. Load casts with infinite query
   const {
     data: castsData,
     isFetching,
-    refetch,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -133,15 +104,25 @@ function PostsLayoutComponent() {
     initialData: preload as any,
   });
 
-  const { data: likesData, isLoading: isLoadingLikes } = useQuery({
+  // 1. Initial casts loading - handle infinite query data properly
+  useEffect(() => {
+    if (!castsData?.pages) return;
+
+    // Combine all pages and ensure uniqueness
+    const allPagesCasts = castsData.pages.flatMap((page) => page.data);
+    const uniqueCasts = unique(allPagesCasts, (c) => c.castHash);
+
+    setCasts(uniqueCasts);
+  }, [castsData, setCasts]);
+
+  // 3. Load likes only after casts are processed
+  const { data: likesData } = useQuery({
     queryKey: ["allCastsLikes", casts.map((c) => c.castHash).join(",")],
     queryFn: async () => {
       const allLikesData: Record<string, number[]> = {};
       const lastLikedTimes: Record<string, number> = {};
 
-      // Process in smaller batches to avoid request size limits
       const castBatches = cluster(casts, 25);
-
       for (const batch of castBatches) {
         await Promise.all(
           batch.map(async (cast) => {
@@ -150,15 +131,13 @@ function PostsLayoutComponent() {
                 `/v1/reactionsByCast?${new URLSearchParams({
                   target_fid: cast.fid.toString(),
                   target_hash: cast.castHash,
-                  reaction_type: "1", // 1 === likes
+                  reaction_type: "1",
                   page_size: MAX_REACTIONS_PAGE_SIZE.toString(),
                 })}`
               );
 
               allLikesData[cast.castHash] =
                 res?.messages.map((m) => m.data?.fid ?? 0) || [];
-
-              // Update last liked time for each cast with the timestamp of the most recent like
               lastLikedTimes[cast.castHash] =
                 res?.messages.reduce((max, m) => {
                   const timestamp =
@@ -182,58 +161,159 @@ function PostsLayoutComponent() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // 1. First, let's clear out old excluded casts that aren't in our current set
   useEffect(() => {
-    // Wait for initial casts data
-    if (!castsData?.pages || castsData.pages.length === 0) {
-      return;
+    if (casts.length > 0) {
+      const currentCastHashes = new Set(casts.map((cast) => cast.castHash));
+      const validExcludedCasts = excludedCasts.filter((hash) =>
+        currentCastHashes.has(hash)
+      );
+
+      if (validExcludedCasts.length !== excludedCasts.length) {
+        clearExcludedCasts();
+        for (const hash of validExcludedCasts) {
+          addExcludedCast(hash);
+        }
+      }
+    }
+  }, [casts, excludedCasts, clearExcludedCasts, addExcludedCast]);
+
+  // 2. Debug the likes processing
+  const processedLikesMap = useMemo(() => {
+    if (!likesData || !following) return {};
+
+    const processedMap: Record<
+      string,
+      {
+        allLikes: number[];
+        modLikes: number[];
+        followingLikes: number[];
+      }
+    > = {};
+    for (const [castHash, likes] of Object.entries(likesData.allLikesData)) {
+      processedMap[castHash] = {
+        allLikes: likes,
+        modLikes: likes.filter((fid) => moderatorFids.includes(fid)),
+        followingLikes: likes.filter((fid) =>
+          (following?.following ?? []).includes(fid)
+        ),
+      };
     }
 
-    // Process casts
-    const allPagesCasts = castsData.pages.flatMap((page) => page.data);
-    const uniqueCasts = unique(allPagesCasts, (c) => c.castHash);
-    setCasts(uniqueCasts);
+    return processedMap;
+  }, [likesData, following]);
 
-    // Filter and calculate scores
-    const filteredCasts = uniqueCasts
+  // 3. Make sure we update castsLikesMap
+  useEffect(() => {
+    if (Object.keys(processedLikesMap).length > 0) {
+      setCastsLikesMap(processedLikesMap);
+    }
+  }, [processedLikesMap]);
+
+  // 4. Update the filtering logic
+  const filteredCasts = useMemo(() => {
+    if (!casts.length) return [];
+
+    const filtered = casts
       .filter((cast) => !excludedCasts.includes(cast.castHash))
       .filter((cast) => !DO_NOT_PAY.includes(cast.fid));
 
-    const newSmoothScores = calculateSmoothScores(filteredCasts.slice(0, topN));
+    return filtered;
+  }, [casts, excludedCasts]);
+
+  // Separate score calculation
+  const calculatedScores = useMemo(() => {
+    if (!filteredCasts.length || !likesData || !castsLikesMap) {
+      return null;
+    }
+
+    // First enrich casts with their likes data
+    const castsWithLikes = filteredCasts.map((cast) => {
+      const enrichedCast = {
+        ...cast,
+        modLikes: castsLikesMap[cast.castHash]?.modLikes || [],
+        followingLikes: castsLikesMap[cast.castHash]?.followingLikes || [],
+        allLikes: castsLikesMap[cast.castHash]?.allLikes || [],
+        lastLikedTime: likesData.lastLikedTimes[cast.castHash] || 0,
+      };
+      return enrichedCast;
+    });
+
+    // Then filter for mod threshold
+    const eligibleCasts = castsWithLikes.filter(
+      (cast) => cast.modLikes.length >= minMods
+    );
+
+    if (eligibleCasts.length === 0) return null;
+
+    // Take top N by views from eligible casts
+    const scoringCasts = eligibleCasts
+      .sort((a, b) => b.count - a.count)
+      .slice(0, topN);
+
+    const newSmoothScores = calculateSmoothScores(scoringCasts);
     const winners = calculateWinners(newSmoothScores, rulesConfig);
 
-    setSmoothScores(newSmoothScores);
-    setWinners(winners);
+    return { smoothScores: newSmoothScores, winners };
+  }, [filteredCasts, likesData, castsLikesMap, minMods, topN, rulesConfig]);
 
-    // Handle sorting if likes data is available
-    if (sortBy === "likes" && likesData) {
-      const sortedCasts = [...uniqueCasts].sort((a, b) => {
-        const aLikes = castsLikesMap[a.castHash]?.followingLikes?.length || 0;
-        const bLikes = castsLikesMap[b.castHash]?.followingLikes?.length || 0;
-        return bLikes - aLikes;
-      });
-      setCasts(sortedCasts);
-    } else if (sortBy === "views") {
-      setCasts([...uniqueCasts].sort((a, b) => b.count - a.count));
-    } else if (sortBy === "timestamp" && likesData) {
-      setCasts(
-        [...uniqueCasts].sort((a, b) => {
-          const aTimestamp = likesData.lastLikedTimes[a.castHash] ?? 0;
-          const bTimestamp = likesData.lastLikedTimes[b.castHash] ?? 0;
-          return bTimestamp - aTimestamp;
-        })
-      );
+  // Update scores immediately when calculated
+  useEffect(() => {
+    if (!calculatedScores) return;
+
+    setSmoothScores(calculatedScores.smoothScores);
+    setWinners(calculatedScores.winners);
+  }, [calculatedScores, setSmoothScores, setWinners]);
+
+  // 6. Handle sorting separately
+  const sortedCasts = useMemo(() => {
+    if (!casts.length) return casts;
+
+    // Don't sort if we need likes data but don't have it
+    if (
+      (sortBy === "likes" || sortBy === "timestamp") &&
+      (!likesData || Object.keys(castsLikesMap).length === 0)
+    ) {
+      return casts;
     }
-  }, [
-    castsData,
-    likesData,
-    excludedCasts,
-    topN,
-    rulesConfig,
-    sortBy,
-    setCasts,
-    setSmoothScores,
-    setWinners,
-  ]);
+
+    return sortCasts([...casts], sortBy, likesData, castsLikesMap);
+  }, [casts, sortBy, likesData, castsLikesMap]);
+
+  // 7. Update casts only when sort actually changes
+  useEffect(() => {
+    if (
+      JSON.stringify(sortedCasts.map((c) => c.castHash)) !==
+      JSON.stringify(casts.map((c) => c.castHash))
+    ) {
+      setCasts(sortedCasts);
+    }
+  }, [casts, sortedCasts, setCasts]);
+
+  // Simple sort handler
+  const handleSort = useCallback(
+    (sortType: "views" | "likes" | "timestamp") => {
+      setSortBy(sortType);
+    },
+    [setSortBy]
+  );
+
+  const handleRemoveMod = () => {
+    if (minMods > 0) {
+      setRulesConfig({ ...rulesConfig, minMods: minMods - 1 });
+      clearExcludedCasts();
+    }
+  };
+
+  const handleAddMod = () => {
+    if (minMods < 12) {
+      setRulesConfig({ ...rulesConfig, minMods: minMods + 1 });
+      clearExcludedCasts();
+    }
+  };
+
+  // Create ref for intersection observer
+  const observerTarget = useRef(null);
 
   const [showScrollButton, setShowScrollButton] = useState(false);
 
@@ -277,7 +357,7 @@ function PostsLayoutComponent() {
     }
   };
 
-  // Callback for intersection observer
+  // Make sure the intersection observer is working
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
@@ -305,43 +385,12 @@ function PostsLayoutComponent() {
     };
   }, [handleObserver]);
 
-  // Add new state for consolidated likes data
-  const [castsLikesMap, setCastsLikesMap] = useState<
-    Record<
-      string,
-      {
-        allLikes: number[];
-        modLikes: number[];
-        followingLikes: number[];
-      }
-    >
-  >({});
-
-  // Process the likes data
+  // Clear excluded casts when likes data arrives
   useEffect(() => {
-    if (!likesData || !following) return;
-
-    const processedLikesMap: Record<
-      string,
-      {
-        allLikes: number[];
-        modLikes: number[];
-        followingLikes: number[];
-      }
-    > = {};
-
-    for (const [castHash, likes] of Object.entries(likesData.allLikesData)) {
-      processedLikesMap[castHash] = {
-        allLikes: likes,
-        modLikes: likes.filter((fid) => moderatorFids.includes(fid)),
-        followingLikes: likes.filter((fid) =>
-          (following?.following ?? []).includes(fid)
-        ),
-      };
+    if (likesData && Object.keys(castsLikesMap).length > 0) {
+      clearExcludedCasts();
     }
-
-    setCastsLikesMap(processedLikesMap);
-  }, [likesData, following]);
+  }, [likesData, castsLikesMap, clearExcludedCasts]);
 
   return (
     <>
@@ -490,37 +539,13 @@ function PostsLayoutComponent() {
               )}
             </div>
           </ol>
-        ) : isFetching ? (
-          <div className="flex flex-col w-full items-center p-4">
-            <span className="loading loading-ring loading-lg loading-secondary" />
-          </div>
         ) : (
-          <div className="flex flex-col items-center justify-center p-8 text-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center">
-              <span className="text-3xl">💅</span>
+          isFetching &&
+          !isFetchingNextPage && (
+            <div className="flex justify-center mt-4">
+              <span className="loading loading-ring loading-lg loading-primary" />
             </div>
-            <h3 className="font-bold text-xl">No SassyHash casts yet</h3>
-            <p className="text-base-content/70 max-w-md">
-              There are no decoded messages to display right now. Check back
-              later or explore other casts.
-            </p>
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => refetch()}
-              >
-                Refresh
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline"
-                onClick={() => openUrl("https://warpcast.com/~/channel/p2p")}
-              >
-                Go to Warpcast
-              </button>
-            </div>
-          </div>
+          )
         )}
         {showScrollButton && (
           <button
