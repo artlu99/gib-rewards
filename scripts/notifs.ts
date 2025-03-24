@@ -116,16 +116,22 @@ const sendNotifications = async (
   fids: number[],
   topN = 15,
   totalPool = 100,
+  minMods = 2,
   chunkSize = 5,
   delayInMs = 1000
 ) => {
   for (const chunk of cluster(fids, chunkSize)) {
     await Promise.all(
       chunk.map(async (fid) => {
-        await sendFrameNotification({
+        const res = await sendFrameNotification({
           fid,
-          body: `Weekly Rewards has begun! $${totalPool} for the top ${topN} qualified SassyHash casts`,
+          // body: `Weekly Rewards has begun! $${totalPool} for the top ${topN} qualified SassyHash casts`,
+          // body: `New Weekly Rewards begins on Tuesday! Current contest requires likes by ${minMods} SassyMods in order to qualify`,
+          body: "Weekly Rewards drop tomorrow! Winners will receive payment from sassyhash-rewards.base.eth. Trust, and verify.",
         });
+        if (res?.state !== "success") {
+          console.error("error", fid, res?.error);
+        }
       })
     );
     await new Promise((resolve) => setTimeout(resolve, delayInMs));
@@ -140,10 +146,14 @@ if (!DO_NOT_RUN) {
 
   console.log(
     "sending notifications to",
-    res.map((r) => `${r.username}:${r.fid} (${r.userScore}) ${r.followerCount} followers`)
+    res.map(
+      (r) =>
+        `${r.username}:${r.fid} (${r.userScore}) ${r.followerCount} followers`
+    )
   );
 
   if (!DO_NOT_SEND) {
+    // await sendNotifications([6546]);
     await sendNotifications(res.map((r) => r.fid));
   }
 } else {
