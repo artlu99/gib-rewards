@@ -159,11 +159,12 @@ if (!DO_NOT_RUN) {
     // body: `Weekly Rewards has begun! $${totalPool} for the top ${topN} qualified SassyHash casts`,
     // body: `New Weekly Rewards begins on Tuesday! Current contest requires likes by ${minMods} SassyMods in order to qualify`,
     // body: "Weekly Rewards drop tomorrow! Winners will receive payment from sassyhash-rewards.base.eth. Trust, and verify.",
+    // body: "Weekly Rewards pay out in ~2 hrs! Please check the Leaderboard for this week's most popular SassyCasts, before it resets.";
     const body =
-      "Weekly Rewards pay out in ~2 hrs! Please check the Leaderboard for this week's most popular SassyCasts, before it resets.";
+      "First weekly payouts are out! Please share screenshots in /p2p official thread.";
 
     console.log(
-      `starting to send notifications to ${res.length} users, ${chunkSize} at a time`
+      `sending notifications to ${res.length} users, ${chunkSize} at a time`
     );
     await sendNotifications(
       res.map((r) => r.fid),

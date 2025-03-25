@@ -3,6 +3,8 @@ import { getUsers } from "../app/utils/neynar";
 
 dotenv.config();
 
+const FULL_OUTPUT = true;
+
 const json = {
   winners: [
     {
@@ -124,7 +126,13 @@ const json = {
   timestamp: 1742913023679,
 };
 
-console.log("fid,username,USDC,DEGEN,BURRITO,primary");
+// header
+console.log(
+  FULL_OUTPUT
+    ? "fid,username,USDC,DEGEN,BURRITO,primary"
+    : "receiverAddress,value"
+);
+// body
 for await (const winner of json.winners) {
   const { fid, username, payout } = winner;
 
@@ -135,5 +143,10 @@ for await (const winner of json.winners) {
   const user = await getUsers([fid]);
   const primary = user.users[0].verified_addresses.primary.eth_address;
 
-  console.log([fid, username, usdc, degen, burrito, primary].join(","));
+  if (FULL_OUTPUT) {
+    console.log([fid, username, usdc, degen, burrito, primary].join(","));
+  } else {
+    // USDC on Base https://smold.app/disperse?token=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+    console.log([primary, usdc].join(","));
+  }
 }
