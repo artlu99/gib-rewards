@@ -21,8 +21,8 @@ importers:
         specifier: ^0.0.30
         version: 0.0.30(typescript@5.8.2)(zod@3.24.2)
       '@neynar/nodejs-sdk':
-        specifier: ^2.17.0
-        version: 2.17.0(typescript@5.8.2)(zod@3.24.2)
+        specifier: ^2.23.0
+        version: 2.23.0(typescript@5.8.2)(zod@3.24.2)
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@4.0.9)
@@ -841,8 +841,8 @@ packages:
     resolution: {integrity: sha512-q3L9i3HoNfz0SGpTIS4zTcKBbRkxzCRpd169eyiTuk3IwcPC3/85mzLHranlKo2b+HYT0gu37YxGB45aD8A3Tw==}
     engines: {node: '>=18.0.0'}
 
-  '@neynar/nodejs-sdk@2.17.0':
-    resolution: {integrity: sha512-qzpTvaM90Oq72UOkJhfxu5o35HvQVCe98BHfnNf9dSCgkw6eoLYw5wHkZ01E4LDrE8jY6/NmdWMZWUFcbL/jBw==}
+  '@neynar/nodejs-sdk@2.23.0':
+    resolution: {integrity: sha512-OGASRM4JIvx/kL8YUEQnuDhbiK6Y+/oTXBQwcXkFSLGbOqagkKaILWiHr8J7sYogtgdEJHYW2J9n91tliGPK3Q==}
     engines: {node: '>=19.9.0'}
 
   '@noble/curves@1.8.1':
@@ -4288,7 +4288,7 @@ snapshots:
       '@netlify/node-cookies': 0.1.0
       urlpattern-polyfill: 8.0.2
 
-  '@neynar/nodejs-sdk@2.17.0(typescript@5.8.2)(zod@3.24.2)':
+  '@neynar/nodejs-sdk@2.23.0(typescript@5.8.2)(zod@3.24.2)':
     dependencies:
       '@openapitools/openapi-generator-cli': 2.17.0
       semver: 7.7.1

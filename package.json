@@ -7,6 +7,7 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "notifs": "tsx scripts/notifs.ts",
+    "pay": "tsx scripts/make-csv.ts",
     "reset": "tsx scripts/reset.ts",
     "refresh-spam-labels": "tsx scripts/refresh-spam-labels.ts",
     "start": "vinxi start"
@@ -16,7 +17,7 @@
     "@farcaster/frame-core": "^0.0.28",
     "@farcaster/frame-node": "^0.0.18",
     "@farcaster/frame-sdk": "^0.0.30",
-    "@neynar/nodejs-sdk": "^2.17.0",
+    "@neynar/nodejs-sdk": "^2.23.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-query": "^5.67.2",
     "@tanstack/react-router": "^1.112.7",
