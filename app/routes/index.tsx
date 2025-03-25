@@ -390,6 +390,13 @@ function PostsLayoutComponent() {
     };
   }, [handleObserver]);
 
+  useEffect(() => {
+    // Once we have our first page of data
+    if (castsData?.pages[0]) {
+      fetchNextPage();
+    }
+  }, [castsData?.pages[0], fetchNextPage]);
+
   // Clear excluded casts when likes data arrives
   useEffect(() => {
     if (likesData && Object.keys(castsLikesMap).length > 0) {
