@@ -18,8 +18,24 @@ const viewsRedis = new Redis({
 });
 
 const usageKey = () => "action-usage";
-const getAllInterationsKeys = async () =>
-  await viewsRedis.keys("interactions-0x*");
+const getAllInterationsKeys = async () => {
+  let cursor = 0;
+  const keys = new Set<string>();
+
+  do {
+    const [nextCursor, batch] = await viewsRedis.scan(cursor, {
+      match: "interactions-0x*",
+      count: 100,
+    });
+
+    for (const key of batch) {
+      keys.add(key);
+    }
+    cursor = Number.parseInt(nextCursor);
+  } while (cursor !== 0);
+
+  return Array.from(keys);
+};
 
 if (!DO_NOT_RUN) {
   const keys = await getAllInterationsKeys();
