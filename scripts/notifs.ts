@@ -11,6 +11,8 @@ import { getUsers } from "../app/utils/neynar";
 const DO_NOT_RUN = false;
 const DO_NOT_SEND = true;
 
+const chunkSize = 5;
+
 const env = dotenv.config().parsed;
 if (!env) {
   throw new Error(
@@ -114,9 +116,7 @@ const getNotifications = async (minUserScore = 0.8) => {
 
 const sendNotifications = async (
   fids: number[],
-  topN = 15,
-  totalPool = 100,
-  minMods = 2,
+  text: string,
   chunkSize = 5,
   delayInMs = 1000
 ) => {
@@ -125,9 +125,7 @@ const sendNotifications = async (
       chunk.map(async (fid) => {
         const res = await sendFrameNotification({
           fid,
-          // body: `Weekly Rewards has begun! $${totalPool} for the top ${topN} qualified SassyHash casts`,
-          // body: `New Weekly Rewards begins on Tuesday! Current contest requires likes by ${minMods} SassyMods in order to qualify`,
-          body: "Weekly Rewards drop tomorrow! Winners will receive payment from sassyhash-rewards.base.eth. Trust, and verify.",
+          body: text, // "Weekly Rewards pay out in ~2 hrs! Please check the Leaderboard for this week's most popular SassyCasts, before it resets.",
         });
         if (res?.state !== "success") {
           console.error("error", fid, res?.error);
@@ -139,7 +137,7 @@ const sendNotifications = async (
 };
 
 if (!DO_NOT_RUN) {
-  const minUserScore = 0.7;
+  const minUserScore = 0.6;
 
   const res = await getNotifications(minUserScore);
   console.log(res.length, "users above score", minUserScore);
@@ -154,7 +152,24 @@ if (!DO_NOT_RUN) {
 
   if (!DO_NOT_SEND) {
     // await sendNotifications([6546]);
-    await sendNotifications(res.map((r) => r.fid));
+
+    // const topN = 15;
+    // const totalPool = 100;
+    // const minMods = 2;
+    // body: `Weekly Rewards has begun! $${totalPool} for the top ${topN} qualified SassyHash casts`,
+    // body: `New Weekly Rewards begins on Tuesday! Current contest requires likes by ${minMods} SassyMods in order to qualify`,
+    // body: "Weekly Rewards drop tomorrow! Winners will receive payment from sassyhash-rewards.base.eth. Trust, and verify.",
+    const body =
+      "Weekly Rewards pay out in ~2 hrs! Please check the Leaderboard for this week's most popular SassyCasts, before it resets.";
+
+    console.log(
+      `starting to send notifications to ${res.length} users, ${chunkSize} at a time`
+    );
+    await sendNotifications(
+      res.map((r) => r.fid),
+      body,
+      chunkSize
+    );
   }
 } else {
   console.log("set DO_NOT_RUN to false to send notifications");
