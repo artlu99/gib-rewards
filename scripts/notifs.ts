@@ -160,8 +160,9 @@ if (!DO_NOT_RUN) {
     // body: `New Weekly Rewards begins on Tuesday! Current contest requires likes by ${minMods} SassyMods in order to qualify`,
     // body: "Weekly Rewards drop tomorrow! Winners will receive payment from sassyhash-rewards.base.eth. Trust, and verify.",
     // body: "Weekly Rewards pay out in ~2 hrs! Please check the Leaderboard for this week's most popular SassyCasts, before it resets.";
+    // body: "First weekly payouts are out! Please share screenshots in /p2p official thread.";
     const body =
-      "First weekly payouts are out! Please share screenshots in /p2p official thread.";
+      "Rewards go out in 3 days! 2 SassyMod likes are required to qualify.";
 
     console.log(
       `sending notifications to ${res.length} users, ${chunkSize} at a time`
