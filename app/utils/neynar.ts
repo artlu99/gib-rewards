@@ -49,11 +49,25 @@ export const getUsers = async (
   fids: number[],
   viewerFid = 6546
 ): Promise<BulkUsersResponse> => {
-  const res = await cachedFetcherGet<BulkUsersResponse>(
-    `/v2/farcaster/user/bulk?viewer_fid=${viewerFid}&fids=${fids.join(",")}`,
-    true
+  const chunks = fids.reduce((acc, fid, index) => {
+    const chunkIndex = Math.floor(index / 100);
+    if (!acc[chunkIndex]) {
+      acc[chunkIndex] = [];
+    }
+    acc[chunkIndex].push(fid);
+    return acc;
+  }, [] as number[][]);
+
+  const res = await Promise.all(
+    chunks.map((chunk) =>
+      cachedFetcherGet<BulkUsersResponse>(
+        `/v2/farcaster/user/bulk?viewer_fid=${viewerFid}&fids=${chunk.join(",")}`,
+        true
+      )
+    )
   );
-  return res;
+
+  return {users: res.flatMap((r) => r.users)};
 };
 
 export const getTokenBalances = async (
