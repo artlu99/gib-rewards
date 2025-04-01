@@ -1,5 +1,5 @@
 import { sdk } from "@farcaster/frame-sdk";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useFrame } from "~/components/context/FrameContext";
 
 const MESSAGE_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -79,5 +79,10 @@ export const useSignIn = () => {
     }
   }, [context, contextFid, contextError]);
 
-  return { logout, signIn, isSignedIn, isLoading, error };
+  const secureContextFid = useMemo(
+    () => (isSignedIn ? contextFid : null),
+    [contextFid, isSignedIn]
+  );
+
+  return { logout, signIn, isSignedIn, isLoading, error, secureContextFid };
 };

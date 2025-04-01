@@ -57,7 +57,7 @@ function PostsLayoutComponent() {
     >
   >({});
 
-  const { logout, signIn } = useSignIn();
+  const { logout, signIn, secureContextFid } = useSignIn();
 
   const { contextFid, viewProfile } = useFrame();
   const {
@@ -103,7 +103,7 @@ function PostsLayoutComponent() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    ...castsInfiniteQueryOptions(contextFid ?? null),
+    ...castsInfiniteQueryOptions(secureContextFid ?? null),
     // biome-ignore lint/suspicious/noExplicitAny: too gnarly
     initialData: preload as any,
   });
