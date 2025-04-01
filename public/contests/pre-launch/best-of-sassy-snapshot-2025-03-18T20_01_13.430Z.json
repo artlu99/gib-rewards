@@ -1,0 +1,158 @@
+{
+  "bestOfSassy": {
+    "nRaw": 15,
+    "sumRaw": 161,
+    "meanRaw": 10.733333333333333,
+    "stdevRaw": 4.725345372445161,
+    "sumSmooth": 155.28673176799435,
+    "items": [
+      {
+        "fid": 10215,
+        "username": "zoo",
+        "castHash": "0x186dd70ff1c88098ec33e17daac364968779ca1d",
+        "raw": 21,
+        "rawZscore": 2.172680694734936,
+        "smooth": 16.117591551673193,
+        "smoothZscore": 1.1394422616676882
+      },
+      {
+        "fid": 311933,
+        "username": "burrrrrberry",
+        "castHash": "0xf08ad07bf38f4941eabca6e08f07cc71868c2dc7",
+        "raw": 20,
+        "rawZscore": 1.9610559517412736,
+        "smooth": 15.927606964179176,
+        "smoothZscore": 1.0992368221665103
+      },
+      {
+        "fid": 380950,
+        "username": "lovejoy",
+        "castHash": "0x93682661b4166fb8157a0d7bdafb391ae8ec4274",
+        "raw": 16,
+        "rawZscore": 1.114556979766623,
+        "smooth": 14.700358398744367,
+        "smoothZscore": 0.8395206599170278
+      },
+      {
+        "fid": 3115,
+        "username": "ghostlinkz.eth",
+        "castHash": "0x21160710b4310479193c016cbc33bcd37545ceb3",
+        "raw": 12,
+        "rawZscore": 0.2680580077919728,
+        "smooth": 11.970905591878982,
+        "smoothZscore": 0.2619009111508097
+      },
+      {
+        "fid": 204221,
+        "username": "jarrettr",
+        "castHash": "0x1e20a0a58f54e2b9773a1fc5697110f44bd4d9d9",
+        "raw": 12,
+        "rawZscore": 0.2680580077919728,
+        "smooth": 11.970905591878982,
+        "smoothZscore": 0.2619009111508097
+      },
+      {
+        "fid": 380950,
+        "username": "lovejoy",
+        "castHash": "0x7da2afe230036bfa78dd7b8e4feaa96d3fdc34a4",
+        "raw": 12,
+        "rawZscore": 0.2680580077919728,
+        "smooth": 11.970905591878982,
+        "smoothZscore": 0.2619009111508097
+      },
+      {
+        "fid": 256931,
+        "username": "catch0x22.eth",
+        "castHash": "0x00d6916d340ff360f840b5fca3ce42246248fb08",
+        "raw": 11,
+        "rawZscore": 0.0564332647983102,
+        "smooth": 10.999717454067097,
+        "smoothZscore": 0.0563734710878758
+      },
+      {
+        "fid": 535389,
+        "username": "xbornid.eth",
+        "castHash": "0xc5b022d1e40bbcd7c4cc8daa4f05596adb76305e",
+        "raw": 8,
+        "rawZscore": -0.5784409641826775,
+        "smooth": 8.255284674722672,
+        "smoothZscore": -0.5244164105042715
+      },
+      {
+        "fid": 3346,
+        "username": "haole",
+        "castHash": "0x44c921681ae67289e3f0450f64804121aac96cc0",
+        "raw": 8,
+        "rawZscore": -0.5784409641826775,
+        "smooth": 8.255284674722672,
+        "smoothZscore": -0.5244164105042715
+      },
+      {
+        "fid": 356241,
+        "username": "kevang30.eth",
+        "castHash": "0xfe319dd20dfb7935817f0ead947f642a5e6593bf",
+        "raw": 8,
+        "rawZscore": -0.5784409641826775,
+        "smooth": 8.255284674722672,
+        "smoothZscore": -0.5244164105042715
+      },
+      {
+        "fid": 482183,
+        "username": "wanderlustmom",
+        "castHash": "0x3fa4320409799162087e7b84781fd5e21fe82def",
+        "raw": 7,
+        "rawZscore": -0.7900657071763402,
+        "smooth": 7.5737121341831894,
+        "smoothZscore": -0.6686540242274771
+      },
+      {
+        "fid": 535389,
+        "username": "xbornid.eth",
+        "castHash": "0x55ebad778b39ca94f7649e7aa3f6ec2fa8372158",
+        "raw": 7,
+        "rawZscore": -0.7900657071763402,
+        "smooth": 7.5737121341831894,
+        "smoothZscore": -0.6686540242274771
+      },
+      {
+        "fid": 194372,
+        "username": "roadu",
+        "castHash": "0x40b6ef64b779d48b3e7a259f7aa9eca9045c4536",
+        "raw": 7,
+        "rawZscore": -0.7900657071763402,
+        "smooth": 7.5737121341831894,
+        "smoothZscore": -0.6686540242274771
+      },
+      {
+        "fid": 906814,
+        "username": "ismancuan",
+        "castHash": "0x98ff4d3e9271f256d8c9cb94fdbda11aba582c44",
+        "raw": 7,
+        "rawZscore": -0.7900657071763402,
+        "smooth": 7.5737121341831894,
+        "smoothZscore": -0.6686540242274771
+      },
+      {
+        "fid": 755466,
+        "username": "andryaoe",
+        "castHash": "0xade1dc36ee78f86ba4882f492f494957cbe6c7ce",
+        "raw": 5,
+        "rawZscore": -1.2133151931636654,
+        "smooth": 6.568038062792829,
+        "smoothZscore": -0.8814795411208524
+      }
+    ]
+  },
+  "rulesConfig": {
+    "topN": 15,
+    "totalPool": 100,
+    "minPayout": 5,
+    "minMods": 2,
+    "vector": {
+      "views": 1,
+      "likes": 0,
+      "replies": 0
+    }
+  },
+  "timestamp": 1742327964743
+}

@@ -1,0 +1,158 @@
+{
+  "bestOfSassy": {
+    "nRaw": 15,
+    "sumRaw": 112,
+    "meanRaw": 7.466666666666667,
+    "stdevRaw": 2.94089933334837,
+    "sumSmooth": 109.52401304506343,
+    "items": [
+      {
+        "fid": 644823,
+        "username": "0xkesha",
+        "castHash": "0x3f3fcaff3b7ed8f44cc255ff09dfd1304772e357",
+        "raw": 14,
+        "rawZscore": 2.2215426618818626,
+        "smooth": 10.842313073027096,
+        "smoothZscore": 1.1478279341568203
+      },
+      {
+        "fid": 1355,
+        "username": "bias",
+        "castHash": "0x7fbf60eec08b9b40965d2c8992301506f33666aa",
+        "raw": 12,
+        "rawZscore": 1.5414785817139454,
+        "smooth": 10.393790742997695,
+        "smoothZscore": 0.9953159712537124
+      },
+      {
+        "fid": 10174,
+        "username": "cryptowenmoon.eth",
+        "castHash": "0x00c33d3f3e25d073168010e06c939d3281e092f3",
+        "raw": 11,
+        "rawZscore": 1.2014465416299869,
+        "smooth": 10.044807461235466,
+        "smoothZscore": 0.8766504740009068
+      },
+      {
+        "fid": 8004,
+        "username": "ahn.eth",
+        "castHash": "0xc067ac9d624d38175860cd208445e2a17f71e1e9",
+        "raw": 9,
+        "rawZscore": 0.5213824614620698,
+        "smooth": 8.880083136474816,
+        "smoothZscore": 0.4806068857171318
+      },
+      {
+        "fid": 234616,
+        "username": "pichi",
+        "castHash": "0xb4eb8039a3d78f894751a7479001b03211494924",
+        "raw": 9,
+        "rawZscore": 0.5213824614620698,
+        "smooth": 8.880083136474816,
+        "smoothZscore": 0.4806068857171318
+      },
+      {
+        "fid": 644823,
+        "username": "0xkesha",
+        "castHash": "0xe54aca60e43f2a55b3ac3bf6f9981d153adbb801",
+        "raw": 8,
+        "rawZscore": 0.1813504213781112,
+        "smooth": 7.994265978759688,
+        "smoothZscore": 0.17940067043788308
+      },
+      {
+        "fid": 3115,
+        "username": "ghostlinkz.eth",
+        "castHash": "0xf29be00c0f8bee0c32e649e80067bf3e9a206440",
+        "raw": 7,
+        "rawZscore": -0.15868161870584738,
+        "smooth": 7.003858734713214,
+        "smoothZscore": -0.15736952526917042
+      },
+      {
+        "fid": 535389,
+        "username": "xbornid.eth",
+        "castHash": "0x53897373b3113562598dc3ff136f8c8df645ce67",
+        "raw": 7,
+        "rawZscore": -0.15868161870584738,
+        "smooth": 7.003858734713214,
+        "smoothZscore": -0.15736952526917042
+      },
+      {
+        "fid": 875987,
+        "username": "i-d0-care",
+        "castHash": "0x13cee308af43c6044af80cf44d68affb49c045f8",
+        "raw": 6,
+        "rawZscore": -0.49871365878980595,
+        "smooth": 6.106153679378548,
+        "smoothZscore": -0.4626180066282997
+      },
+      {
+        "fid": 380950,
+        "username": "lovejoy",
+        "castHash": "0x93ce1558e9584bea5cc146fbc1f365465663e99a",
+        "raw": 6,
+        "rawZscore": -0.49871365878980595,
+        "smooth": 6.106153679378548,
+        "smoothZscore": -0.4626180066282997
+      },
+      {
+        "fid": 997390,
+        "username": "lomonn",
+        "castHash": "0x543ee03c2a70136f052129c5ee5bac63cf2a8c69",
+        "raw": 6,
+        "rawZscore": -0.49871365878980595,
+        "smooth": 6.106153679378548,
+        "smoothZscore": -0.4626180066282997
+      },
+      {
+        "fid": 538667,
+        "username": "lixzon",
+        "castHash": "0xe835ad805f6fdfe5dafd60d68f6f194e177d5778",
+        "raw": 5,
+        "rawZscore": -0.8387456988737645,
+        "smooth": 5.4141425326944805,
+        "smoothZscore": -0.6979239685961227
+      },
+      {
+        "fid": 476033,
+        "username": "torii-stories",
+        "castHash": "0x6b5a6350511e563a4d7360da25824d14a9f899d4",
+        "raw": 4,
+        "rawZscore": -1.178777738957723,
+        "smooth": 4.916116158612425,
+        "smoothZscore": -0.8672688925908608
+      },
+      {
+        "fid": 646397,
+        "username": "trizsamae",
+        "castHash": "0x40fe738a4c7e6e6a9245f2a81bef73e561c753f5",
+        "raw": 4,
+        "rawZscore": -1.178777738957723,
+        "smooth": 4.916116158612425,
+        "smoothZscore": -0.8672688925908608
+      },
+      {
+        "fid": 535389,
+        "username": "xbornid.eth",
+        "castHash": "0x6386614a8ac0b43800c2a46bbac5249f063fac9d",
+        "raw": 4,
+        "rawZscore": -1.178777738957723,
+        "smooth": 4.916116158612425,
+        "smoothZscore": -0.8672688925908608
+      }
+    ]
+  },
+  "rulesConfig": {
+    "topN": 15,
+    "totalPool": 100,
+    "minPayout": 5,
+    "minMods": 2,
+    "vector": {
+      "views": 1,
+      "likes": 0,
+      "replies": 0
+    }
+  },
+  "timestamp": 1742913031614
+}

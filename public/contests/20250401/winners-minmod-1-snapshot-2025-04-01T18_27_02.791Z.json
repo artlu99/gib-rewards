@@ -1,0 +1,80 @@
+{
+  "winners": [
+    {
+      "fid": 875987,
+      "username": "i-d0-care",
+      "rawScore": 37,
+      "smoothScore": 36.59964965839965,
+      "numCasts": 5,
+      "payout": 27.131191559322335
+    },
+    {
+      "fid": 3115,
+      "username": "ghostlinkz.eth",
+      "rawScore": 30,
+      "smoothScore": 28.38259786140916,
+      "numCasts": 4,
+      "payout": 22.162478769189526
+    },
+    {
+      "fid": 6786,
+      "username": "naaate",
+      "rawScore": 13,
+      "smoothScore": 9.942463473690262,
+      "numCasts": 1,
+      "payout": 11.012040163267123
+    },
+    {
+      "fid": 535389,
+      "username": "xbornid.eth",
+      "rawScore": 5,
+      "smoothScore": 5.210766294379175,
+      "numCasts": 1,
+      "payout": 8.150862593169649
+    },
+    {
+      "fid": 499575,
+      "username": "neverlee",
+      "rawScore": 5,
+      "smoothScore": 5.210766294379175,
+      "numCasts": 1,
+      "payout": 8.150862593169649
+    },
+    {
+      "fid": 3103,
+      "username": "auntiepapi.eth",
+      "rawScore": 4,
+      "smoothScore": 4.626425304049626,
+      "numCasts": 1,
+      "payout": 7.7975214406272375
+    },
+    {
+      "fid": 6622,
+      "username": "frdysk",
+      "rawScore": 4,
+      "smoothScore": 4.626425304049626,
+      "numCasts": 1,
+      "payout": 7.7975214406272375
+    },
+    {
+      "fid": 997390,
+      "username": "lomonn",
+      "rawScore": 4,
+      "smoothScore": 4.626425304049626,
+      "numCasts": 1,
+      "payout": 7.7975214406272375
+    }
+  ],
+  "rulesConfig": {
+    "topN": 15,
+    "totalPool": 100,
+    "minPayout": 5,
+    "minMods": 1,
+    "vector": {
+      "views": 1,
+      "likes": 0,
+      "replies": 0
+    }
+  },
+  "timestamp": 1743532020776
+}

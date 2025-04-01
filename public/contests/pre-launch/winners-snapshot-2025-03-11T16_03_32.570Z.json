@@ -1,0 +1,88 @@
+{
+  "winners": [
+    {
+      "fid": 644823,
+      "username": "0xkesha",
+      "rawScore": 30,
+      "smoothScore": 30.70945420751073,
+      "numCasts": 4,
+      "payout": 19.248376693552466
+    },
+    {
+      "fid": 277952,
+      "username": "dummie.eth",
+      "rawScore": 30,
+      "smoothScore": 26.912051598049466,
+      "numCasts": 3,
+      "payout": 17.486482051235768
+    },
+    {
+      "fid": 256931,
+      "username": "catch0x22.eth",
+      "rawScore": 14,
+      "smoothScore": 14.459857979419153,
+      "numCasts": 2,
+      "payout": 11.708992678080392
+    },
+    {
+      "fid": 194372,
+      "username": "roadu",
+      "rawScore": 9,
+      "smoothScore": 8.920317263165922,
+      "numCasts": 1,
+      "payout": 9.138791908600632
+    },
+    {
+      "fid": 191780,
+      "username": "agrimony.eth",
+      "rawScore": 8,
+      "smoothScore": 8,
+      "numCasts": 1,
+      "payout": 8.711788974762745
+    },
+    {
+      "fid": 10215,
+      "username": "zoo",
+      "rawScore": 8,
+      "smoothScore": 8,
+      "numCasts": 1,
+      "payout": 8.711788974762745
+    },
+    {
+      "fid": 356241,
+      "username": "kevang30.eth",
+      "rawScore": 8,
+      "smoothScore": 8,
+      "numCasts": 1,
+      "payout": 8.711788974762745
+    },
+    {
+      "fid": 936624,
+      "username": "bleufeud",
+      "rawScore": 7,
+      "smoothScore": 7.079682736834078,
+      "numCasts": 1,
+      "payout": 8.284786040924859
+    },
+    {
+      "fid": 906814,
+      "username": "ismancuan",
+      "rawScore": 6,
+      "smoothScore": 6.459857979419153,
+      "numCasts": 1,
+      "payout": 7.997203703317645
+    }
+  ],
+  "rulesConfig": {
+    "topN": 15,
+    "totalPool": 100,
+    "minPayout": 5,
+    "minMods": 1,
+    "vector": {
+      "views": 1,
+      "likes": 0,
+      "replies": 0
+    }
+  },
+  "timestamp": 1741709011029
+}
