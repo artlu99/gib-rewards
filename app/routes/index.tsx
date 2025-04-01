@@ -9,7 +9,7 @@ import { useFrame } from "~/components/context/FrameContext";
 import { Eyeball, Flame, Heart } from "~/components/ui/Icons";
 import { useSignIn } from "~/hooks/use-sign-in";
 import { useFollowing } from "~/hooks/useFollowing";
-import { getStoredToken, verifyToken } from "~/utils/auth";
+import { getStoredToken } from "~/utils/auth";
 import { FARCASTER_EPOCH } from "~/utils/hub";
 import { moderatorFids } from "~/utils/moderators";
 import { calculateSmoothScores } from "~/utils/smoothScores";
@@ -83,7 +83,7 @@ function PostsLayoutComponent() {
 
     if (!token) {
       signIn();
-    } else if (!verifyToken(token)) {
+    } else {
       logout();
       signIn();
     }
