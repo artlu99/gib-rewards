@@ -3,9 +3,9 @@ import { getUsers } from "../app/utils/neynar";
 
 dotenv.config();
 
-const FULL_OUTPUT = true;
+const FULL_OUTPUT = false;
 
-const json = {
+const json20250325 = {
   winners: [
     {
       fid: 644823,
@@ -126,14 +126,84 @@ const json = {
   timestamp: 1742913023679,
 };
 
+const json20250401 = {
+  winners: [
+    {
+      fid: 3115,
+      username: "ghostlinkz.eth",
+      rawScore: 19,
+      smoothScore: 15.115125529222471,
+      numCasts: 2,
+      payout: 24.23792880357729,
+    },
+    {
+      fid: 6786,
+      username: "naaate",
+      rawScore: 13,
+      smoothScore: 8.69610832841354,
+      numCasts: 1,
+      payout: 16.068059776730212,
+    },
+    {
+      fid: 875987,
+      username: "i-d0-care",
+      rawScore: 7,
+      smoothScore: 7.320449302788765,
+      numCasts: 2,
+      payout: 14.317175846470898,
+    },
+    {
+      fid: 8004,
+      username: "ahn.eth",
+      rawScore: 5,
+      smoothScore: 5.18393908825621,
+      numCasts: 2,
+      payout: 11.597910874715996,
+    },
+    {
+      fid: 535389,
+      username: "xbornid.eth",
+      rawScore: 4,
+      smoothScore: 5.058019155245403,
+      numCasts: 3,
+      payout: 11.437645007156394,
+    },
+    {
+      fid: 475488,
+      username: "hankmoody",
+      rawScore: 2,
+      smoothScore: 2.1593266273868146,
+      numCasts: 1,
+      payout: 7.7483047918473416,
+    },
+    {
+      fid: 194372,
+      username: "roadu",
+      rawScore: 2,
+      smoothScore: 2.1593266273868146,
+      numCasts: 1,
+      payout: 7.7483047918473416,
+    },
+    {
+      fid: 3,
+      username: "dwr.eth",
+      rawScore: 1,
+      smoothScore: 1.4493462639292942,
+      numCasts: 1,
+      payout: 6.844670107654527,
+    },
+  ],
+};
 // header
 console.log(
   FULL_OUTPUT
     ? "fid,username,USDC,DEGEN,BURRITO,primary"
     : "receiverAddress,value"
 );
+json20250325.winners.length;
+
 // body
-for await (const winner of json.winners) {
+for await (const winner of json20250401.winners) {
   const { fid, username, payout } = winner;
 
   const usdc = (payout * 0.6).toFixed(2);
@@ -147,6 +217,6 @@ for await (const winner of json.winners) {
     console.log([fid, username, usdc, degen, burrito, primary].join(","));
   } else {
     // USDC on Base https://smold.app/disperse?token=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
-    console.log([primary, usdc].join(","));
+    console.log([primary, degen].join(","));
   }
 }
