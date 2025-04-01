@@ -9,7 +9,7 @@ import { useFrame } from "~/components/context/FrameContext";
 import { Eyeball, Flame, Heart } from "~/components/ui/Icons";
 import { useSignIn } from "~/hooks/use-sign-in";
 import { useFollowing } from "~/hooks/useFollowing";
-import { getStoredToken } from "~/utils/auth";
+import { getStoredToken, isTokenExpired } from "~/utils/auth";
 import { FARCASTER_EPOCH } from "~/utils/hub";
 import { moderatorFids } from "~/utils/moderators";
 import { calculateSmoothScores } from "~/utils/smoothScores";
@@ -59,7 +59,7 @@ function PostsLayoutComponent() {
 
   const { logout, signIn } = useSignIn();
 
-  const { contextFid, viewProfile, openUrl } = useFrame();
+  const { contextFid, viewProfile } = useFrame();
   const {
     rulesConfig,
     setRulesConfig,
@@ -84,8 +84,12 @@ function PostsLayoutComponent() {
     if (!token) {
       signIn();
     } else {
-      logout();
-      signIn();
+      isTokenExpired(token).then((isExpired) => {
+        if (isExpired) {
+          logout();
+          signIn();
+        }
+      });
     }
   }, [contextFid, logout, signIn]);
 
