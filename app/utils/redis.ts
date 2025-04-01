@@ -5,6 +5,7 @@ import { Redis } from "@upstash/redis/cloudflare";
 import { verifyToken } from "~/utils/auth";
 
 const DEFAULT_TTL = 60 * 60 * 24 * 7; // 7 days
+const DO_NOT_TRACK_AFTER = 1743523200000;
 
 class RedisCache {
   private redis: Redis;
@@ -80,6 +81,10 @@ export const logCastDecode = createServerFn({ method: "POST" })
     ) => input
   )
   .handler(async ({ data }) => {
+    if (Date.now() > DO_NOT_TRACK_AFTER) {
+      return;
+    }
+
     const token = data?.token;
     const auth = token ? await verifyToken(token) : null;
 
